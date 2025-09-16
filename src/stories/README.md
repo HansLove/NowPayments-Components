@@ -8,6 +8,8 @@ This directory contains interactive stories for the NOWPayments Components libra
 src/stories/
 ├── Introduction.mdx              # Main introduction page
 ├── README.md                     # This file
+├── caos-theme.css               # Caos Engines inspired theme
+├── CaosThemeDemo.stories.tsx    # Theme demonstration stories
 ├── DepositModal/
 │   ├── DepositModal.stories.tsx  # All DepositModal variations
 │   └── mocks.ts                  # Deposit-specific mock data
@@ -52,6 +54,16 @@ src/stories/
   - `PrefilledTron` - Tron network pre-selected
   - `PrefilledPolygon` - Polygon network pre-selected
   - `LargeAmount` - Large withdrawal amounts
+
+### 4. Theming Demo
+- **Path**: `Theming/Caos Engines Demo/*`
+- **Coverage**: Complete theme demonstration with cyberpunk styling
+- **Stories**:
+  - `Overview` - Theme color palette and introduction
+  - `DepositModalThemed` - Deposit flow with Caos theme
+  - `WithdrawModalThemed` - Withdrawal flow with Caos theme
+  - `BothModalsThemed` - Both modals for comparison
+- **Features**: Dark navy backgrounds, electric red primary, cyan accents, neon glows
 
 ## Mock Data Strategy
 
@@ -158,6 +170,41 @@ Stories automatically inherit CSS variables from the Storybook theme. To test cu
 - **Network Tab**: Verify no real API calls are made
 - **React DevTools**: Inspect component props and state
 
+## Theming Capabilities
+
+### Caos Engines Theme
+The Storybook includes a complete cyberpunk theme inspired by Caos Engines:
+
+- **Implementation**: `caos-theme.css` - Complete CSS custom property overrides
+- **Color Palette**: Dark navy, electric red, cyan blue with neon effects
+- **Visual Effects**: Glowing borders, gradients, enhanced shadows
+- **Interactive States**: Smooth transitions with enhanced hover effects
+- **Responsive**: Maintains theme consistency across all viewport sizes
+
+### Theme Structure
+```css
+:root {
+  /* Primary Colors */
+  --np-primary: #e53e3e;
+  --np-accent: #00d4ff;
+  --np-success: #06ffa5;
+
+  /* Surface Colors */
+  --np-surface: #0a0e1a;
+  --np-surface-variant: #1a1f2e;
+
+  /* Effects */
+  --np-glow-primary: 0 0 20px rgba(229, 62, 62, 0.3);
+  --np-gradient-primary: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+}
+```
+
+### Custom Theme Development
+1. Create CSS file with custom property overrides
+2. Import in Storybook preview.ts
+3. Test with existing stories to ensure compatibility
+4. Document color palette and usage guidelines
+
 ## Integration with Main App
 
 Stories demonstrate how to integrate components in real applications:
@@ -165,5 +212,5 @@ Stories demonstrate how to integrate components in real applications:
 - **Setup**: API key configuration and store initialization
 - **Callbacks**: Backend integration patterns
 - **Error Handling**: Graceful error recovery
-- **Theming**: CSS variable customization
+- **Theming**: CSS variable customization and theme switching
 - **Responsive**: Mobile-first design principles

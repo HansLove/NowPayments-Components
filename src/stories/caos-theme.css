@@ -1,0 +1,61 @@
+/* Caos Engines Inspired Theme - Scoped to .caos-theme class */
+:root {
+  --np-primary: #e53e3e;
+  --np-primary-hover: #c53030;
+  --np-primary-active: #9b2c2c;
+  --np-surface: #0a0e1a;
+  --np-surface-variant: #1a1f2e;
+  --np-surface-hover: #2d3447;
+  --np-on-surface: #ffffff;
+  --np-on-surface-variant: #a0aec0;
+  --np-on-primary: #ffffff;
+  --np-accent: #00d4ff;
+  --np-accent-hover: #0bc5ea;
+  --np-secondary: #4fd1c7;
+  --np-error: #ff6b6b;
+  --np-error-hover: #ee5a52;
+  --np-success: #06ffa5;
+  --np-success-hover: #38d9a9;
+  --np-warning: #ffd93d;
+  --np-border: #2d3447;
+  --np-border-variant: #4a5568;
+  --np-glow-primary: 0 0 20px rgba(229, 62, 62, 0.3);
+  --np-glow-accent: 0 0 20px rgba(0, 212, 255, 0.3);
+  --np-glow-success: 0 0 20px rgba(6, 255, 165, 0.3);
+  --np-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --np-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --np-shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+  --np-shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.6);
+  --np-gradient-primary: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+  --np-gradient-surface: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+  --np-gradient-accent: linear-gradient(135deg, #00d4ff 0%, #4fd1c7 100%);
+}
+
+.caos-theme .np-modal {
+  background: var(--np-gradient-surface);
+  border: 1px solid var(--np-border);
+  box-shadow: var(--np-shadow-xl), var(--np-glow-primary);
+}
+
+.caos-theme .np-button--primary {
+  background: var(--np-gradient-primary);
+  box-shadow: var(--np-glow-primary);
+  transition: all 0.3s ease;
+}
+
+.caos-theme .np-button--primary:hover {
+  box-shadow: var(--np-glow-primary), 0 0 30px rgba(229, 62, 62, 0.5);
+  transform: translateY(-1px);
+}
+
+.caos-theme .np-input {
+  background: rgba(26, 31, 46, 0.8);
+  border: 1px solid var(--np-border);
+  color: var(--np-on-surface);
+  transition: all 0.3s ease;
+}
+
+.caos-theme .np-input:focus {
+  border-color: var(--np-accent);
+  box-shadow: var(--np-glow-accent);
+}
