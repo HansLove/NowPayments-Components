@@ -1,0 +1,187 @@
+/**
+ * NowPayments Components - Base Styles
+ * CSS-first theming with custom properties
+ */
+
+:root {
+  /* Color Variables */
+  --nowpayments-primary: var(--np-primary, #3b82f6);
+  --nowpayments-primary-hover: var(--np-primary-hover, #2563eb);
+  --nowpayments-primary-active: var(--np-primary-active, #1d4ed8);
+  --nowpayments-secondary: var(--np-secondary, #64748b);
+  --nowpayments-accent: var(--np-accent, #10b981);
+  --nowpayments-accent-hover: var(--np-accent-hover, #059669);
+
+  /* Surface Colors */
+  --nowpayments-surface: var(--np-surface, #ffffff);
+  --nowpayments-surface-variant: var(--np-surface-variant, #f8fafc);
+  --nowpayments-surface-hover: var(--np-surface-hover, #f1f5f9);
+
+  /* Text Colors */
+  --nowpayments-on-surface: var(--np-on-surface, #1f2937);
+  --nowpayments-on-surface-variant: var(--np-on-surface-variant, #64748b);
+  --nowpayments-on-primary: var(--np-on-primary, #ffffff);
+
+  /* Status Colors */
+  --nowpayments-error: var(--np-error, #ef4444);
+  --nowpayments-error-hover: var(--np-error-hover, #dc2626);
+  --nowpayments-success: var(--np-success, #10b981);
+  --nowpayments-success-hover: var(--np-success-hover, #059669);
+  --nowpayments-warning: var(--np-warning, #f59e0b);
+  --nowpayments-warning-hover: var(--np-warning-hover, #d97706);
+
+  /* Border & Outline */
+  --nowpayments-border: var(--np-border, #e2e8f0);
+  --nowpayments-border-variant: var(--np-border-variant, #cbd5e1);
+  --nowpayments-outline: var(--np-outline, #94a3b8);
+
+  /* Shadow & Elevation */
+  --nowpayments-shadow-sm: var(--np-shadow-sm, 0 1px 2px 0 rgb(0 0 0 / 0.05));
+  --nowpayments-shadow: var(--np-shadow, 0 4px 6px -1px rgb(0 0 0 / 0.1));
+  --nowpayments-shadow-lg: var(--np-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
+  --nowpayments-shadow-xl: var(--np-shadow-xl, 0 20px 25px -5px rgb(0 0 0 / 0.1));
+
+  /* Spacing */
+  --nowpayments-spacing-xs: var(--np-spacing-xs, 0.25rem);
+  --nowpayments-spacing-sm: var(--np-spacing-sm, 0.5rem);
+  --nowpayments-spacing-md: var(--np-spacing-md, 0.75rem);
+  --nowpayments-spacing-lg: var(--np-spacing-lg, 1rem);
+  --nowpayments-spacing-xl: var(--np-spacing-xl, 1.5rem);
+  --nowpayments-spacing-2xl: var(--np-spacing-2xl, 2rem);
+
+  /* Border Radius */
+  --nowpayments-radius-sm: var(--np-radius-sm, 0.25rem);
+  --nowpayments-radius: var(--np-radius, 0.375rem);
+  --nowpayments-radius-lg: var(--np-radius-lg, 0.5rem);
+  --nowpayments-radius-xl: var(--np-radius-xl, 0.75rem);
+
+  /* Typography */
+  --nowpayments-font-size-xs: var(--np-font-size-xs, 0.75rem);
+  --nowpayments-font-size-sm: var(--np-font-size-sm, 0.875rem);
+  --nowpayments-font-size-base: var(--np-font-size-base, 1rem);
+  --nowpayments-font-size-lg: var(--np-font-size-lg, 1.125rem);
+  --nowpayments-font-size-xl: var(--np-font-size-xl, 1.25rem);
+  --nowpayments-font-weight-normal: var(--np-font-weight-normal, 400);
+  --nowpayments-font-weight-medium: var(--np-font-weight-medium, 500);
+  --nowpayments-font-weight-semibold: var(--np-font-weight-semibold, 600);
+
+  /* Transitions */
+  --nowpayments-transition-fast: var(--np-transition-fast, 150ms ease-in-out);
+  --nowpayments-transition: var(--np-transition, 200ms ease-in-out);
+  --nowpayments-transition-slow: var(--np-transition-slow, 300ms ease-in-out);
+
+  /* Z-Index */
+  --nowpayments-z-dropdown: var(--np-z-dropdown, 10);
+  --nowpayments-z-modal: var(--np-z-modal, 50);
+  --nowpayments-z-toast: var(--np-z-toast, 100);
+}
+
+.nowpayments-modal {
+  /* Color Variables */
+  --nowpayments-primary: var(--np-primary, #3b82f6);
+  --nowpayments-primary-hover: var(--np-primary-hover, #2563eb);
+  --nowpayments-primary-active: var(--np-primary-active, #1d4ed8);
+  --nowpayments-secondary: var(--np-secondary, #64748b);
+  --nowpayments-accent: var(--np-accent, #10b981);
+  --nowpayments-accent-hover: var(--np-accent-hover, #059669);
+
+  /* Surface Colors */
+  --nowpayments-surface: var(--np-surface, #ffffff);
+  --nowpayments-surface-variant: var(--np-surface-variant, #f8fafc);
+  --nowpayments-surface-hover: var(--np-surface-hover, #f1f5f9);
+
+  /* Text Colors */
+  --nowpayments-on-surface: var(--np-on-surface, #1f2937);
+  --nowpayments-on-surface-variant: var(--np-on-surface-variant, #64748b);
+  --nowpayments-on-primary: var(--np-on-primary, #ffffff);
+
+  /* Status Colors */
+  --nowpayments-error: var(--np-error, #ef4444);
+  --nowpayments-error-hover: var(--np-error-hover, #dc2626);
+  --nowpayments-success: var(--np-success, #10b981);
+  --nowpayments-success-hover: var(--np-success-hover, #059669);
+  --nowpayments-warning: var(--np-warning, #f59e0b);
+  --nowpayments-warning-hover: var(--np-warning-hover, #d97706);
+
+  /* Border & Outline */
+  --nowpayments-border: var(--np-border, #e2e8f0);
+  --nowpayments-border-variant: var(--np-border-variant, #cbd5e1);
+  --nowpayments-outline: var(--np-outline, #94a3b8);
+
+  /* Shadow & Elevation */
+  --nowpayments-shadow-sm: var(--np-shadow-sm, 0 1px 2px 0 rgb(0 0 0 / 0.05));
+  --nowpayments-shadow: var(--np-shadow, 0 4px 6px -1px rgb(0 0 0 / 0.1));
+  --nowpayments-shadow-lg: var(--np-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
+  --nowpayments-shadow-xl: var(--np-shadow-xl, 0 20px 25px -5px rgb(0 0 0 / 0.1));
+
+  /* Spacing */
+  --nowpayments-spacing-xs: var(--np-spacing-xs, 0.25rem);
+  --nowpayments-spacing-sm: var(--np-spacing-sm, 0.5rem);
+  --nowpayments-spacing-md: var(--np-spacing-md, 0.75rem);
+  --nowpayments-spacing-lg: var(--np-spacing-lg, 1rem);
+  --nowpayments-spacing-xl: var(--np-spacing-xl, 1.5rem);
+  --nowpayments-spacing-2xl: var(--np-spacing-2xl, 2rem);
+
+  /* Typography */
+  --nowpayments-font-family: var(--np-font-family, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+  --nowpayments-font-size-xs: var(--np-font-size-xs, 0.75rem);
+  --nowpayments-font-size-sm: var(--np-font-size-sm, 0.875rem);
+  --nowpayments-font-size-base: var(--np-font-size-base, 1rem);
+  --nowpayments-font-size-lg: var(--np-font-size-lg, 1.125rem);
+  --nowpayments-font-size-xl: var(--np-font-size-xl, 1.25rem);
+  --nowpayments-font-size-2xl: var(--np-font-size-2xl, 1.5rem);
+
+  --nowpayments-font-weight-normal: var(--np-font-weight-normal, 400);
+  --nowpayments-font-weight-medium: var(--np-font-weight-medium, 500);
+  --nowpayments-font-weight-semibold: var(--np-font-weight-semibold, 600);
+  --nowpayments-font-weight-bold: var(--np-font-weight-bold, 700);
+
+  --nowpayments-line-height-tight: var(--np-line-height-tight, 1.25);
+  --nowpayments-line-height-normal: var(--np-line-height-normal, 1.5);
+  --nowpayments-line-height-relaxed: var(--np-line-height-relaxed, 1.75);
+
+  /* Border Radius */
+  --nowpayments-radius-sm: var(--np-radius-sm, 0.25rem);
+  --nowpayments-radius: var(--np-radius, 0.375rem);
+  --nowpayments-radius-md: var(--np-radius-md, 0.5rem);
+  --nowpayments-radius-lg: var(--np-radius-lg, 0.75rem);
+  --nowpayments-radius-xl: var(--np-radius-xl, 1rem);
+  --nowpayments-radius-full: var(--np-radius-full, 9999px);
+
+  /* Animation & Transitions */
+  --nowpayments-transition-fast: var(--np-transition-fast, 150ms ease-in-out);
+  --nowpayments-transition: var(--np-transition, 200ms ease-in-out);
+  --nowpayments-transition-slow: var(--np-transition-slow, 300ms ease-in-out);
+
+  /* Z-index */
+  --nowpayments-z-modal: var(--np-z-modal, 1000);
+  --nowpayments-z-overlay: var(--np-z-overlay, 999);
+  --nowpayments-z-dropdown: var(--np-z-dropdown, 100);
+  --nowpayments-z-tooltip: var(--np-z-tooltip, 200);
+}
+
+/* Base Modal Styles */
+.nowpayments-modal {
+  font-family: var(--nowpayments-font-family);
+  font-size: var(--nowpayments-font-size-base);
+  line-height: var(--nowpayments-line-height-normal);
+  color: var(--nowpayments-on-surface);
+}
+
+/* Reset styles for components */
+.nowpayments-modal *,
+.nowpayments-modal *::before,
+.nowpayments-modal *::after {
+  box-sizing: border-box;
+}
+
+.nowpayments-modal button {
+  font-family: inherit;
+}
+
+.nowpayments-modal input,
+.nowpayments-modal select,
+.nowpayments-modal textarea {
+  font-family: inherit;
+  font-size: inherit;
+}

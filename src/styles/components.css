@@ -1,0 +1,427 @@
+/**
+ * NowPayments Components - Component Styles
+ * BEM methodology with CSS custom properties
+ */
+
+/* Modal Container */
+.nowpayments-modal__overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgb(0 0 0 / 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--nowpayments-spacing-lg);
+  z-index: var(--nowpayments-z-modal);
+}
+
+.nowpayments-modal__container {
+  background-color: var(--nowpayments-surface);
+  border-radius: var(--nowpayments-radius-lg);
+  box-shadow: var(--nowpayments-shadow-xl);
+  width: 100%;
+  max-width: 28rem;
+  max-height: 90vh;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Modal Header */
+.nowpayments-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--nowpayments-spacing-xl);
+  border-bottom: 1px solid var(--nowpayments-border);
+}
+
+.nowpayments-modal__title {
+  font-size: var(--nowpayments-font-size-xl);
+  font-weight: var(--nowpayments-font-weight-semibold);
+  color: var(--nowpayments-on-surface);
+  margin: 0;
+}
+
+.nowpayments-modal__close {
+  background: none;
+  border: none;
+  padding: var(--nowpayments-spacing-sm);
+  border-radius: var(--nowpayments-radius);
+  color: var(--nowpayments-on-surface-variant);
+  cursor: pointer;
+  transition: background-color var(--nowpayments-transition-fast);
+}
+
+.nowpayments-modal__close:hover {
+  background-color: var(--nowpayments-surface-hover);
+}
+
+/* Modal Body */
+.nowpayments-modal__body {
+  padding: var(--nowpayments-spacing-xl);
+  overflow-y: auto;
+  max-height: calc(90vh - 8rem);
+}
+
+/* Stepper */
+.nowpayments-stepper {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--nowpayments-spacing-xl);
+}
+
+.nowpayments-stepper__step {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.nowpayments-stepper__step:not(:last-child)::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background-color: var(--nowpayments-border);
+  margin: 0 var(--nowpayments-spacing-md);
+}
+
+.nowpayments-stepper__step--completed:not(:last-child)::after {
+  background-color: var(--nowpayments-primary);
+}
+
+.nowpayments-stepper__number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--nowpayments-radius-full);
+  font-size: var(--nowpayments-font-size-sm);
+  font-weight: var(--nowpayments-font-weight-medium);
+  background-color: var(--nowpayments-border);
+  color: var(--nowpayments-on-surface-variant);
+}
+
+.nowpayments-stepper__step--active .nowpayments-stepper__number {
+  background-color: var(--nowpayments-primary);
+  color: var(--nowpayments-on-primary);
+}
+
+.nowpayments-stepper__step--completed .nowpayments-stepper__number {
+  background-color: var(--nowpayments-success);
+  color: var(--nowpayments-on-primary);
+}
+
+/* Buttons */
+.nowpayments-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--nowpayments-spacing-md) var(--nowpayments-spacing-xl);
+  font-size: var(--nowpayments-font-size-base);
+  font-weight: var(--nowpayments-font-weight-medium);
+  border-radius: var(--nowpayments-radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all var(--nowpayments-transition-fast);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.nowpayments-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.nowpayments-button--primary {
+  background-color: var(--nowpayments-primary);
+  color: var(--nowpayments-on-primary);
+}
+
+.nowpayments-button--primary:hover:not(:disabled) {
+  background-color: var(--nowpayments-primary-hover);
+}
+
+.nowpayments-button--primary:active:not(:disabled) {
+  background-color: var(--nowpayments-primary-active);
+}
+
+.nowpayments-button--secondary {
+  background-color: var(--nowpayments-surface-variant);
+  color: var(--nowpayments-on-surface);
+  border-color: var(--nowpayments-border);
+}
+
+.nowpayments-button--secondary:hover:not(:disabled) {
+  background-color: var(--nowpayments-surface-hover);
+}
+
+.nowpayments-button--error {
+  background-color: var(--nowpayments-error);
+  color: var(--nowpayments-on-primary);
+}
+
+.nowpayments-button--error:hover:not(:disabled) {
+  background-color: var(--nowpayments-error-hover);
+}
+
+/* Form Elements */
+.nowpayments-input {
+  width: 100%;
+  padding: var(--nowpayments-spacing-md);
+  border: 1px solid var(--nowpayments-border);
+  border-radius: var(--nowpayments-radius);
+  background-color: var(--nowpayments-surface);
+  color: var(--nowpayments-on-surface);
+  font-size: var(--nowpayments-font-size-base);
+  transition: border-color var(--nowpayments-transition-fast);
+}
+
+.nowpayments-input:focus {
+  outline: none;
+  border-color: var(--nowpayments-primary);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
+}
+
+.nowpayments-input::placeholder {
+  color: var(--nowpayments-on-surface-variant);
+}
+
+.nowpayments-label {
+  display: block;
+  font-size: var(--nowpayments-font-size-sm);
+  font-weight: var(--nowpayments-font-weight-medium);
+  color: var(--nowpayments-on-surface);
+  margin-bottom: var(--nowpayments-spacing-sm);
+}
+
+/* Currency Selection */
+.nowpayments-currency-list {
+  display: grid;
+  gap: var(--nowpayments-spacing-sm);
+  max-height: 16rem;
+  overflow-y: auto;
+  border: 1px solid var(--nowpayments-border);
+  border-radius: var(--nowpayments-radius);
+  padding: var(--nowpayments-spacing-sm);
+}
+
+.nowpayments-currency-item {
+  display: flex;
+  align-items: center;
+  gap: var(--nowpayments-spacing-md);
+  padding: var(--nowpayments-spacing-md);
+  border-radius: var(--nowpayments-radius);
+  cursor: pointer;
+  transition: background-color var(--nowpayments-transition-fast);
+}
+
+.nowpayments-currency-item:hover {
+  background-color: var(--nowpayments-surface-hover);
+}
+
+.nowpayments-currency-item--selected {
+  background-color: var(--nowpayments-primary);
+  color: var(--nowpayments-on-primary);
+}
+
+.nowpayments-currency-item__logo {
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--nowpayments-radius-full);
+}
+
+.nowpayments-currency-item__info {
+  flex: 1;
+}
+
+.nowpayments-currency-item__name {
+  font-weight: var(--nowpayments-font-weight-medium);
+  font-size: var(--nowpayments-font-size-base);
+}
+
+.nowpayments-currency-item__code {
+  font-size: var(--nowpayments-font-size-sm);
+  opacity: 0.8;
+}
+
+/* QR Code Container */
+.nowpayments-qr-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--nowpayments-spacing-lg);
+  padding: var(--nowpayments-spacing-xl);
+  background-color: var(--nowpayments-surface-variant);
+  border-radius: var(--nowpayments-radius-lg);
+  text-align: center;
+}
+
+.nowpayments-qr-code {
+  padding: var(--nowpayments-spacing-md);
+  background-color: white;
+  border-radius: var(--nowpayments-radius);
+}
+
+/* Address Display */
+.nowpayments-address {
+  display: flex;
+  align-items: center;
+  gap: var(--nowpayments-spacing-sm);
+  padding: var(--nowpayments-spacing-md);
+  background-color: var(--nowpayments-surface-variant);
+  border: 1px solid var(--nowpayments-border);
+  border-radius: var(--nowpayments-radius);
+  word-break: break-all;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', monospace;
+  font-size: var(--nowpayments-font-size-sm);
+}
+
+.nowpayments-address__text {
+  flex: 1;
+}
+
+.nowpayments-address__copy {
+  background: none;
+  border: none;
+  padding: var(--nowpayments-spacing-sm);
+  border-radius: var(--nowpayments-radius-sm);
+  color: var(--nowpayments-on-surface-variant);
+  cursor: pointer;
+  transition: background-color var(--nowpayments-transition-fast);
+}
+
+.nowpayments-address__copy:hover {
+  background-color: var(--nowpayments-surface-hover);
+}
+
+/* Loading Spinner */
+.nowpayments-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--nowpayments-spacing-xl);
+}
+
+.nowpayments-spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid var(--nowpayments-border);
+  border-top: 2px solid var(--nowpayments-primary);
+  border-radius: var(--nowpayments-radius-full);
+  animation: nowpayments-spin 1s linear infinite;
+}
+
+@keyframes nowpayments-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error State */
+.nowpayments-error {
+  padding: var(--nowpayments-spacing-md);
+  background-color: rgb(239 68 68 / 0.1);
+  border: 1px solid var(--nowpayments-error);
+  border-radius: var(--nowpayments-radius);
+  color: var(--nowpayments-error);
+  font-size: var(--nowpayments-font-size-sm);
+}
+
+/* Success State */
+.nowpayments-success {
+  padding: var(--nowpayments-spacing-md);
+  background-color: rgb(16 185 129 / 0.1);
+  border: 1px solid var(--nowpayments-success);
+  border-radius: var(--nowpayments-radius);
+  color: var(--nowpayments-success);
+  font-size: var(--nowpayments-font-size-sm);
+}
+
+/* Input Group */
+.nowpayments-input-group {
+  margin-bottom: var(--nowpayments-spacing-lg);
+}
+
+.nowpayments-input--error {
+  border-color: var(--nowpayments-error);
+}
+
+.nowpayments-helper-text {
+  margin-top: var(--nowpayments-spacing-xs);
+  font-size: var(--nowpayments-font-size-sm);
+  color: var(--nowpayments-on-surface-variant);
+}
+
+/* Button Sizes */
+.nowpayments-button--sm {
+  padding: var(--nowpayments-spacing-sm) var(--nowpayments-spacing-md);
+  font-size: var(--nowpayments-font-size-sm);
+}
+
+.nowpayments-button--lg {
+  padding: var(--nowpayments-spacing-lg) var(--nowpayments-spacing-2xl);
+  font-size: var(--nowpayments-font-size-lg);
+}
+
+/* Stepper Labels */
+.nowpayments-stepper__label {
+  margin-left: var(--nowpayments-spacing-sm);
+  text-align: left;
+}
+
+.nowpayments-stepper__title {
+  font-size: var(--nowpayments-font-size-sm);
+  font-weight: var(--nowpayments-font-weight-medium);
+  color: var(--nowpayments-on-surface);
+}
+
+.nowpayments-stepper__description {
+  font-size: var(--nowpayments-font-size-xs);
+  color: var(--nowpayments-on-surface-variant);
+  margin-top: var(--nowpayments-spacing-xs);
+}
+
+/* Currency Selector */
+.nowpayments-currency-selector {
+  width: 100%;
+}
+
+/* Spinner Sizes */
+.nowpayments-spinner--sm {
+  width: 1rem;
+  height: 1rem;
+}
+
+.nowpayments-spinner--lg {
+  width: 3rem;
+  height: 3rem;
+}
+
+/* Summary Component */
+.nowpayments-summary {
+  border: 1px solid var(--nowpayments-border);
+  border-radius: var(--nowpayments-radius);
+  overflow: hidden;
+}
+
+.nowpayments-summary__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--nowpayments-spacing-md);
+  border-bottom: 1px solid var(--nowpayments-border);
+}
+
+.nowpayments-summary__row:last-child {
+  border-bottom: none;
+}
+
+.nowpayments-summary__row span:first-child {
+  color: var(--nowpayments-on-surface-variant);
+  font-size: var(--nowpayments-font-size-sm);
+}
+
+.nowpayments-summary__row span:last-child {
+  font-weight: var(--nowpayments-font-weight-medium);
+  color: var(--nowpayments-on-surface);
+}

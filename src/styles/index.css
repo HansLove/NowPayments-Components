@@ -1,0 +1,7 @@
+/**
+ * @taloon/nowpayments-components
+ * Main stylesheet - Import this file to get all component styles
+ */
+
+@import './base.css';
+@import './components.css';
