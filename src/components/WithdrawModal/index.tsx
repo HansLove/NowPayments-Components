@@ -6,6 +6,24 @@ import Button from '../shared/Button'
 import { useNowPaymentsStore } from '@/stores/nowPaymentsStore'
 import type { WithdrawModalProps, WithdrawFormData } from '@/types'
 
+// Network Icons
+const TronIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 0L24 6L20.25 18L12 24L3.75 18L0 6L12 0Z" fill="#FF0013"/>
+    <path d="M12 4.5L19.5 8.25L16.875 16.5L12 19.5L7.125 16.5L4.5 8.25L12 4.5Z" fill="white"/>
+    <path d="M12 7.5L16.5 9.75L14.625 14.25L12 15.75L9.375 14.25L7.5 9.75L12 7.5Z" fill="#FF0013"/>
+  </svg>
+)
+
+const PolygonIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 0L24 12L12 24L0 12L12 0Z" fill="#8247E5"/>
+    <path d="M12 3L21 12L12 21L3 12L12 3Z" fill="white"/>
+    <path d="M8.5 9.5L12 6L15.5 9.5L12 13L8.5 9.5Z" fill="#8247E5"/>
+    <path d="M8.5 14.5L12 11L15.5 14.5L12 18L8.5 14.5Z" fill="#8247E5"/>
+  </svg>
+)
+
 interface WithdrawForm {
   currency: 'usdttrc20' | 'usdtmatic'
   amount: number
@@ -121,37 +139,39 @@ export function WithdrawModal({
               gap: 'var(--nowpayments-spacing-sm)',
               marginTop: 'var(--nowpayments-spacing-sm)'
             }}>
-              <label style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 'var(--nowpayments-spacing-sm)',
-                padding: 'var(--nowpayments-spacing-md)',
-                border: '1px solid var(--nowpayments-border)',
-                borderRadius: 'var(--nowpayments-radius)',
-                cursor: 'pointer'
-              }}>
+              <label className="nowpayments-network-option">
                 <input
                   type="radio"
                   value="usdttrc20"
                   {...register('currency')}
+                  className="nowpayments-network-option__input"
                 />
-                <span>USDT (Tron)</span>
+                <div className="nowpayments-network-option__content">
+                  <div className="nowpayments-network-option__icon">
+                    <TronIcon />
+                  </div>
+                  <div className="nowpayments-network-option__info">
+                    <span className="nowpayments-network-option__name">USDT</span>
+                    <span className="nowpayments-network-option__network">Tron Network</span>
+                  </div>
+                </div>
               </label>
-              <label style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 'var(--nowpayments-spacing-sm)',
-                padding: 'var(--nowpayments-spacing-md)',
-                border: '1px solid var(--nowpayments-border)',
-                borderRadius: 'var(--nowpayments-radius)',
-                cursor: 'pointer'
-              }}>
+              <label className="nowpayments-network-option">
                 <input
                   type="radio"
                   value="usdtmatic"
                   {...register('currency')}
+                  className="nowpayments-network-option__input"
                 />
-                <span>USDT (Polygon)</span>
+                <div className="nowpayments-network-option__content">
+                  <div className="nowpayments-network-option__icon">
+                    <PolygonIcon />
+                  </div>
+                  <div className="nowpayments-network-option__info">
+                    <span className="nowpayments-network-option__name">USDT</span>
+                    <span className="nowpayments-network-option__network">Polygon Network</span>
+                  </div>
+                </div>
               </label>
             </div>
           </div>

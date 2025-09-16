@@ -74,6 +74,12 @@
   --nowpayments-z-dropdown: var(--np-z-dropdown, 10);
   --nowpayments-z-modal: var(--np-z-modal, 50);
   --nowpayments-z-toast: var(--np-z-toast, 100);
+
+  /* Modal Dimensions */
+  --nowpayments-modal-width: var(--np-modal-width, 28rem);
+  --nowpayments-modal-max-width: var(--np-modal-max-width, 32rem);
+  --nowpayments-modal-min-height: var(--np-modal-min-height, 600px);
+  --nowpayments-modal-max-height: var(--np-modal-max-height, 90vh);
 }
 
 .nowpayments-modal {

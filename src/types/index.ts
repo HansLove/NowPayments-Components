@@ -19,7 +19,8 @@ export interface Currency {
 export interface DepositModalProps {
   isOpen: boolean
   onClose: () => void
-  customerEmail: string | (() => Promise<string>)
+  customerEmail?: string | (() => Promise<string>)
+  enableEmail?: boolean
   /**
    * Callback when form is submitted
    * @param formData - Fixed schema from the form
@@ -52,7 +53,7 @@ export interface WithdrawModalProps {
 export interface DepositFormData {
   selectedCurrency: string // e.g., 'btc', 'eth'
   amount: number
-  customerEmail: string
+  customerEmail?: string
 }
 
 /**

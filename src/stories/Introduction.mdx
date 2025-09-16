@@ -1,0 +1,216 @@
+import { Meta } from '@storybook/addon-docs';
+
+<Meta title="Introduction" />
+
+# NOWPayments Components
+
+Welcome to **@taloon/nowpayments-components** - a React component library for cryptocurrency payments and withdrawals using the NOWPayments API.
+
+## 🚀 Quick Start
+
+```bash
+npm install @taloon/nowpayments-components
+```
+
+```tsx
+import { DepositModal, WithdrawModal, useNowPaymentsStore } from '@taloon/nowpayments-components'
+import '@taloon/nowpayments-components/styles'
+
+// Setup API key globally
+useNowPaymentsStore().setApiKey('your-nowpayments-api-key')
+
+function App() {
+  return (
+    <DepositModal
+      isOpen={showDeposit}
+      onClose={() => setShowDeposit(false)}
+      customerEmail="user@example.com"
+      onSubmit={async (formData) => {
+        // Send to your backend
+        return await fetch('/api/deposits', {
+          method: 'POST',
+          body: JSON.stringify(formData)
+        }).then(r => r.json())
+      }}
+      onSuccess={(response) => {
+        console.log('Payment created:', response)
+      }}
+    />
+  )
+}
+```
+
+## 🎨 Theming
+
+This library uses **CSS Custom Properties** for theming. Customize by defining CSS variables to override the defaults.
+
+### Available Variables
+
+```css
+:root {
+  /* Primary Colors */
+  --np-primary: #3b82f6;
+  --np-primary-hover: #2563eb;
+  --np-primary-active: #1d4ed8;
+
+  /* Surface Colors */
+  --np-surface: #ffffff;
+  --np-surface-variant: #f8fafc;
+  --np-surface-hover: #f1f5f9;
+
+  /* Text Colors */
+  --np-on-surface: #1f2937;
+  --np-on-surface-variant: #64748b;
+  --np-on-primary: #ffffff;
+
+  /* Status Colors */
+  --np-error: #ef4444;
+  --np-success: #10b981;
+  --np-warning: #f59e0b;
+
+  /* Border & Spacing */
+  --np-border: #e2e8f0;
+  --np-radius: 0.375rem;
+  --np-spacing-lg: 1rem;
+
+  /* Shadows */
+  --np-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --np-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  /* Modal Dimensions */
+  --np-modal-max-width: 32rem;
+  --np-modal-min-height: 600px;
+  --np-modal-max-height: 90vh;
+}
+```
+
+### Dark Theme Example
+
+The current Storybook demo uses a dark theme inspired by modern crypto platforms:
+
+```css
+:root {
+  /* Dark Theme - Crypto Platform Style */
+  --np-primary: #f97316;
+  --np-primary-hover: #ea580c;
+  --np-surface: #0f172a;
+  --np-surface-variant: #1e293b;
+  --np-on-surface: #f8fafc;
+  --np-on-surface-variant: #94a3b8;
+  --np-border: #334155;
+  --np-accent: #ef4444;
+}
+```
+
+### Light/Dark Mode Toggle
+
+For automatic theme switching based on system preference:
+
+```css
+/* Light theme (default) */
+:root {
+  --np-surface: #ffffff;
+  --np-on-surface: #1f2937;
+  --np-border: #e2e8f0;
+}
+
+/* Dark theme */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --np-surface: #1f2937;
+    --np-on-surface: #f9fafb;
+    --np-border: #4b5563;
+  }
+}
+```
+
+### Custom Brand Colors
+
+Override primary colors to match your brand:
+
+```css
+:root {
+  /* Purple Brand Example */
+  --np-primary: #7c3aed;
+  --np-primary-hover: #6d28d9;
+  --np-accent: #8b5cf6;
+
+  /* Green Brand Example */
+  --np-primary: #10b981;
+  --np-primary-hover: #059669;
+  --np-accent: #34d399;
+}
+```
+
+### Modal Size Customization
+
+Adjust modal dimensions to fit your content needs:
+
+```css
+:root {
+  /* Larger modal for more content */
+  --np-modal-max-width: 40rem;
+  --np-modal-min-height: 700px;
+
+  /* Compact modal for mobile */
+  --np-modal-max-width: 24rem;
+  --np-modal-min-height: 500px;
+
+  /* Full-height modal */
+  --np-modal-min-height: 80vh;
+  --np-modal-max-height: 95vh;
+}
+```
+
+## 📦 Components
+
+### Main Components
+- **DepositModal** - 3-step deposit flow with currency selection and QR code
+- **WithdrawModal** - Withdrawal with amount slider and network selection
+
+### Shared Components
+- **Button** - Customizable button with variants and states
+- **Input** - Material Design input with floating labels
+- **CurrencySelector** - Dropdown selector with search functionality
+- **LoadingSpinner** - Circular loading animation
+- **Stepper** - Progress indicator for multi-step flows
+
+## 🔧 Architecture
+
+### Frontend Responsibilities
+- Display available currencies (from NOWPayments)
+- Collect user input (amount, currency, addresses)
+- Validate form data
+- Send structured data to your backend
+
+### Backend Responsibilities
+- Handle actual NOWPayments API calls
+- Process payments and withdrawals
+- Return custom response schemas
+- Manage webhooks and notifications
+
+### Data Flow
+1. Frontend fetches currencies from NOWPayments (for display only)
+2. User fills form → structured `FormData`
+3. `onSubmit(formData)` → your backend endpoint
+4. Backend processes with NOWPayments → custom response
+5. `onSuccess(backendResponse)` → handle in frontend
+
+## 🎯 Features
+
+- ✅ **CSS-first theming** - No JavaScript theme configuration
+- ✅ **Flexible backend integration** - Any response schema
+- ✅ **TypeScript support** - Full type safety
+- ✅ **Accessible** - ARIA labels, keyboard navigation
+- ✅ **Mobile responsive** - Works on all screen sizes
+- ✅ **Portal-based modals** - Proper z-index handling
+- ✅ **Material Design** - Modern, clean interface
+
+## 📚 Examples
+
+Explore the stories in this Storybook to see all components in action with interactive examples and customization options.
+
+## 🔗 Links
+
+- [GitHub Repository](https://github.com/taloon/nowpayments-components)
+- [NPM Package](https://www.npmjs.com/package/@taloon/nowpayments-components)
+- [NOWPayments API Docs](https://nowpayments.io/api/)

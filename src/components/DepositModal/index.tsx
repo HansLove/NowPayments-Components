@@ -5,13 +5,15 @@ import Stepper from '../shared/Stepper'
 import CurrencySelector from '../shared/CurrencySelector'
 import Input from '../shared/Input'
 import Button from '../shared/Button'
+import QRCode from '../shared/QRCode'
+import { Copy, ExternalLink } from 'lucide-react'
 import { useNowPaymentsStore } from '@/stores/nowPaymentsStore'
 import type { DepositModalProps, DepositFormData, Currency, StepperStep } from '@/types'
 
 const STEPS: StepperStep[] = [
   { id: 1, title: 'Select Currency', completed: false, active: true },
   { id: 2, title: 'Enter Amount', completed: false, active: false },
-  { id: 3, title: 'Confirm Details', completed: false, active: false },
+  { id: 3, title: 'Payment Details', completed: false, active: false },
 ]
 
 export function DepositModal({
@@ -21,12 +23,18 @@ export function DepositModal({
   onSubmit,
   onSuccess,
   onError,
+  enableEmail = false,
 }: DepositModalProps) {
   const { error: storeError } = useNowPaymentsStore()
   const [currentStep, setCurrentStep] = useState(1)
   const [selectedCurrency, setSelectedCurrency] = useState<Currency | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [steps, setSteps] = useState(STEPS)
+  const [paymentDetails, setPaymentDetails] = useState<{
+    address: string
+    paymentId: string
+    explorerUrl?: string
+  } | null>(null)
 
   const {
     register,
@@ -66,22 +74,19 @@ export function DepositModal({
     setCurrentStep(2)
   }
 
-  const handleAmountSubmit = () => {
-    if (amount && amount > 0) {
-      setCurrentStep(3)
-    }
-  }
-
-  const handleFinalSubmit = async () => {
-    if (!selectedCurrency || !amount) return
+  const handleAmountSubmit = async () => {
+    if (!amount || amount <= 0 || !selectedCurrency) return
 
     setIsSubmitting(true)
 
     try {
-      // Get customer email
-      const email = typeof customerEmail === 'function'
-        ? await customerEmail()
-        : customerEmail
+      // Get customer email only if enabled
+      let email: string | undefined
+      if (enableEmail && customerEmail) {
+        email = typeof customerEmail === 'function'
+          ? await customerEmail()
+          : customerEmail
+      }
 
       const formData: DepositFormData = {
         selectedCurrency: selectedCurrency.cg_id,
@@ -91,8 +96,18 @@ export function DepositModal({
 
       const result = await onSubmit(formData)
 
+      // Extract payment details from result for QR display
+      if (result && typeof result === 'object') {
+        const details = result as any
+        setPaymentDetails({
+          address: details.depositAddress || details.address || 'No address provided',
+          paymentId: details.paymentId || details.id || 'Unknown',
+          explorerUrl: details.explorerUrl
+        })
+      }
+
       onSuccess?.(result)
-      onClose()
+      setCurrentStep(3) // Go to payment details step
     } catch (error) {
       const errorObj = error instanceof Error ? error : new Error('Unknown error occurred')
       onError?.(errorObj)
@@ -100,6 +115,7 @@ export function DepositModal({
       setIsSubmitting(false)
     }
   }
+
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -152,9 +168,10 @@ export function DepositModal({
                 <Button
                   variant="primary"
                   disabled={!amount || amount <= 0 || isSubmitting}
+                  loading={isSubmitting}
                   type="submit"
                 >
-                  Continue
+                  Create Deposit
                 </Button>
               </div>
             </form>
@@ -164,53 +181,106 @@ export function DepositModal({
       case 3:
         return (
           <div>
-            <h3 style={{ marginBottom: 'var(--nowpayments-spacing-lg)' }}>
-              Confirm your deposit
-            </h3>
-
-            <div style={{ marginBottom: 'var(--nowpayments-spacing-xl)' }}>
-              <div className="nowpayments-summary">
-                <div className="nowpayments-summary__row">
-                  <span>Currency:</span>
-                  <span>
-                    {selectedCurrency?.name} ({selectedCurrency?.code.toUpperCase()})
-                  </span>
-                </div>
-                <div className="nowpayments-summary__row">
-                  <span>Amount:</span>
-                  <span>{amount}</span>
-                </div>
-                <div className="nowpayments-summary__row">
-                  <span>Email:</span>
-                  <span>
-                    {typeof customerEmail === 'string' ? customerEmail : 'Loading...'}
-                  </span>
-                </div>
+            <div className="nowpayments-payment-status">
+              <div className="nowpayments-payment-status__indicator">
+                <div className="nowpayments-payment-status__dot"></div>
+                <span className="nowpayments-payment-status__text">
+                  Waiting for payment
+                </span>
               </div>
             </div>
 
-            <div style={{
-              display: 'flex',
-              gap: 'var(--nowpayments-spacing-md)'
-            }}>
-              <Button
-                variant="secondary"
-                onClick={() => setCurrentStep(2)}
-                disabled={isSubmitting}
-              >
-                Back
-              </Button>
-              <Button
-                variant="primary"
-                onClick={handleFinalSubmit}
-                loading={isSubmitting}
-                disabled={isSubmitting}
-              >
-                Create Deposit
-              </Button>
-            </div>
+            {paymentDetails && (
+              <div className="nowpayments-payment-details">
+                <QRCode
+                  value={paymentDetails.address}
+                  size={200}
+                  title="Payment Address"
+                  showActions={false}
+                />
+
+                <div className="nowpayments-payment-info">
+                  <h4 className="nowpayments-payment-info__title">Payment Details</h4>
+
+                  <div className="nowpayments-payment-info__grid">
+                    <div className="nowpayments-payment-info__item">
+                      <span className="nowpayments-payment-info__label">Amount:</span>
+                      <span className="nowpayments-payment-info__value">
+                        {amount} {selectedCurrency?.code.toUpperCase()}
+                      </span>
+                    </div>
+                    <div className="nowpayments-payment-info__item">
+                      <span className="nowpayments-payment-info__label">Payment ID:</span>
+                      <span className="nowpayments-payment-info__value">
+                        {paymentDetails.paymentId.length > 10
+                          ? `${paymentDetails.paymentId.slice(0, 10)}...`
+                          : paymentDetails.paymentId
+                        }
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="nowpayments-payment-address">
+                    <span className="nowpayments-payment-address__label">
+                      Send payment to this address:
+                    </span>
+                    <div className="nowpayments-payment-address__container">
+                      <code className="nowpayments-payment-address__value">
+                        {paymentDetails.address.length > 20
+                          ? `${paymentDetails.address.slice(0, 20)}...${paymentDetails.address.slice(-10)}`
+                          : paymentDetails.address
+                        }
+                      </code>
+                      <button
+                        type="button"
+                        className="nowpayments-payment-address__show-btn"
+                        onClick={() => {
+                          console.log('Full address:', paymentDetails.address)
+                        }}
+                      >
+                        Show full
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="nowpayments-payment-warning">
+                    <div className="nowpayments-payment-warning__icon">⚠</div>
+                    <div className="nowpayments-payment-warning__content">
+                      <span className="nowpayments-payment-warning__title">Important:</span>
+                      <ul className="nowpayments-payment-warning__list">
+                        <li>Only send {selectedCurrency?.code.toUpperCase()} to this address</li>
+                        <li>Payment will be processed automatically</li>
+                        <li>Keep this payment ID for reference</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div className="nowpayments-payment-actions">
+                    {paymentDetails.explorerUrl && (
+                      <Button
+                        variant="secondary"
+                        onClick={() => window.open(paymentDetails.explorerUrl, '_blank')}
+                        className="nowpayments-payment-action"
+                      >
+                        <ExternalLink size={16} />
+                        Explorer
+                      </Button>
+                    )}
+                    <Button
+                      variant="primary"
+                      onClick={() => navigator.clipboard.writeText(paymentDetails.address)}
+                      className="nowpayments-payment-action"
+                    >
+                      <Copy size={16} />
+                      Copy Address
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )
+
 
       default:
         return null
