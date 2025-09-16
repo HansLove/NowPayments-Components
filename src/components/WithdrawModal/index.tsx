@@ -26,7 +26,7 @@ const PolygonIcon = () => (
 
 interface WithdrawForm {
   currency: 'usdttrc20' | 'usdtmatic'
-  amount: number
+  amount: number | undefined
   destinationAddress: string
 }
 
@@ -43,6 +43,7 @@ export function WithdrawModal({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [usdtAmount, setUsdtAmount] = useState<number | null>(null)
   const [isConverting, setIsConverting] = useState(false)
+  const [shouldFocusAmount, setShouldFocusAmount] = useState(false)
 
   const {
     register,
@@ -54,7 +55,7 @@ export function WithdrawModal({
   } = useForm<WithdrawForm>({
     defaultValues: {
       currency: 'usdttrc20',
-      amount: 0,
+      amount: undefined,
       destinationAddress: '',
     },
   })
@@ -66,7 +67,7 @@ export function WithdrawModal({
     if (isOpen) {
       reset({
         currency: 'usdttrc20',
-        amount: 0,
+        amount: undefined,
         destinationAddress: '',
       })
       setIsSubmitting(false)
@@ -87,10 +88,23 @@ export function WithdrawModal({
     }
   }, [watchedAmount, balanceToUsdtConverter])
 
+  // Focus amount input when slider changes value
+  useEffect(() => {
+    if (shouldFocusAmount) {
+      const amountInput = document.querySelector('input[name="amount"]') as HTMLInputElement
+      if (amountInput) {
+        amountInput.focus()
+        setTimeout(() => amountInput.blur(), 100)
+      }
+      setShouldFocusAmount(false)
+    }
+  }, [shouldFocusAmount])
+
   const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const percentage = Number(event.target.value)
     const amount = (availableBalance * percentage) / 100
     setValue('amount', Number(amount.toFixed(2)))
+    setShouldFocusAmount(true)
   }
 
   const getWithdrawPercentage = () => {
@@ -104,7 +118,7 @@ export function WithdrawModal({
     try {
       const formData: WithdrawFormData = {
         currency: data.currency,
-        amount: data.amount,
+        amount: data.amount || 0,
         destinationAddress: data.destinationAddress,
       }
 
@@ -132,12 +146,10 @@ export function WithdrawModal({
         <form onSubmit={handleSubmit(onFormSubmit)}>
           {/* Network Selection */}
           <div style={{ marginBottom: 'var(--nowpayments-spacing-lg)' }}>
-            <label className="nowpayments-label">Network</label>
             <div style={{
               display: 'grid',
               gridTemplateColumns: '1fr 1fr',
-              gap: 'var(--nowpayments-spacing-sm)',
-              marginTop: 'var(--nowpayments-spacing-sm)'
+              gap: 'var(--nowpayments-spacing-sm)'
             }}>
               <label className="nowpayments-network-option">
                 <input
@@ -178,9 +190,19 @@ export function WithdrawModal({
 
           {/* Amount Slider */}
           <div style={{ marginBottom: 'var(--nowpayments-spacing-lg)' }}>
-            <label className="nowpayments-label">
-              Withdraw Amount ({getWithdrawPercentage()}% of balance)
-            </label>
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'flex-end', 
+              alignItems: 'center',
+              marginBottom: 'var(--nowpayments-spacing-xs)'
+            }}>
+              <span style={{ 
+                fontSize: 'var(--nowpayments-font-size-sm)',
+                color: 'var(--nowpayments-on-surface-variant)'
+              }}>
+                {getWithdrawPercentage()}% of balance
+              </span>
+            </div>
             <input
               type="range"
               min="0"
@@ -223,7 +245,7 @@ export function WithdrawModal({
           />
 
           {/* USDT Conversion Display */}
-          {watchedAmount > 0 && (
+          {watchedAmount && watchedAmount > 0 && (
             <div style={{
               padding: 'var(--nowpayments-spacing-md)',
               backgroundColor: 'var(--nowpayments-surface-variant)',

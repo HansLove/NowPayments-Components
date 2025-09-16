@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, forwardRef } from 'react'
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string
@@ -7,7 +7,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   variant?: 'filled' | 'outlined' | 'standard'
 }
 
-export function Input({
+export const Input = forwardRef<HTMLInputElement, InputProps>(({
   label,
   error,
   helperText,
@@ -17,11 +17,12 @@ export function Input({
   value,
   defaultValue,
   ...props
-}: InputProps) {
+}, ref) => {
   const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`
   const hasError = !!error
   const [isFocused, setIsFocused] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const internalRef = useRef<HTMLInputElement>(null)
+  const inputRef = ref || internalRef
 
   const hasValue = value !== undefined
     ? String(value).length > 0
@@ -42,14 +43,16 @@ export function Input({
   }
 
   const handleLabelClick = () => {
-    inputRef.current?.focus()
+    if (typeof inputRef === 'object' && inputRef?.current) {
+      inputRef.current.focus()
+    }
   }
 
   return (
     <div className={`nowpayments-input-group nowpayments-input-group--${variant}`}>
       <div className="nowpayments-input-container">
         <input
-          ref={inputRef}
+          ref={inputRef as React.RefObject<HTMLInputElement>}
           id={inputId}
           className={`nowpayments-input ${hasError ? 'nowpayments-input--error' : ''} ${isFocused ? 'nowpayments-input--focused' : ''} ${className}`}
           value={value}
@@ -81,6 +84,8 @@ export function Input({
       )}
     </div>
   )
-}
+})
+
+Input.displayName = 'Input'
 
 export default Input
