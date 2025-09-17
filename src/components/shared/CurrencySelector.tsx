@@ -126,11 +126,7 @@ export function CurrencySelector({
 
   return (
     <div className="nowpayments-currency-selector" ref={dropdownRef}>
-      {label && (
-        <label className="nowpayments-currency-selector__label">
-          {label}
-        </label>
-      )}
+      {label && <label className="nowpayments-currency-selector__label">{label}</label>}
 
       <button
         type="button"
@@ -147,10 +143,10 @@ export function CurrencySelector({
           {selectedCurrencyData ? (
             <>
               <img
-                src={getCurrencyLogo(selectedCurrencyData.cg_id)}
+                src={getCurrencyLogo(selectedCurrencyData.logo_url)}
                 alt={`${selectedCurrencyData.name} logo`}
                 className="nowpayments-currency-selector__logo"
-                onError={(e) => {
+                onError={e => {
                   e.currentTarget.style.display = 'none'
                 }}
               />
@@ -164,9 +160,7 @@ export function CurrencySelector({
               </div>
             </>
           ) : (
-            <span className="nowpayments-currency-selector__placeholder">
-              {placeholder}
-            </span>
+            <span className="nowpayments-currency-selector__placeholder">{placeholder}</span>
           )}
         </div>
         <ChevronDown
@@ -186,7 +180,7 @@ export function CurrencySelector({
               type="text"
               placeholder="Search currencies..."
               value={searchTerm}
-              onChange={(e) => {
+              onChange={e => {
                 setSearchTerm(e.target.value)
                 setHighlightedIndex(-1)
               }}
@@ -218,10 +212,10 @@ export function CurrencySelector({
                   aria-selected={selectedCurrency === currency.cg_id}
                 >
                   <img
-                    src={getCurrencyLogo(currency.cg_id)}
+                    src={getCurrencyLogo(currency.logo_url)}
                     alt={`${currency.name} logo`}
                     className="nowpayments-currency-selector__option-logo"
-                    onError={(e) => {
+                    onError={e => {
                       e.currentTarget.style.display = 'none'
                     }}
                   />

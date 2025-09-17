@@ -10,6 +10,9 @@ import { Copy, ExternalLink } from 'lucide-react'
 import { useNowPaymentsStore } from '@/stores/nowPaymentsStore'
 import type { DepositModalProps, DepositFormData, Currency, StepperStep } from '@/types'
 
+// @ts-expect-error File exists
+import NowPaymentsLogo from '@/assets/nowpayments-logo.png'
+
 const STEPS: StepperStep[] = [
   { id: 1, title: 'Select Currency', completed: false, active: true },
   { id: 2, title: 'Enter Amount', completed: false, active: false },
@@ -24,6 +27,7 @@ export function DepositModal({
   onSuccess,
   onError,
   enableEmail = false,
+  shouldNotifyByEmail = false,
 }: DepositModalProps) {
   const { error: storeError } = useNowPaymentsStore()
   const [currentStep, setCurrentStep] = useState(1)
@@ -35,6 +39,7 @@ export function DepositModal({
     paymentId: string
     explorerUrl?: string
   } | null>(null)
+  const [userEmail, setUserEmail] = useState<string>('')
 
   const {
     register,
@@ -83,6 +88,7 @@ export function DepositModal({
       let email: string | undefined
       if (enableEmail && customerEmail) {
         email = typeof customerEmail === 'function' ? await customerEmail() : customerEmail
+        setUserEmail(email || '')
       }
 
       const formData: DepositFormData = {
@@ -238,6 +244,15 @@ export function DepositModal({
                         </button>
                       </div>
                     </div>
+
+                    {shouldNotifyByEmail && userEmail && (
+                      <div className="nowpayments-email-notification">
+                        <p className="nowpayments-email-notification__text">
+                          A confirmation email will be sent to:
+                        </p>
+                        <p className="nowpayments-email-notification__email">{userEmail}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -263,14 +278,15 @@ export function DepositModal({
                       Explorer
                     </Button>
                   )}
-                  <Button
-                    variant="primary"
-                    onClick={() => navigator.clipboard.writeText(paymentDetails.address)}
-                    className="nowpayments-payment-action"
-                  >
-                    <Copy size={18} />
-                    Copy Address
-                  </Button>
+                </div>
+
+                <div className="nowpayments-powered-by">
+                  <p className="nowpayments-powered-by__text">This transaction is processed by</p>
+                  <img
+                    src={NowPaymentsLogo}
+                    alt="NOWPayments"
+                    className="nowpayments-powered-by__logo nowpayments-powered-by__logo--with-background"
+                  />
                 </div>
               </div>
             )}

@@ -21,6 +21,7 @@ export interface DepositModalProps {
   onClose: () => void
   customerEmail?: string | (() => Promise<string>)
   enableEmail?: boolean
+  shouldNotifyByEmail?: boolean
   /**
    * Callback when form is submitted
    * @param formData - Fixed schema from the form

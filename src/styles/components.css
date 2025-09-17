@@ -1417,3 +1417,69 @@
   color: var(--nowpayments-on-surface-variant);
   line-height: 1.5;
 }
+
+/* Email Notification */
+.nowpayments-email-notification {
+  text-align: center;
+  margin-top: var(--nowpayments-spacing-md);
+  padding: var(--nowpayments-spacing-sm);
+  background-color: var(--nowpayments-surface-variant);
+  border-radius: var(--nowpayments-radius-sm);
+  border: 1px solid var(--nowpayments-border);
+}
+
+.nowpayments-email-notification__text {
+  font-size: var(--nowpayments-font-size-xs);
+  color: var(--nowpayments-on-surface-variant);
+  margin: 0 0 var(--nowpayments-spacing-xs) 0;
+}
+
+.nowpayments-email-notification__email {
+  font-size: var(--nowpayments-font-size-sm);
+  color: var(--nowpayments-on-surface);
+  font-weight: var(--nowpayments-font-weight-medium);
+  margin: 0;
+  word-break: break-all;
+}
+
+/* Powered By NOWPayments */
+.nowpayments-powered-by {
+  text-align: center;
+  padding: var(--nowpayments-spacing-md);
+  border-top: 1px solid var(--nowpayments-border);
+  margin-top: var(--nowpayments-spacing-lg);
+}
+
+.nowpayments-powered-by__text {
+  font-size: var(--nowpayments-font-size-sm);
+  color: var(--nowpayments-on-surface-variant);
+  margin: 0 0 var(--nowpayments-spacing-sm) 0;
+}
+
+.nowpayments-powered-by__logo {
+  height: 28px;
+  width: auto;
+  max-width: 200px;
+}
+
+/* Logo with adaptive background for light themes */
+.nowpayments-powered-by__logo--with-background {
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: var(--np-surface-secondary, #f8fafc);
+  border: 1px solid var(--np-border, #e2e8f0);
+}
+
+/* Dark mode background */
+@media (prefers-color-scheme: dark) {
+  .nowpayments-powered-by__logo--with-background {
+    background: var(--np-surface-secondary-dark, #374151);
+    border-color: var(--np-border-dark, #4b5563);
+  }
+}
+
+/* Light mode override for explicit light theme */
+[data-theme="light"] .nowpayments-powered-by__logo--with-background {
+  background: var(--np-surface-secondary, #f8fafc);
+  border-color: var(--np-border, #e2e8f0);
+}

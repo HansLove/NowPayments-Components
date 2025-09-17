@@ -56,8 +56,8 @@ export function useCurrencies() {
     }
   }, [apiKey, setError, setCurrencies, setEnabledCurrencies, setIsLoadingCurrencies])
 
-  const getCurrencyLogo = useCallback((cg_id: string) => {
-    return `https://nowpayments.io/images/coins/${cg_id}.svg`
+  const getCurrencyLogo = useCallback((path: string) => {
+    return `https://nowpayments.io/${path}`
   }, [])
 
   const getEnabledCurrencies = useCallback(() => {

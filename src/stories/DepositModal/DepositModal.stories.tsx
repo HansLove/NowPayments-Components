@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useEffect } from 'react'
 import { DepositModal } from '../../components/DepositModal'
 import { useNowPaymentsStore } from '../../stores/nowPaymentsStore'
@@ -52,6 +52,10 @@ The component fetches available currencies for display only. All payment process
       control: 'boolean',
       description: 'Show email input field in the form',
     },
+    shouldNotifyByEmail: {
+      control: 'boolean',
+      description: 'Show email notification message under QR code when email is provided',
+    },
     onSubmit: {
       action: 'submitted',
       description: 'Callback when form is submitted with DepositFormData',
@@ -94,8 +98,9 @@ export const Default: Story = {
   args: {
     isOpen: true,
     customerEmail: mockEmailProviders.static,
-    enableEmail: false,
+    enableEmail: true,
     ...createDepositActions(),
+    shouldNotifyByEmail: true,
   },
 }
 
@@ -273,6 +278,25 @@ export const Mobile: Story = {
       description: {
         story:
           'Modal displayed on mobile viewport to test responsive behavior and touch interactions.',
+      },
+    },
+  },
+}
+
+// With Email Notification
+export const WithEmailNotification: Story = {
+  args: {
+    isOpen: true,
+    customerEmail: 'user@example.com',
+    enableEmail: true,
+    shouldNotifyByEmail: true,
+    ...createDepositActions(),
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Demonstrates the email notification feature. When shouldNotifyByEmail is true and an email is provided, a notification message appears under the QR code.',
       },
     },
   },
