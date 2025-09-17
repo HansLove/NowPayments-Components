@@ -9,6 +9,7 @@ export { default as Input } from './components/shared/Input'
 export { default as Stepper } from './components/shared/Stepper'
 export { default as LoadingSpinner } from './components/shared/LoadingSpinner'
 export { default as CurrencySelector } from './components/shared/CurrencySelector'
+export { default as ContinueWithNowPayments } from './components/shared/ContinueWithNowPayments'
 
 // Types
 export type {

@@ -1483,3 +1483,187 @@
   background: var(--np-surface-secondary, #f8fafc);
   border-color: var(--np-border, #e2e8f0);
 }
+
+/* Continue with NOWPayments Button */
+.np-continue-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: #1a1a1a;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.np-continue-btn:hover:not(:disabled) {
+  background: #2a2a2a;
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  transform: translateY(-1px);
+}
+
+.np-continue-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.np-continue-btn__content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 100%;
+  padding: 16px 24px;
+}
+
+.np-continue-btn__text {
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.np-continue-btn__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.np-continue-btn__logo svg {
+  height: 16px;
+  width: auto;
+  fill: currentColor;
+}
+
+/* Variant styles - default is dark like Apple Pay */
+.np-continue-btn--default {
+  background: #1a1a1a;
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.np-continue-btn--default:hover:not(:disabled) {
+  background: #2a2a2a;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Light variant like PayPal */
+.np-continue-btn--light {
+  background: #ffffff;
+  color: #142952;
+  border-color: #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.np-continue-btn--light:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Dark variant */
+.np-continue-btn--dark {
+  background: #0f0f0f;
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.np-continue-btn--dark:hover:not(:disabled) {
+  background: #1f1f1f;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Size variants */
+.np-continue-btn--small {
+  min-height: 40px;
+}
+
+.np-continue-btn--small .np-continue-btn__content {
+  padding: 12px 20px;
+  gap: 6px;
+}
+
+.np-continue-btn--small .np-continue-btn__text {
+  font-size: 14px;
+}
+
+.np-continue-btn--small .np-continue-btn__logo svg {
+  height: 14px;
+}
+
+.np-continue-btn--medium {
+  min-height: 48px;
+}
+
+.np-continue-btn--medium .np-continue-btn__content {
+  padding: 16px 24px;
+  gap: 8px;
+}
+
+.np-continue-btn--medium .np-continue-btn__text {
+  font-size: 16px;
+}
+
+.np-continue-btn--medium .np-continue-btn__logo svg {
+  height: 16px;
+}
+
+.np-continue-btn--large {
+  min-height: 56px;
+}
+
+.np-continue-btn--large .np-continue-btn__content {
+  padding: 20px 32px;
+  gap: 10px;
+}
+
+.np-continue-btn--large .np-continue-btn__text {
+  font-size: 18px;
+}
+
+.np-continue-btn--large .np-continue-btn__logo svg {
+  height: 18px;
+}
+
+/* Full width */
+.np-continue-btn--full-width {
+  width: 100%;
+  min-width: 200px;
+}
+
+/* Disabled state */
+.np-continue-btn--disabled,
+.np-continue-btn:disabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+  border-color: #e5e7eb;
+  cursor: not-allowed;
+  opacity: 0.6;
+  box-shadow: none;
+  transform: none;
+}
+
+.np-continue-btn--disabled:hover,
+.np-continue-btn:disabled:hover {
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+  box-shadow: none;
+  transform: none;
+}
+.np-continue-btn:disabled:hover {
+  background: var(--nowpayments-surface-variant);
+  box-shadow: none;
+  transform: none;
+}
