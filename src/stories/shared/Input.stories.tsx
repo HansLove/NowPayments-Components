@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Input } from '@/components/shared/Input'
-import { useState } from 'react'
+import React, { useState } from 'react'
 
 // Simple mock function for actions
 const mockFn = () => {}

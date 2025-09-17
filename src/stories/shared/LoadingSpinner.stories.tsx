@@ -354,10 +354,9 @@ export const CustomStyling: Story = {
       <LoadingSpinner
         size="lg"
         className="custom-spinner"
-        style={{ filter: 'drop-shadow(0 0 10px rgba(0, 123, 255, 0.5))' } as any}
       />
       <div style={{ background: '#333', padding: '1rem', borderRadius: '8px' }}>
-        <LoadingSpinner size="md" color="inherit" style={{ color: '#fff' } as any} />
+        <LoadingSpinner size="md" color="inherit" />
       </div>
     </div>
   ),
