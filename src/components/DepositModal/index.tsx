@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import Modal from '../shared/Modal'
 import Stepper from '../shared/Stepper'
@@ -40,7 +40,6 @@ export function DepositModal({
     register,
     handleSubmit,
     watch,
-    setValue,
     formState: { errors },
     reset,
   } = useForm<{ amount: number }>()
@@ -60,8 +59,8 @@ export function DepositModal({
 
   // Update steps based on current step
   useEffect(() => {
-    setSteps((prevSteps) =>
-      prevSteps.map((step) => ({
+    setSteps(prevSteps =>
+      prevSteps.map(step => ({
         ...step,
         completed: step.id < currentStep,
         active: step.id === currentStep,
@@ -83,9 +82,7 @@ export function DepositModal({
       // Get customer email only if enabled
       let email: string | undefined
       if (enableEmail && customerEmail) {
-        email = typeof customerEmail === 'function'
-          ? await customerEmail()
-          : customerEmail
+        email = typeof customerEmail === 'function' ? await customerEmail() : customerEmail
       }
 
       const formData: DepositFormData = {
@@ -102,7 +99,7 @@ export function DepositModal({
         setPaymentDetails({
           address: details.depositAddress || details.address || 'No address provided',
           paymentId: details.paymentId || details.id || 'Unknown',
-          explorerUrl: details.explorerUrl
+          explorerUrl: details.explorerUrl,
         })
       }
 
@@ -115,7 +112,6 @@ export function DepositModal({
       setIsSubmitting(false)
     }
   }
-
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -136,9 +132,7 @@ export function DepositModal({
       case 2:
         return (
           <div>
-            <h3 style={{ marginBottom: 'var(--nowpayments-spacing-lg)' }}>
-              Enter deposit amount
-            </h3>
+            <h3 style={{ marginBottom: 'var(--nowpayments-spacing-lg)' }}>Enter deposit amount</h3>
             <form onSubmit={handleSubmit(handleAmountSubmit)}>
               <Input
                 label="Amount"
@@ -152,11 +146,13 @@ export function DepositModal({
                   min: { value: 0.01, message: 'Amount must be greater than 0' },
                 })}
               />
-              <div style={{
-                display: 'flex',
-                gap: 'var(--nowpayments-spacing-md)',
-                marginTop: 'var(--nowpayments-spacing-lg)'
-              }}>
+              <div
+                style={{
+                  display: 'flex',
+                  gap: 'var(--nowpayments-spacing-md)',
+                  marginTop: 'var(--nowpayments-spacing-lg)',
+                }}
+              >
                 <Button
                   variant="secondary"
                   onClick={() => setCurrentStep(1)}
@@ -184,9 +180,7 @@ export function DepositModal({
             <div className="nowpayments-payment-status">
               <div className="nowpayments-payment-status__indicator">
                 <div className="nowpayments-payment-status__dot"></div>
-                <span className="nowpayments-payment-status__text">
-                  Waiting for payment
-                </span>
+                <span className="nowpayments-payment-status__text">Waiting for payment</span>
               </div>
             </div>
 
@@ -214,8 +208,7 @@ export function DepositModal({
                       <span className="nowpayments-payment-info__value">
                         {paymentDetails.paymentId.length > 10
                           ? `${paymentDetails.paymentId.slice(0, 10)}...`
-                          : paymentDetails.paymentId
-                        }
+                          : paymentDetails.paymentId}
                       </span>
                     </div>
                   </div>
@@ -227,9 +220,11 @@ export function DepositModal({
                     <div className="nowpayments-payment-address__container">
                       <code className="nowpayments-payment-address__value">
                         {paymentDetails.address.length > 20
-                          ? `${paymentDetails.address.slice(0, 20)}...${paymentDetails.address.slice(-10)}`
-                          : paymentDetails.address
-                        }
+                          ? `${paymentDetails.address.slice(
+                              0,
+                              20
+                            )}...${paymentDetails.address.slice(-10)}`
+                          : paymentDetails.address}
                       </code>
                       <button
                         type="button"
@@ -281,7 +276,6 @@ export function DepositModal({
           </div>
         )
 
-
       default:
         return null
     }
@@ -293,7 +287,10 @@ export function DepositModal({
         <Stepper steps={steps} />
 
         {storeError && (
-          <div className="nowpayments-error" style={{ marginBottom: 'var(--nowpayments-spacing-lg)' }}>
+          <div
+            className="nowpayments-error"
+            style={{ marginBottom: 'var(--nowpayments-spacing-lg)' }}
+          >
             {storeError}
           </div>
         )}

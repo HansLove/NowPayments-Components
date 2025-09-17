@@ -1,61 +1,61 @@
 # NOWPayments Components - Technical Guidelines
 
-Biblioteca de componentes React para criptomonedas con integración de NOWPayments API. Este documento proporciona la documentación técnica para desarrollo y mantenimiento.
+React component library for cryptocurrency payments with NOWPayments API integration. This document provides technical documentation for development and maintenance.
 
-Ver [README.md](./README.md) para contexto de negocio y ejemplos de uso.
+See [README.md](./README.md) for business context and usage examples.
 
 ## Quick Reference
 
-- **README.md**: [link](./README.md) - Contexto de negocio y documentación de usuario
-- **Build**: `npm run build` - Construye la biblioteca usando Vite
-- **Test**: `npm run lint && npm run type-check` - Ejecuta linting y verificación de tipos
-- **Dev**: `npm run storybook` - Inicia Storybook en puerto 6006
-- **CSS Guide**: [CSS_THEMING.md](./CSS_THEMING.md) - Guía completa de theming
+- **README.md**: [link](./README.md) - Business context and user documentation
+- **Build**: `npm run build` - Builds the library using Vite
+- **Test**: `npm run lint && npm run type-check` - Runs linting and type checking
+- **Dev**: `npm run storybook` - Starts Storybook on port 6006
+- **CSS Guide**: [CSS_THEMING.md](./CSS_THEMING.md) - Complete theming guide
 
 ## Code Standards
 
 ### Naming Conventions
 
-**Archivos y Directorios:**
+**Files and Directories:**
 ```
 src/
-├── components/           # Componentes organizados por feature
-│   ├── DepositModal/    # Modal principal de depósitos
-│   ├── WithdrawModal/   # Modal principal de retiros
-│   └── shared/          # Componentes reutilizables
-├── hooks/               # Custom hooks con prefijo 'use'
-├── stores/              # Zustand stores con sufijo 'Store'
-├── types/               # Interfaces TypeScript
-├── utils/               # Utilidades generales
-└── styles/              # CSS con metodología BEM
+├── components/           # Components organized by feature
+│   ├── DepositModal/    # Main deposit modal
+│   ├── WithdrawModal/   # Main withdrawal modal
+│   └── shared/          # Reusable components
+├── hooks/               # Custom hooks with 'use' prefix
+├── stores/              # Zustand stores with 'Store' suffix
+├── types/               # TypeScript interfaces
+├── utils/               # General utilities
+└── styles/              # CSS with BEM methodology
 ```
 
-**Componentes React:**
+**React Components:**
 - **PascalCase**: `DepositModal`, `CurrencySelector`
-- **Archivos**: `index.tsx` para componente principal
+- **Files**: `index.tsx` for main component
 - **Props interfaces**: `ComponentNameProps`
 
-**Hooks y Stores:**
+**Hooks and Stores:**
 - **Hooks**: `useNowPayments`, `useCurrencies`
 - **Stores**: `nowPaymentsStore` (Zustand)
-- **Variables**: `camelCase` descriptivo
+- **Variables**: descriptive `camelCase`
 
-**CSS y Clases:**
+**CSS and Classes:**
 - **BEM methodology**: `.np-modal__header`, `.np-button--primary`
 - **CSS Variables**: `--np-primary`, `--np-surface`
-- **Prefijo consistente**: `np-` para evitar colisiones
+- **Consistent prefix**: `np-` to avoid collisions
 
 ### Common Patterns
 
 **Component Structure Pattern:**
 ```tsx
-// ✅ Estructura estándar de componentes
+// ✅ Standard component structure
 import React, { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import type { ComponentProps } from '@/types'
 
 interface LocalState {
-  // Estado local específico del componente
+  // Component-specific local state
 }
 
 export function ComponentName({
@@ -63,7 +63,7 @@ export function ComponentName({
   prop2,
   onCallback,
 }: ComponentProps) {
-  // 1. Hooks de estado
+  // 1. State hooks
   const [localState, setLocalState] = useState<LocalState>()
 
   // 2. Form hooks
@@ -95,7 +95,7 @@ export default ComponentName
 
 **Error Handling Pattern:**
 ```tsx
-// ✅ Manejo consistente de errores
+// ✅ Consistent error handling
 try {
   const result = await onSubmit(formData)
   onSuccess?.(result)
@@ -110,7 +110,7 @@ try {
 
 **Async Props Pattern:**
 ```tsx
-// ✅ Soporte para props síncronos y asíncronos
+// ✅ Support for sync and async props
 customerEmail?: string | (() => Promise<string>)
 
 // Implementation
@@ -123,9 +123,9 @@ const getEmail = async () => {
 
 ### Antipatterns to Address
 
-**❌ Props drilling excesivo:**
+**❌ Excessive props drilling:**
 ```tsx
-// Problemático - pasar props a través de múltiples niveles
+// Problematic - passing props through multiple levels
 <Modal>
   <ModalContent isLoading={isLoading} error={error}>
     <Step1 isLoading={isLoading} error={error} />
@@ -133,33 +133,33 @@ const getEmail = async () => {
 </Modal>
 ```
 
-**✅ Usar context o store:**
+**✅ Use context or store:**
 ```tsx
-// Mejor - usar store global o context
+// Better - use global store or context
 const { isLoading, error } = useNowPaymentsStore()
 ```
 
-**❌ Mutación directa de estado:**
+**❌ Direct state mutation:**
 ```tsx
-// Problemático
+// Problematic
 currencies.push(newCurrency)
 ```
 
-**✅ Inmutabilidad:**
+**✅ Immutability:**
 ```tsx
-// Correcto
+// Correct
 setCurrencies(prev => [...prev, newCurrency])
 ```
 
-**❌ CSS inline en componentes:**
+**❌ Inline CSS in components:**
 ```tsx
-// Problemático
+// Problematic
 <div style={{ color: '#3b82f6', marginTop: '1rem' }}>
 ```
 
-**✅ CSS variables y clases:**
+**✅ CSS variables and classes:**
 ```tsx
-// Correcto
+// Correct
 <div className="np-component__header">
 ```
 
@@ -268,7 +268,7 @@ npm run type-check      # TypeScript compiler sin emit
 npm run preview         # Preview del build de Vite
 ```
 
-### Configuración de Build
+### Build Configuration
 
 **Vite Library Mode:**
 ```typescript
@@ -278,7 +278,7 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'NowpaymentsComponents',
-      formats: ['es'],              // Solo ES modules
+      formats: ['es'],              // ES modules only
       fileName: 'index',
     },
     rollupOptions: {
@@ -290,7 +290,7 @@ export default defineConfig({
 
 **Path Aliases:**
 ```typescript
-// Configurados en vite.config.ts
+// Configured in vite.config.ts
 '@': './src'
 '@/components': './src/components'
 '@/hooks': './src/hooks'
@@ -302,12 +302,12 @@ export default defineConfig({
 
 ### ESLint Configuration
 
-**Reglas principales:**
-- TypeScript strict mode habilitado
+**Main Rules:**
+- TypeScript strict mode enabled
 - React hooks rules enforcement
-- Unused variables como error (excepto `_` prefix)
-- `no-explicit-any` como warning
-- Storybook rules para stories
+- Unused variables as error (except `_` prefix)
+- `no-explicit-any` as warning
+- Storybook rules for stories
 
 ### Deployment Strategy
 
@@ -353,23 +353,23 @@ npm run build-storybook
 ### Manual Testing via Storybook
 
 **Story Coverage:**
-- Todos los componentes shared tienen stories
-- Modales principales con diferentes estados
-- Interactive examples con mock data
-- Theme variations documentadas
+- All shared components have stories
+- Main modals with different states
+- Interactive examples with mock data
+- Documented theme variations
 
 ## Cross-References
 
-- **CSS Theming**: [CSS_THEMING.md](./CSS_THEMING.md) - Guía completa de theming
-- **Business Context**: [README.md](./README.md) - Documentación de usuario
-- **Development Progress**: [progress.md](./progress.md) - Estado actual del desarrollo
-- **Original Plan**: [nowpayments.md](./nowpayments.md) - Plan inicial del proyecto
+- **CSS Theming**: [CSS_THEMING.md](./CSS_THEMING.md) - Complete theming guide
+- **Business Context**: [README.md](./README.md) - User documentation
+- **Development Progress**: [progress.md](./progress.md) - Current development status
+- **Original Plan**: [nowpayments.md](./nowpayments.md) - Initial project plan
 
 ## Key Implementation Details
 
 ### Modal Portal Strategy
 ```tsx
-// Renderiza modales en document.body para evitar z-index issues
+// Renders modals in document.body to avoid z-index issues
 return createPortal(
   <div className="np-modal-overlay">{children}</div>,
   document.body
@@ -389,7 +389,7 @@ return createPortal(
 
 ### Form Validation Integration
 ```tsx
-// React Hook Form con integración de componentes
+// React Hook Form with component integration
 const { register, handleSubmit, formState: { errors } } = useForm()
 
 <Input
@@ -404,11 +404,11 @@ const { register, handleSubmit, formState: { errors } } = useForm()
 
 ### CSS Variable System
 ```css
-/* Fallback pattern para máxima compatibilidad */
+/* Fallback pattern for maximum compatibility */
 .np-button--primary {
   background-color: var(--np-primary, #3b82f6);
   color: var(--np-on-primary, #ffffff);
 }
 ```
 
-Esta biblioteca está lista para producción y publicación en NPM con el scope `@taloon`.
+This library is ready for production and NPM publishing with the `@taloon` scope.
