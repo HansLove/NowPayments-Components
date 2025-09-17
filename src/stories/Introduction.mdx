@@ -1,287 +1,120 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Meta } from '@storybook/addon-docs/blocks';
 
-<Meta title="NOWPayments Components/Introduction" />
+<Meta title="NOWPayments/Introduction" />
 
-<style>
-  {`
-    .sb-container {
-      margin-bottom: 48px;
-    }
+# NOWPayments Components
 
-    .sb-section {
-      width: 100%;
-      display: flex;
-      flex-direction: row;
-      gap: 20px;
-    }
+A comprehensive React component library for cryptocurrency payments powered by the NOWPayments API.
 
-    .sb-section-title {
-      margin-bottom: 32px;
-    }
+## Overview
 
-    .sb-section-item {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
+This library provides ready-to-use React components for building cryptocurrency payment interfaces. It includes everything you need to integrate crypto payments into your application with minimal configuration.
 
-    .sb-section-item-heading {
-      padding-top: 20px !important;
-      padding-bottom: 5px !important;
-      margin: 0 !important;
-    }
-    .sb-section-item-paragraph {
-      margin: 0;
-      padding-bottom: 10px;
-    }
+## Key Features
 
-    .sb-section-item a:not(h1 a, h2 a, h3 a) {
-      font-size: 14px;
-    }
+### 🚀 **Easy Integration**
+- Pre-built modal components for deposits and withdrawals
+- Frontend-only currency fetching from NOWPayments API
+- Flexible backend integration with fixed form schemas
 
-    .sb-explore-image {
-      max-height: 32px;
-    }
+### 🎨 **Highly Customizable**
+- CSS variables for complete theming control
+- Multiple component variants and sizes
+- Responsive design for all screen sizes
 
-    .sb-addon {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      position: relative;
-      background-color: #EEF3F8;
-      border-radius: 5px;
-      border: 2px solid #E0E8F0;
-      padding: 20px;
-      margin-bottom: 48px;
-    }
+### ♿ **Accessibility First**
+- Full keyboard navigation support
+- ARIA labels and semantic markup
+- Screen reader compatibility
 
-    .sb-addon-text {
-      padding-left: 48px;
-      max-width: 240px;
-    }
+### 🔧 **Developer Experience**
+- TypeScript support with complete type definitions
+- Comprehensive Storybook documentation
+- Clean API with consistent patterns
 
-    .sb-addon-text h4 {
-      padding-top: 0px;
-    }
+## Main Components
 
-    .sb-addon-img {
-      position: absolute;
-      left: 20px;
-      top: 20px;
-      height: 48px;
-      width: 48px;
-    }
+### Modals
+- **DepositModal** - 3-step cryptocurrency deposit flow
+- **WithdrawModal** - Single-form withdrawal interface
 
-    .sb-addon-img img {
-      max-width: 100%;
-      height: auto;
-    }
+### Shared Components
+- **Button** - Flexible button with variants and loading states
+- **Input** - Material Design-inspired input with floating labels
+- **CurrencySelector** - Searchable dropdown for cryptocurrency selection
+- **Modal** - Portal-based modal foundation
+- **Stepper** - Progress indicator for multi-step processes
+- **LoadingSpinner** - Animated loading indicator
+- **QRCode** - Cryptocurrency address QR code generator
 
-    @media screen and (max-width: 800px) {
-      .sb-section {
-        flex-direction: column;
-      }
-    }
-  `}
-</style>
-
-# Welcome to NOWPayments Components
-
-**React component library for cryptocurrency deposits and withdrawals using NOWPayments API.**
-
-NOWPayments Components provides ready-to-use React components for implementing cryptocurrency payment flows in your applications. This Storybook demonstrates all available components with interactive examples and documentation.
-
-<div className="sb-container">
-  <div className="sb-section-title">
-    ## Key Features
-
-    - 🔐 **Frontend-only currency display** - Fetches available currencies from NOWPayments for UI
-    - 🎯 **Flexible backend integration** - Your backend handles payment logic and webhooks
-    - 🎨 **CSS-first theming** - Customize appearance with CSS custom properties
-    - 📱 **Mobile-responsive** - Works seamlessly across devices
-    - ⚡ **TypeScript ready** - Full type safety with comprehensive interfaces
-
-  </div>
-</div>
-
-<div className="sb-container">
-  <div className="sb-section-title">
-    ## Main Components
-  </div>
-
-  <div className="sb-section">
-    <div className="sb-section-item">
-      <div className="sb-explore-image">
-        💰
-      </div>
-      <h4 className="sb-section-item-heading">DepositModal</h4>
-      <p className="sb-section-item-paragraph">
-        A 3-step cryptocurrency deposit flow with currency selection, amount input, and payment confirmation.
-      </p>
-      <a href="?path=/story/nowpayments-depositmodal--default" target="_self">
-        View stories →
-      </a>
-    </div>
-
-    <div className="sb-section-item">
-      <div className="sb-explore-image">
-        💸
-      </div>
-      <h4 className="sb-section-item-heading">WithdrawModal</h4>
-      <p className="sb-section-item-paragraph">
-        Single-form withdrawal modal with network selection, amount slider, and destination address input.
-      </p>
-      <a href="?path=/story/nowpayments-withdrawmodal--default" target="_self">
-        View stories →
-      </a>
-    </div>
-
-    <div className="sb-section-item">
-      <div className="sb-explore-image">
-        🧩
-      </div>
-      <h4 className="sb-section-item-heading">Shared Components</h4>
-      <p className="sb-section-item-paragraph">
-        Reusable UI components including Modal, Button, Input, CurrencySelector, and more.
-      </p>
-      <a href="?path=/story/shared-button--primary" target="_self">
-        Explore components →
-      </a>
-    </div>
-
-  </div>
-</div>
-
-<div className="sb-container">
-  <div className="sb-section-title">
-    ## Architecture Philosophy
-  </div>
-
-  <div className="sb-section">
-    <div className="sb-section-item">
-      <h4 className="sb-section-item-heading">Frontend Responsibilities</h4>
-      <p className="sb-section-item-paragraph">
-        • Display available currencies from NOWPayments<br/>
-        • Collect and validate form data<br/>
-        • Handle UI states (loading, error, success)<br/>
-        • Provide theming and customization
-      </p>
-    </div>
-
-    <div className="sb-section-item">
-      <h4 className="sb-section-item-heading">Backend Responsibilities</h4>
-      <p className="sb-section-item-paragraph">
-        • Process payments with NOWPayments API<br/>
-        • Handle webhooks and IPN callbacks<br/>
-        • Manage business logic<br/>
-        • User and session management
-      </p>
-    </div>
-
-    <div className="sb-section-item">
-      <h4 className="sb-section-item-heading">Data Flow</h4>
-      <p className="sb-section-item-paragraph">
-        1. Frontend fetches currencies for display<br/>
-        2. User fills form → Fixed schema<br/>
-        3. onSubmit() → Your backend<br/>
-        4. Backend processes → Custom response<br/>
-        5. onSuccess() → Handle any schema
-      </p>
-    </div>
-
-  </div>
-</div>
-
-<div className="sb-addon">
-  <div className="sb-addon-text">
-    <h4>Theming with CSS Variables</h4>
-    <p className="sb-section-item-paragraph">
-      Customize the appearance using CSS custom properties. No JavaScript configuration needed.
-    </p>
-    <a href="?path=/docs/theming-css-variables--docs" target="_self">
-      Learn about theming →
-    </a>
-  </div>
-  <div className="sb-addon-img">🎨</div>
-</div>
-
-## Quick Setup
+## Quick Start
 
 ```bash
 npm install @taloon/nowpayments-components
 ```
 
 ```tsx
-import { DepositModal, useNowPaymentsStore } from '@taloon/nowpayments-components'
+import { DepositModal } from '@taloon/nowpayments-components'
 import '@taloon/nowpayments-components/styles'
 
-// Initialize with your NOWPayments API key
-const store = useNowPaymentsStore()
-store.setApiKey('your-nowpayments-api-key')
+function App() {
+  const [isOpen, setIsOpen] = useState(false)
 
-// Use in your app
-<DepositModal
-  isOpen={showDeposit}
-  onClose={() => setShowDeposit(false)}
-  customerEmail="user@example.com"
-  onSubmit={async (formData) => {
-    // Send to your backend API
-    const response = await fetch('/api/deposits', {
+  const handleSubmit = async (formData) => {
+    // Your backend integration
+    return await fetch('/api/deposits', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData)
     })
-    return response.json()
-  }}
-  onSuccess={(result) => {
-    console.log('Deposit created:', result)
-    setShowDeposit(false)
-  }}
-/>
-```
+  }
 
-## Form Schemas
-
-The library provides fixed form schemas to ensure consistent data structure:
-
-```typescript
-// From DepositModal
-interface DepositFormData {
-  selectedCurrency: string // e.g., 'btc', 'eth'
-  amount: number
-  customerEmail?: string
-}
-
-// From WithdrawModal
-interface WithdrawFormData {
-  currency: 'usdttrc20' | 'usdtmatic'
-  amount: number
-  destinationAddress: string
+  return (
+    <DepositModal
+      isOpen={isOpen}
+      onClose={() => setIsOpen(false)}
+      onSubmit={handleSubmit}
+      customerEmail="user@example.com"
+    />
+  )
 }
 ```
 
-Your backend receives this structured data and can add additional fields before processing.
+## Architecture
 
-## Browse Stories
+### Frontend Responsibilities
+- Currency display and selection
+- Form validation and UI states
+- User experience and theming
 
-Explore all components and their variations in the sidebar:
+### Backend Integration
+- Payment processing via NOWPayments API
+- Webhook handling and confirmations
+- Business logic and user management
 
-- **NOWPayments/DepositModal** - Cryptocurrency deposit flow
-- **NOWPayments/WithdrawModal** - Cryptocurrency withdrawal flow
-- **Shared Components** - Reusable UI building blocks
-- **Theming/Caos Engines Demo** - Cyberpunk theme showcase
-- **CSS Customization** - Theming examples and documentation
+## Theming
 
-Each story includes interactive controls to test different states and configurations.
+The library uses CSS variables for complete customization:
 
-## 🎨 Theme Showcase
+```css
+:root {
+  --np-primary: #3b82f6;
+  --np-secondary: #6b7280;
+  --np-surface: #ffffff;
+  --np-border: #e5e7eb;
+}
+```
 
-This Storybook includes a special **Caos Engines inspired theme** that demonstrates the powerful theming capabilities of the component library. The cyberpunk-styled theme features:
+## Browser Support
 
-- **Dark navy backgrounds** with gradient effects
-- **Electric red primary colors** with neon glows
-- **Cyan blue accents** for highlights and interactions
-- **Smooth animations** and hover effects
-- **Modern cyberpunk aesthetic** perfect for gaming and fintech apps
+- Chrome 90+
+- Firefox 88+
+- Safari 14+
+- Edge 90+
 
-Visit the [Theming/Caos Engines Demo](?path=/story/theming-caos-engines-demo--overview) to see the complete themed experience!
+## License
+
+MIT License - see LICENSE file for details.
+
+---
+
+**Explore the components** using the navigation panel to see detailed examples and interactive demos.

@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import { WithdrawModal } from '../../components/WithdrawModal'
+import type { Meta, StoryObj } from '@storybook/react-vite'
+import { WithdrawModal } from '@/components/WithdrawModal'
 import {
   createWithdrawActions,
   mockBalanceToUsdtConverter,
@@ -8,7 +8,7 @@ import {
 } from './mocks'
 
 const meta = {
-  title: 'NOWPayments/WithdrawModal',
+  title: 'NOWPayments/Components/Modals/WithdrawModal',
   component: WithdrawModal,
   parameters: {
     layout: 'centered',
@@ -82,39 +82,6 @@ export const Default: Story = {
   }
 }
 
-// Low balance scenario
-export const LowBalance: Story = {
-  args: {
-    isOpen: true,
-    availableBalance: 25.50,
-    balanceToUsdtConverter: mockBalanceToUsdtConverter,
-    ...createWithdrawActions()
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Testing withdrawal with low available balance. The slider and input should respect the maximum available amount.'
-      }
-    }
-  }
-}
-
-// Very high balance
-export const HighBalance: Story = {
-  args: {
-    isOpen: true,
-    availableBalance: 50000,
-    balanceToUsdtConverter: mockBalanceToUsdtConverter,
-    ...createWithdrawActions()
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Testing withdrawal with high balance. Users can withdraw substantial amounts with proper validation.'
-      }
-    }
-  }
-}
 
 // Zero balance state
 export const ZeroBalance: Story = {
@@ -133,22 +100,6 @@ export const ZeroBalance: Story = {
   }
 }
 
-// Minimal balance (just above minimum)
-export const MinimalBalance: Story = {
-  args: {
-    isOpen: true,
-    availableBalance: 10.01,
-    balanceToUsdtConverter: mockBalanceToUsdtConverter,
-    ...createWithdrawActions()
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Testing with minimal balance just above withdrawal minimum. Tests edge cases for validation.'
-      }
-    }
-  }
-}
 
 // Slow conversion function
 export const SlowConversion: Story = {
@@ -184,22 +135,6 @@ export const ConversionError: Story = {
   }
 }
 
-// Closed modal
-export const Closed: Story = {
-  args: {
-    isOpen: false,
-    availableBalance: 1000,
-    balanceToUsdtConverter: mockBalanceToUsdtConverter,
-    ...createWithdrawActions()
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Modal in closed state. Use the controls to open it and test the opening behavior.'
-      }
-    }
-  }
-}
 
 // Mobile viewport
 export const Mobile: Story = {
@@ -255,18 +190,18 @@ export const PrefilledPolygon: Story = {
   }
 }
 
-// Testing large amounts (close to maximum)
-export const LargeAmount: Story = {
+// Edge cases story (consolidating multiple scenarios)
+export const EdgeCases: Story = {
   args: {
     isOpen: true,
-    availableBalance: 9999.99,
+    availableBalance: 10.01,
     balanceToUsdtConverter: mockBalanceToUsdtConverter,
     ...createWithdrawActions()
   },
   parameters: {
     docs: {
       description: {
-        story: 'Testing withdrawal of large amounts close to maximum balance. Validates handling of edge cases and number formatting.'
+        story: 'Testing edge cases with minimal balance above withdrawal minimum. Use controls to test different balance amounts and edge scenarios.'
       }
     }
   }

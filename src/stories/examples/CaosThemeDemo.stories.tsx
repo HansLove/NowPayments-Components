@@ -1,15 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useEffect } from 'react'
-import { DepositModal } from '../components/DepositModal'
-import { WithdrawModal } from '../components/WithdrawModal'
-import { useNowPaymentsStore } from '../stores/nowPaymentsStore'
+import { DepositModal } from '@/components/DepositModal'
+import { WithdrawModal } from '@/components/WithdrawModal'
+import { useNowPaymentsStore } from '@/stores/nowPaymentsStore'
 import {
   mockCurrencies,
   mockEnabledCurrencies,
   createDepositActions,
   mockEmailProviders,
-} from './DepositModal/mocks'
-import { createWithdrawActions, mockBalanceToUsdtConverter } from './WithdrawModal/mocks'
+} from '../components/modals/DepositModal/mocks'
+import { createWithdrawActions, mockBalanceToUsdtConverter } from '../components/modals/WithdrawModal/mocks'
 
 // Dynamic theme loading - only loads when these stories are active
 const CaosThemeLoader = () => {
@@ -17,7 +17,7 @@ const CaosThemeLoader = () => {
     // Create and add CSS link element
     const link = document.createElement('link')
     link.rel = 'stylesheet'
-    link.href = '/src/stories/caos-theme.css'
+    link.href = '/src/stories/examples/caos-theme.css'
     link.setAttribute('data-caos-theme', 'true')
     document.head.appendChild(link)
 
@@ -156,7 +156,7 @@ const ThemeShowcase = ({
 }
 
 const meta = {
-  title: 'Theming/Caos Engines Demo',
+  title: 'NOWPayments/Examples/Caos Engines Theme',
   component: ThemeShowcase,
   parameters: {
     layout: 'fullscreen',

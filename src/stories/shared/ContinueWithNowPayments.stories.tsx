@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ContinueWithNowPayments } from '@/components/shared/ContinueWithNowPayments'
 
 const meta: Meta<typeof ContinueWithNowPayments> = {
-  title: 'NOWPayments/ContinueWithNowPayments',
+  title: 'NOWPayments/Components/ContinueWithNowPayments',
   component: ContinueWithNowPayments,
   parameters: {
     layout: 'centered',
@@ -112,56 +112,6 @@ export const Interactive: Story = {
       description: {
         story:
           'Click the button to see the interaction. In a real implementation, this would redirect to your NOWPayments integration.',
-      },
-    },
-  },
-}
-
-export const AllVariants: Story = {
-  render: () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
-      <ContinueWithNowPayments variant="default" onClick={() => console.log('Default clicked')} />
-      <ContinueWithNowPayments variant="light" onClick={() => console.log('Light clicked')} />
-      <ContinueWithNowPayments variant="dark" onClick={() => console.log('Dark clicked')} />
-    </div>
-  ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Comparison of all available variants: default (dark), light, and dark.',
-      },
-    },
-  },
-}
-
-export const AllSizes: Story = {
-  render: () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
-      <ContinueWithNowPayments size="small" onClick={() => console.log('Small clicked')} />
-      <ContinueWithNowPayments size="medium" onClick={() => console.log('Medium clicked')} />
-      <ContinueWithNowPayments size="large" onClick={() => console.log('Large clicked')} />
-    </div>
-  ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Comparison of all available sizes: small, medium (default), and large.',
-      },
-    },
-  },
-}
-
-export const States: Story = {
-  render: () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
-      <ContinueWithNowPayments onClick={() => console.log('Active clicked')} />
-      <ContinueWithNowPayments disabled />
-    </div>
-  ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Button in different states: active and disabled.',
       },
     },
   },

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useEffect } from 'react'
-import { DepositModal } from '../../components/DepositModal'
-import { useNowPaymentsStore } from '../../stores/nowPaymentsStore'
+import { DepositModal } from '@/components/DepositModal'
+import { useNowPaymentsStore } from '@/stores/nowPaymentsStore'
 import {
   mockCurrencies,
   mockEnabledCurrencies,
@@ -10,7 +10,7 @@ import {
 } from './mocks'
 
 const meta = {
-  title: 'NOWPayments/DepositModal',
+  title: 'NOWPayments/Components/Modals/DepositModal',
   component: DepositModal,
   parameters: {
     layout: 'centered',
@@ -230,38 +230,6 @@ export const LimitedCurrencies: Story = {
   },
 }
 
-// Closed modal for testing open/close behavior
-export const Closed: Story = {
-  args: {
-    isOpen: false,
-    customerEmail: mockEmailProviders.static,
-    ...createDepositActions(),
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Modal in closed state. Use the controls to open it and test the opening behavior.',
-      },
-    },
-  },
-}
-
-// Pre-filled step 2 (for testing amount validation)
-export const Step2AmountEntry: Story = {
-  args: {
-    isOpen: true,
-    customerEmail: mockEmailProviders.static,
-    ...createDepositActions(),
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Testing story focused on the amount entry step. Select a currency first to proceed to this step.',
-      },
-    },
-  },
-}
 
 // Mobile viewport
 export const Mobile: Story = {
