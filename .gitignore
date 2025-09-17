@@ -85,4 +85,5 @@ temp/
 
 # Local development files
 .claude/
+.serena/
 *storybook.log

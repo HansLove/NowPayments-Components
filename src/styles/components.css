@@ -762,7 +762,7 @@
   border-top: none;
   border-radius: 0 0 var(--nowpayments-radius) var(--nowpayments-radius);
   box-shadow: var(--nowpayments-shadow-lg);
-  max-height: 20rem;
+  max-height: 280px;
   overflow: hidden;
 }
 
@@ -800,7 +800,7 @@
 
 /* Options List */
 .nowpayments-currency-selector__list {
-  max-height: 16rem;
+  max-height: 230px;
   overflow-y: auto;
 }
 
