@@ -34,7 +34,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--nowpayments-spacing-xl);
+  padding: var(--nowpayments-spacing-lg);
   border-bottom: 1px solid var(--nowpayments-border);
 }
 
@@ -61,17 +61,17 @@
 
 /* Modal Body */
 .nowpayments-modal__body {
-  padding: var(--nowpayments-spacing-xl);
+  padding: var(--nowpayments-spacing-lg);
   overflow-y: auto;
   flex: 1;
-  max-height: calc(var(--nowpayments-modal-max-height) - 8rem);
-  min-height: calc(var(--nowpayments-modal-min-height) - 8rem);
+  max-height: calc(var(--nowpayments-modal-max-height) - 6rem);
+  min-height: calc(var(--nowpayments-modal-min-height) - 6rem);
 }
 
 /* Stepper - Professional Design */
 .nowpayments-stepper {
   display: flex;
-  margin-bottom: var(--nowpayments-spacing-xl);
+  margin-bottom: var(--nowpayments-spacing-lg);
 }
 
 .nowpayments-stepper--horizontal {
@@ -956,7 +956,7 @@
 /* Payment Status and Details */
 .nowpayments-payment-status {
   text-align: center;
-  margin-bottom: var(--nowpayments-spacing-xl);
+  margin-bottom: var(--nowpayments-spacing-lg);
 }
 
 .nowpayments-payment-status__indicator {
@@ -1121,7 +1121,7 @@
 
 .nowpayments-payment-actions {
   display: flex;
-  gap: var(--nowpayments-spacing-md);
+  gap: var(--nowpayments-spacing-lg);
   justify-content: center;
 }
 
@@ -1130,7 +1130,9 @@
   align-items: center;
   gap: var(--nowpayments-spacing-sm);
   flex: 1;
-  max-width: 150px;
+  max-width: 180px;
+  padding: var(--nowpayments-spacing-md) var(--nowpayments-spacing-lg);
+  font-size: var(--nowpayments-font-size-base);
 }
 
 
@@ -1256,4 +1258,162 @@
   font-size: var(--nowpayments-font-size-sm);
   color: var(--nowpayments-on-surface-variant);
   line-height: 1.2;
+}
+
+/* Compact Payment Details Layout */
+.nowpayments-payment-details--compact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nowpayments-spacing-md);
+}
+
+.nowpayments-payment-layout {
+  display: flex;
+  gap: var(--nowpayments-spacing-lg);
+  align-items: flex-start;
+}
+
+@media (max-width: 640px) {
+  .nowpayments-payment-layout {
+    flex-direction: column;
+    align-items: center;
+    gap: var(--nowpayments-spacing-lg);
+  }
+}
+
+.nowpayments-payment-qr {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nowpayments-payment-info--compact {
+  flex: 1;
+  min-width: 0;
+}
+
+.nowpayments-payment-info__grid--compact {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--nowpayments-spacing-lg);
+  margin-bottom: var(--nowpayments-spacing-lg);
+}
+
+@media (max-width: 480px) {
+  .nowpayments-payment-info__grid--compact {
+    grid-template-columns: 1fr;
+    gap: var(--nowpayments-spacing-md);
+  }
+}
+
+.nowpayments-payment-info__grid--compact .nowpayments-payment-info__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nowpayments-spacing-sm);
+  padding: var(--nowpayments-spacing-md);
+  background-color: var(--nowpayments-surface-variant);
+  border-radius: var(--nowpayments-radius);
+  border: 1px solid var(--nowpayments-border);
+}
+
+.nowpayments-payment-info__grid--compact .nowpayments-payment-info__label {
+  font-size: var(--nowpayments-font-size-sm);
+  color: var(--nowpayments-on-surface-variant);
+  font-weight: var(--nowpayments-font-weight-medium);
+}
+
+.nowpayments-payment-info__grid--compact .nowpayments-payment-info__value {
+  font-size: var(--nowpayments-font-size-lg);
+  color: var(--nowpayments-on-surface);
+  font-weight: var(--nowpayments-font-weight-semibold);
+}
+
+.nowpayments-payment-address--compact {
+  margin-bottom: var(--nowpayments-spacing-lg);
+}
+
+.nowpayments-payment-address--compact .nowpayments-payment-address__label {
+  display: block;
+  font-size: var(--nowpayments-font-size-base);
+  color: var(--nowpayments-on-surface-variant);
+  margin-bottom: var(--nowpayments-spacing-sm);
+  font-weight: var(--nowpayments-font-weight-medium);
+}
+
+.nowpayments-payment-address__container--compact {
+  display: flex;
+  align-items: center;
+  gap: var(--nowpayments-spacing-sm);
+  background-color: var(--nowpayments-surface-variant);
+  padding: var(--nowpayments-spacing-sm);
+  border-radius: var(--nowpayments-radius-sm);
+  border: 1px solid var(--nowpayments-border);
+}
+
+.nowpayments-payment-address__value--compact {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: var(--nowpayments-font-size-sm);
+  color: var(--nowpayments-on-surface);
+  word-break: break-all;
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nowpayments-payment-address__copy-btn {
+  background: none;
+  border: none;
+  color: var(--nowpayments-primary);
+  cursor: pointer;
+  padding: var(--nowpayments-spacing-xs);
+  border-radius: var(--nowpayments-radius-sm);
+  transition: all var(--nowpayments-transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.nowpayments-payment-address__copy-btn:hover {
+  background-color: var(--nowpayments-surface-hover);
+  color: var(--nowpayments-primary-hover);
+}
+
+.nowpayments-payment-warning--compact {
+  display: flex;
+  gap: var(--nowpayments-spacing-md);
+  padding: var(--nowpayments-spacing-md) var(--nowpayments-spacing-lg);
+  background-color: rgb(251 191 36 / 0.1);
+  border: 1px solid rgb(251 191 36 / 0.3);
+  border-radius: var(--nowpayments-radius);
+  margin-bottom: var(--nowpayments-spacing-lg);
+  align-items: flex-start;
+}
+
+.nowpayments-payment-warning--compact .nowpayments-payment-warning__icon {
+  font-size: var(--nowpayments-font-size-lg);
+  color: rgb(251 191 36);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.nowpayments-payment-warning--compact .nowpayments-payment-warning__content {
+  flex: 1;
+}
+
+.nowpayments-payment-warning--compact .nowpayments-payment-warning__title {
+  display: inline;
+  font-weight: var(--nowpayments-font-weight-semibold);
+  color: rgb(251 191 36);
+  margin-right: var(--nowpayments-spacing-sm);
+  font-size: var(--nowpayments-font-size-base);
+}
+
+.nowpayments-payment-warning__text {
+  font-size: var(--nowpayments-font-size-base);
+  color: var(--nowpayments-on-surface-variant);
+  line-height: 1.5;
 }

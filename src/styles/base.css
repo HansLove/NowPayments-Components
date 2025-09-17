@@ -77,9 +77,9 @@
 
   /* Modal Dimensions */
   --nowpayments-modal-width: var(--np-modal-width, 28rem);
-  --nowpayments-modal-max-width: var(--np-modal-max-width, 32rem);
-  --nowpayments-modal-min-height: var(--np-modal-min-height, 600px);
-  --nowpayments-modal-max-height: var(--np-modal-max-height, 90vh);
+  --nowpayments-modal-max-width: var(--np-modal-max-width, 50rem);
+  --nowpayments-modal-min-height: var(--np-modal-min-height, 500px);
+  --nowpayments-modal-max-height: var(--np-modal-max-height, 800px);
 }
 
 .nowpayments-modal {

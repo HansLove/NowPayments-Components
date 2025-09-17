@@ -9,6 +9,7 @@ interface QRCodeProps {
   className?: string
   title?: string
   showActions?: boolean
+  showRawValue?: boolean
   explorerUrl?: string
   onCopy?: () => void
 }
@@ -19,6 +20,7 @@ export function QRCode({
   className = '',
   title,
   showActions = true,
+  showRawValue = true,
   explorerUrl,
   onCopy,
 }: QRCodeProps) {
@@ -39,11 +41,7 @@ export function QRCode({
 
   return (
     <div className={`nowpayments-qr-code ${className}`}>
-      {title && (
-        <h3 className="nowpayments-qr-code__title">
-          {title}
-        </h3>
-      )}
+      {title && <h3 className="nowpayments-qr-code__title">{title}</h3>}
 
       <div className="nowpayments-qr-code__container">
         <QRCodeSVG
@@ -55,20 +53,22 @@ export function QRCode({
         />
       </div>
 
-      <div className="nowpayments-qr-code__value">
-        <code className="nowpayments-qr-code__address">
-          {value.length > 20 ? `${value.slice(0, 20)}...${value.slice(-10)}` : value}
-        </code>
-        <button
-          type="button"
-          className="nowpayments-qr-code__copy-btn"
-          onClick={handleCopy}
-          title="Copy full address"
-          aria-label="Copy address to clipboard"
-        >
-          Show full
-        </button>
-      </div>
+      {showRawValue && (
+        <div className="nowpayments-qr-code__value">
+          <code className="nowpayments-qr-code__address">
+            {value.length > 20 ? `${value.slice(0, 20)}...${value.slice(-10)}` : value}
+          </code>
+          <button
+            type="button"
+            className="nowpayments-qr-code__copy-btn"
+            onClick={handleCopy}
+            title="Copy full address"
+            aria-label="Copy address to clipboard"
+          >
+            Show full
+          </button>
+        </div>
+      )}
 
       {showActions && (
         <div className="nowpayments-qr-code__actions">
