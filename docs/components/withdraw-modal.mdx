@@ -1,0 +1,306 @@
+# WithdrawModal Component
+
+A single-form withdrawal interface with network selection, amount slider, and destination address input.
+
+## Props Interface
+
+```typescript
+interface WithdrawModalProps {
+  isOpen: boolean
+  onClose: () => void
+  availableBalance: number
+  balanceToUsdtConverter: (amount: number) => Promise<number>
+  onSubmit: (formData: WithdrawFormData) => Promise<any>
+  onSuccess?: (backendResponse: any) => void
+  onError?: (error: Error) => void
+}
+
+interface WithdrawFormData {
+  currency: 'usdttrc20' | 'usdtmatic'
+  amount: number
+  destinationAddress: string
+}
+```
+
+## Basic Usage
+
+```tsx
+import { useState } from 'react'
+import { WithdrawModal, type WithdrawFormData } from '@taloon/nowpayments-components'
+
+function WithdrawExample() {
+  const [isOpen, setIsOpen] = useState(false)
+  const userBalance = 1000 // User's available balance in your system
+
+  // Convert your internal balance to USDT for display
+  const convertToUsdt = async (amount: number) => {
+    // Example: Your balance is in points, convert to USDT
+    const rate = 0.95 // 1 point = 0.95 USDT
+    return amount * rate
+  }
+
+  const handleSubmit = async (formData: WithdrawFormData) => {
+    // Send to your backend API
+    const response = await fetch('/api/withdrawals', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...formData,
+        userId: 'user-123'
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to create withdrawal')
+    }
+
+    return response.json()
+  }
+
+  return (
+    <>
+      <button onClick={() => setIsOpen(true)}>
+        Withdraw Funds
+      </button>
+
+      <WithdrawModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        availableBalance={userBalance}
+        balanceToUsdtConverter={convertToUsdt}
+        onSubmit={handleSubmit}
+        onSuccess={(result) => {
+          console.log('Withdrawal created:', result)
+          setIsOpen(false)
+        }}
+        onError={(error) => {
+          console.error('Error:', error.message)
+        }}
+      />
+    </>
+  )
+}
+```
+
+## Real-time Balance Conversion
+
+```tsx
+function WithdrawWithLiveRates() {
+  const [exchangeRate, setExchangeRate] = useState(0.95)
+
+  // Fetch live exchange rates
+  useEffect(() => {
+    const fetchRate = async () => {
+      try {
+        const response = await fetch('/api/exchange-rates/usdt')
+        const data = await response.json()
+        setExchangeRate(data.rate)
+      } catch (error) {
+        console.error('Failed to fetch exchange rate:', error)
+      }
+    }
+
+    fetchRate()
+    const interval = setInterval(fetchRate, 30000) // Update every 30 seconds
+
+    return () => clearInterval(interval)
+  }, [])
+
+  const convertToUsdt = async (amount: number) => {
+    return amount * exchangeRate
+  }
+
+  return (
+    <WithdrawModal
+      isOpen={isOpen}
+      onClose={() => setIsOpen(false)}
+      availableBalance={userBalance}
+      balanceToUsdtConverter={convertToUsdt}
+      onSubmit={handleSubmit}
+      onSuccess={handleSuccess}
+    />
+  )
+}
+```
+
+## Network Selection
+
+The component supports two USDT networks:
+
+### USDT-TRC20 (Tron Network)
+- Network ID: `'usdttrc20'`
+- Lower fees
+- Faster confirmations
+- Popular for smaller amounts
+
+### USDT-MATIC (Polygon Network)
+- Network ID: `'usdtmatic'`
+- Very low fees
+- Fast confirmations
+- Good for frequent transactions
+
+```tsx
+// The form data will contain the selected network
+const formData = {
+  currency: 'usdttrc20', // or 'usdtmatic'
+  amount: 100,
+  destinationAddress: 'TXYZabc123...'
+}
+```
+
+## Amount Selection
+
+### Slider Interface
+- Visual percentage selector (0-100% of available balance)
+- Real-time percentage display
+- Smooth interaction with exact amount input
+
+### Exact Amount Input
+- Numeric input with decimal support
+- Validation against available balance
+- Updates slider position automatically
+
+```tsx
+// Example validation in your converter
+const convertToUsdt = async (amount: number) => {
+  if (amount > availableBalance) {
+    throw new Error('Amount exceeds available balance')
+  }
+
+  if (amount < minimumWithdraw) {
+    throw new Error(`Minimum withdrawal is ${minimumWithdraw}`)
+  }
+
+  return amount * exchangeRate
+}
+```
+
+## Form Data Flow
+
+### User Input
+1. **Network Selection**: User chooses between USDT-TRC20 and USDT-MATIC
+2. **Amount Selection**: User sets amount via slider or direct input
+3. **Address Input**: User enters destination wallet address
+
+### Form Validation
+```typescript
+// Built-in validation rules
+{
+  amount: {
+    required: 'Amount is required',
+    min: { value: 0.01, message: 'Amount must be greater than 0' },
+    max: { value: availableBalance, message: 'Amount exceeds available balance' }
+  },
+  destinationAddress: {
+    required: 'Destination address is required',
+    minLength: { value: 20, message: 'Invalid wallet address' }
+  }
+}
+```
+
+### Backend Integration
+
+Your backend receives:
+```javascript
+{
+  currency: "usdttrc20",
+  amount: 100,
+  destinationAddress: "TYour1WalletAddress2Here3..."
+}
+```
+
+Common backend response patterns:
+```javascript
+// Minimal response
+{
+  withdrawalId: "withdraw_123",
+  status: "pending"
+}
+
+// Detailed response
+{
+  id: "withdraw_123",
+  amount: 100,
+  currency: "usdttrc20",
+  destinationAddress: "TYour1WalletAddress2Here3...",
+  status: "pending",
+  estimatedCompletionTime: "5-10 minutes",
+  networkFee: 1.5,
+  transactionHash: null // Set after processing
+}
+```
+
+## Error Handling
+
+```tsx
+function WithdrawWithErrorHandling() {
+  const handleSubmit = async (formData: WithdrawFormData) => {
+    // Validate minimum withdrawal amount
+    if (formData.amount < 10) {
+      throw new Error('Minimum withdrawal amount is 10 USDT')
+    }
+
+    // Validate daily withdrawal limit
+    const dailyTotal = await getDailyWithdrawalTotal()
+    if (dailyTotal + formData.amount > dailyLimit) {
+      throw new Error('Daily withdrawal limit exceeded')
+    }
+
+    // Submit to backend
+    return await processWithdrawal(formData)
+  }
+
+  const handleError = (error: Error) => {
+    // Log error for monitoring
+    logWithdrawalError(error)
+
+    // Show user-friendly message
+    showNotification({
+      type: 'error',
+      message: error.message
+    })
+  }
+
+  return (
+    <WithdrawModal
+      onSubmit={handleSubmit}
+      onError={handleError}
+      // ... other props
+    />
+  )
+}
+```
+
+## Styling
+
+```css
+/* Customize network selection */
+.nowpayments-network-option {
+  border: 1px solid var(--np-border);
+  border-radius: var(--np-radius);
+}
+
+.nowpayments-network-option:has(input:checked) {
+  border-color: var(--np-primary);
+  background: var(--np-surface-variant);
+}
+
+/* Style the amount slider */
+input[type="range"] {
+  accent-color: var(--np-primary);
+}
+
+/* Customize USDT conversion display */
+.conversion-display {
+  background: var(--np-surface-variant);
+  border-radius: var(--np-radius);
+  padding: var(--np-spacing-md);
+}
+```
+
+## Integration Notes
+
+- **Address Validation**: The component does basic length validation; implement full address validation in your backend
+- **Network Fees**: Consider displaying network fees to users before confirmation
+- **Rate Updates**: Implement real-time exchange rate updates for accurate conversions
+- **Transaction Tracking**: Your backend should provide transaction status updates via webhooks or polling

@@ -1,0 +1,243 @@
+# DepositModal Component
+
+A complete 3-step deposit flow with currency selection, amount input, and payment confirmation with QR code.
+
+## Props Interface
+
+```typescript
+interface DepositModalProps {
+  isOpen: boolean
+  onClose: () => void
+  customerEmail?: string | (() => Promise<string>)
+  enableEmail?: boolean
+  shouldNotifyByEmail?: boolean
+  onSubmit: (formData: DepositFormData) => Promise<any>
+  onSuccess?: (backendResponse: any) => void
+  onError?: (error: Error) => void
+}
+
+interface DepositFormData {
+  selectedCurrency: string // e.g., 'btc', 'eth'
+  amount: number
+  customerEmail?: string
+}
+```
+
+## Basic Usage
+
+```tsx
+import { useState } from 'react'
+import { DepositModal, type DepositFormData } from '@taloon/nowpayments-components'
+
+function DepositExample() {
+  const [isOpen, setIsOpen] = useState(false)
+
+  const handleSubmit = async (formData: DepositFormData) => {
+    // Send to your backend API
+    const response = await fetch('/api/deposits', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...formData,
+        userId: 'user-123',
+        sessionId: 'session-456'
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to create deposit')
+    }
+
+    return response.json()
+  }
+
+  return (
+    <>
+      <button onClick={() => setIsOpen(true)}>
+        Open Deposit Modal
+      </button>
+
+      <DepositModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        onSubmit={handleSubmit}
+        onSuccess={(result) => {
+          console.log('Deposit created:', result)
+          setIsOpen(false)
+        }}
+        onError={(error) => {
+          console.error('Error:', error.message)
+        }}
+      />
+    </>
+  )
+}
+```
+
+## With Email Configuration
+
+```tsx
+function DepositWithEmail() {
+  const [isOpen, setIsOpen] = useState(false)
+
+  // Async email function
+  const getCustomerEmail = async () => {
+    const user = await getCurrentUser()
+    return user.email
+  }
+
+  return (
+    <DepositModal
+      isOpen={isOpen}
+      onClose={() => setIsOpen(false)}
+      customerEmail={getCustomerEmail}
+      enableEmail={true}
+      shouldNotifyByEmail={true}
+      onSubmit={handleSubmit}
+      onSuccess={handleSuccess}
+    />
+  )
+}
+```
+
+## Static Email
+
+```tsx
+function DepositWithStaticEmail() {
+  return (
+    <DepositModal
+      isOpen={isOpen}
+      onClose={() => setIsOpen(false)}
+      customerEmail="user@example.com"
+      enableEmail={true}
+      shouldNotifyByEmail={true}
+      onSubmit={handleSubmit}
+      onSuccess={handleSuccess}
+    />
+  )
+}
+```
+
+## Form Data Flow
+
+### 1. User Interaction
+- Step 1: User selects cryptocurrency (BTC, ETH, USDT, etc.)
+- Step 2: User enters deposit amount
+- Step 3: Payment details displayed with QR code
+
+### 2. Form Submission
+The component sends a fixed schema to your backend:
+
+```javascript
+{
+  selectedCurrency: "btc",     // Currency ID from NOWPayments
+  amount: 0.001,               // User-entered amount
+  customerEmail: "user@example.com" // Optional, if enabled
+}
+```
+
+### 3. Backend Response
+Your backend can return any structure. Common patterns:
+
+```javascript
+// Minimal response
+{
+  paymentId: "payment_123",
+  depositAddress: "1A2B3C4D5E...",
+  status: "waiting"
+}
+
+// Rich response
+{
+  id: "dep_123",
+  paymentId: "payment_123",
+  depositAddress: "1A2B3C4D5E...",
+  explorerUrl: "https://blockchair.com/bitcoin/transaction/...",
+  amount: 0.001,
+  currency: "btc",
+  status: "waiting",
+  expiresAt: "2024-01-01T12:00:00Z"
+}
+```
+
+## Payment Confirmation Step
+
+The final step automatically displays:
+- QR code with the deposit address
+- Payment amount and currency
+- Payment ID (truncated for display)
+- Copy button for the address
+- Warning about sending correct currency
+- Optional blockchain explorer link
+- NOWPayments branding
+
+## Error Handling
+
+```tsx
+function DepositWithErrorHandling() {
+  const [error, setError] = useState<string | null>(null)
+
+  const handleSubmit = async (formData: DepositFormData) => {
+    try {
+      const response = await createDeposit(formData)
+      return response
+    } catch (err) {
+      // Handle specific error types
+      if (err instanceof NetworkError) {
+        throw new Error('Network connection failed. Please try again.')
+      }
+      throw err
+    }
+  }
+
+  const handleError = (error: Error) => {
+    setError(error.message)
+    // Log to your error tracking service
+    console.error('Deposit error:', error)
+  }
+
+  return (
+    <>
+      {error && (
+        <div className="error-banner">
+          {error}
+          <button onClick={() => setError(null)}>×</button>
+        </div>
+      )}
+
+      <DepositModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        onSubmit={handleSubmit}
+        onError={handleError}
+        onSuccess={() => setError(null)}
+      />
+    </>
+  )
+}
+```
+
+## Styling
+
+The modal uses CSS custom properties for theming:
+
+```css
+/* Customize the modal appearance */
+.np-modal {
+  --np-primary: #your-brand-color;
+  --np-surface: #your-background-color;
+}
+
+/* Style the payment status indicator */
+.nowpayments-payment-status__dot {
+  background: var(--np-accent);
+  box-shadow: 0 0 10px var(--np-accent);
+}
+```
+
+## Integration Notes
+
+- **Currency List**: Automatically fetched from NOWPayments API using your configured API key
+- **QR Codes**: Generated client-side using the deposit address
+- **Address Validation**: Your backend should validate addresses from NOWPayments
+- **Webhook Handling**: Your backend should handle NOWPayments IPN callbacks for payment confirmations

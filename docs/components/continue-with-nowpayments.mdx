@@ -1,0 +1,339 @@
+# ContinueWithNowPayments Component
+
+A branded button component featuring the NOWPayments logo, designed for payment flow integration.
+
+## Props Interface
+
+```typescript
+interface ContinueWithNowPaymentsProps {
+  onClick?: () => void
+  disabled?: boolean
+  fullWidth?: boolean
+  size?: 'small' | 'medium' | 'large'
+  className?: string
+  variant?: 'default' | 'dark' | 'light'
+}
+```
+
+## Basic Usage
+
+```tsx
+import { ContinueWithNowPayments } from '@taloon/nowpayments-components'
+
+function PaymentButton() {
+  const handlePaymentClick = () => {
+    // Open payment modal or navigate to payment page
+    console.log('Payment initiated')
+  }
+
+  return (
+    <ContinueWithNowPayments
+      onClick={handlePaymentClick}
+      size="medium"
+    />
+  )
+}
+```
+
+## Size Variants
+
+### Small Button
+```tsx
+<ContinueWithNowPayments
+  onClick={handleClick}
+  size="small"
+/>
+```
+
+### Medium Button (Default)
+```tsx
+<ContinueWithNowPayments
+  onClick={handleClick}
+  size="medium"
+/>
+```
+
+### Large Button
+```tsx
+<ContinueWithNowPayments
+  onClick={handleClick}
+  size="large"
+/>
+```
+
+## Layout Options
+
+### Full Width
+```tsx
+<ContinueWithNowPayments
+  onClick={handleClick}
+  fullWidth
+  size="large"
+/>
+```
+
+### With Custom Styling
+```tsx
+<ContinueWithNowPayments
+  onClick={handleClick}
+  className="my-custom-payment-button"
+  size="medium"
+/>
+```
+
+## Visual Variants
+
+### Default Variant
+```tsx
+<ContinueWithNowPayments
+  onClick={handleClick}
+  variant="default"
+/>
+```
+
+### Dark Variant
+```tsx
+<ContinueWithNowPayments
+  onClick={handleClick}
+  variant="dark"
+/>
+```
+
+### Light Variant
+```tsx
+<ContinueWithNowPayments
+  onClick={handleClick}
+  variant="light"
+/>
+```
+
+## Integration Examples
+
+### With Deposit Modal
+```tsx
+import { useState } from 'react'
+import { ContinueWithNowPayments, DepositModal } from '@taloon/nowpayments-components'
+
+function PaymentFlow() {
+  const [showDeposit, setShowDeposit] = useState(false)
+
+  return (
+    <div className="payment-section">
+      <h2>Make a Deposit</h2>
+      <p>Fund your account with cryptocurrency</p>
+
+      <ContinueWithNowPayments
+        onClick={() => setShowDeposit(true)}
+        size="large"
+        fullWidth
+      />
+
+      <DepositModal
+        isOpen={showDeposit}
+        onClose={() => setShowDeposit(false)}
+        onSubmit={handleDepositSubmit}
+        onSuccess={() => setShowDeposit(false)}
+      />
+    </div>
+  )
+}
+```
+
+### In a Payment Selection Grid
+```tsx
+function PaymentMethods() {
+  return (
+    <div className="payment-methods">
+      <div className="payment-option">
+        <h3>Credit Card</h3>
+        <button className="payment-btn">Pay with Card</button>
+      </div>
+
+      <div className="payment-option">
+        <h3>Cryptocurrency</h3>
+        <ContinueWithNowPayments
+          onClick={handleCryptoPayment}
+          size="medium"
+          fullWidth
+        />
+      </div>
+
+      <div className="payment-option">
+        <h3>Bank Transfer</h3>
+        <button className="payment-btn">Bank Transfer</button>
+      </div>
+    </div>
+  )
+}
+```
+
+### Disabled State
+```tsx
+function ConditionalPayment() {
+  const [isLoading, setIsLoading] = useState(false)
+  const hasValidAmount = amount > 0
+
+  return (
+    <ContinueWithNowPayments
+      onClick={handlePayment}
+      disabled={!hasValidAmount || isLoading}
+      size="large"
+      fullWidth
+    />
+  )
+}
+```
+
+## Styling and Customization
+
+### CSS Classes
+
+The component uses these CSS classes:
+- `.np-continue-btn` - Main button class
+- `.np-continue-btn--small` - Small size modifier
+- `.np-continue-btn--medium` - Medium size modifier
+- `.np-continue-btn--large` - Large size modifier
+- `.np-continue-btn--full-width` - Full width modifier
+- `.np-continue-btn--disabled` - Disabled state
+- `.np-continue-btn--default` - Default variant
+- `.np-continue-btn--dark` - Dark variant
+- `.np-continue-btn--light` - Light variant
+
+### Custom CSS
+
+```css
+/* Override button colors */
+.np-continue-btn {
+  --np-primary: #your-brand-color;
+  --np-primary-hover: #your-hover-color;
+}
+
+/* Custom variant */
+.my-custom-payment-button {
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+  border: none;
+  transform: scale(1);
+  transition: transform 0.2s ease;
+}
+
+.my-custom-payment-button:hover {
+  transform: scale(1.02);
+}
+```
+
+### Theme Integration
+
+```css
+/* Dark theme support */
+[data-theme="dark"] .np-continue-btn--default {
+  background: var(--np-surface-variant);
+  color: var(--np-on-surface);
+}
+
+/* Light theme support */
+[data-theme="light"] .np-continue-btn--default {
+  background: #ffffff;
+  color: #1a1a1a;
+  border: 1px solid #e0e0e0;
+}
+```
+
+## Accessibility
+
+The component includes proper accessibility features:
+
+```tsx
+// ARIA attributes are automatically applied
+<button
+  type="button"
+  aria-label="Continue with NOWPayments"
+  disabled={disabled}
+  className="np-continue-btn"
+>
+  <div className="np-continue-btn__content">
+    <span className="np-continue-btn__text">Continue with</span>
+    <div className="np-continue-btn__logo">
+      {/* NOWPayments SVG logo */}
+    </div>
+  </div>
+</button>
+```
+
+### Focus Management
+
+```css
+/* Focus styles */
+.np-continue-btn:focus {
+  outline: 2px solid var(--np-accent);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .np-continue-btn {
+    border: 2px solid currentColor;
+  }
+}
+```
+
+## Best Practices
+
+### Loading States
+```tsx
+function SmartPaymentButton() {
+  const [isProcessing, setIsProcessing] = useState(false)
+
+  const handleClick = async () => {
+    setIsProcessing(true)
+    try {
+      await initializePayment()
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
+  return (
+    <ContinueWithNowPayments
+      onClick={handleClick}
+      disabled={isProcessing}
+      size="large"
+    />
+  )
+}
+```
+
+### Error Handling
+```tsx
+function RobustPaymentButton() {
+  const [error, setError] = useState<string | null>(null)
+
+  const handleClick = () => {
+    try {
+      setError(null)
+      initiatePayment()
+    } catch (err) {
+      setError('Failed to start payment process')
+    }
+  }
+
+  return (
+    <div>
+      {error && (
+        <div className="error-message">{error}</div>
+      )}
+      <ContinueWithNowPayments
+        onClick={handleClick}
+        disabled={!!error}
+        size="large"
+      />
+    </div>
+  )
+}
+```
+
+## Integration Notes
+
+- **Brand Consistency**: The NOWPayments logo maintains consistent proportions across all sizes
+- **Performance**: The SVG logo is optimized and embedded to avoid additional HTTP requests
+- **Responsive**: The button scales appropriately on mobile devices
+- **Touch Targets**: All sizes meet minimum touch target requirements (44px minimum)

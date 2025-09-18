@@ -1,0 +1,546 @@
+# Basic Integration Examples
+
+Complete examples showing how to integrate NOWPayments components into different application types.
+
+## Simple React App
+
+**Note**: Always import styles manually - they are not included automatically.
+
+```tsx
+import { useState } from 'react'
+import {
+  NowPaymentsProvider,
+  DepositModal,
+  WithdrawModal,
+  ContinueWithNowPayments
+} from '@taloon/nowpayments-components'
+import '@taloon/nowpayments-components/styles'
+
+function App() {
+  const [showDeposit, setShowDeposit] = useState(false)
+  const [showWithdraw, setShowWithdraw] = useState(false)
+  const [balance, setBalance] = useState(1000)
+
+  const handleDepositSubmit = async (formData) => {
+    // Simulate API call
+    console.log('Creating deposit:', formData)
+
+    const response = await fetch('/api/deposits', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    })
+
+    return response.json()
+  }
+
+  const handleWithdrawSubmit = async (formData) => {
+    // Simulate API call
+    console.log('Creating withdrawal:', formData)
+
+    const response = await fetch('/api/withdrawals', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    })
+
+    return response.json()
+  }
+
+  const convertBalanceToUsdt = async (amount) => {
+    // Simulate conversion rate
+    return amount * 0.95
+  }
+
+  return (
+    <NowPaymentsProvider apiKey="your-nowpayments-api-key">
+      <div className="app">
+        <header>
+          <h1>Crypto Wallet App</h1>
+          <p>Balance: ${balance}</p>
+        </header>
+
+        <main>
+          <div className="actions">
+            <ContinueWithNowPayments
+              onClick={() => setShowDeposit(true)}
+              size="large"
+              fullWidth
+            />
+
+            <button
+              onClick={() => setShowWithdraw(true)}
+              className="withdraw-btn"
+            >
+              Withdraw Funds
+            </button>
+          </div>
+
+          <DepositModal
+            isOpen={showDeposit}
+            onClose={() => setShowDeposit(false)}
+            onSubmit={handleDepositSubmit}
+            onSuccess={(result) => {
+              console.log('Deposit successful:', result)
+              setShowDeposit(false)
+              // Update balance
+              setBalance(prev => prev + result.amount)
+            }}
+            onError={(error) => {
+              console.error('Deposit failed:', error)
+            }}
+          />
+
+          <WithdrawModal
+            isOpen={showWithdraw}
+            onClose={() => setShowWithdraw(false)}
+            availableBalance={balance}
+            balanceToUsdtConverter={convertBalanceToUsdt}
+            onSubmit={handleWithdrawSubmit}
+            onSuccess={(result) => {
+              console.log('Withdrawal successful:', result)
+              setShowWithdraw(false)
+              // Update balance
+              setBalance(prev => prev - result.amount)
+            }}
+            onError={(error) => {
+              console.error('Withdrawal failed:', error)
+            }}
+          />
+        </main>
+      </div>
+    </NowPaymentsProvider>
+  )
+}
+
+export default App
+```
+
+## Next.js Integration
+
+### App Router (app/layout.tsx)
+```tsx
+import { NowPaymentsProvider } from '@taloon/nowpayments-components'
+import '@taloon/nowpayments-components/styles'
+import './globals.css'
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en">
+      <body>
+        <NowPaymentsProvider apiKey={process.env.NEXT_PUBLIC_NOWPAYMENTS_API_KEY!}>
+          {children}
+        </NowPaymentsProvider>
+      </body>
+    </html>
+  )
+}
+```
+
+### Payment Page (app/payment/page.tsx)
+```tsx
+'use client'
+
+import { useState } from 'react'
+import { DepositModal, ContinueWithNowPayments } from '@taloon/nowpayments-components'
+
+export default function PaymentPage() {
+  const [showDeposit, setShowDeposit] = useState(false)
+
+  const handleDepositSubmit = async (formData) => {
+    const response = await fetch('/api/deposits', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to create deposit')
+    }
+
+    return response.json()
+  }
+
+  return (
+    <div className="container mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-6">Make a Payment</h1>
+
+      <div className="max-w-md mx-auto">
+        <ContinueWithNowPayments
+          onClick={() => setShowDeposit(true)}
+          size="large"
+          fullWidth
+        />
+      </div>
+
+      <DepositModal
+        isOpen={showDeposit}
+        onClose={() => setShowDeposit(false)}
+        onSubmit={handleDepositSubmit}
+        onSuccess={() => {
+          setShowDeposit(false)
+          // Redirect to success page
+          window.location.href = '/payment/success'
+        }}
+      />
+    </div>
+  )
+}
+```
+
+### API Route (app/api/deposits/route.ts)
+```typescript
+import { NextRequest, NextResponse } from 'next/server'
+
+export async function POST(request: NextRequest) {
+  try {
+    const formData = await request.json()
+
+    // Process with NOWPayments API
+    const nowPaymentsResponse = await fetch('https://api.nowpayments.io/v1/payment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': process.env.NOWPAYMENTS_API_KEY!,
+      },
+      body: JSON.stringify({
+        price_amount: formData.amount,
+        price_currency: 'usd',
+        pay_currency: formData.selectedCurrency,
+        order_id: `order_${Date.now()}`,
+        order_description: 'Crypto deposit',
+      })
+    })
+
+    const paymentData = await nowPaymentsResponse.json()
+
+    return NextResponse.json({
+      paymentId: paymentData.payment_id,
+      depositAddress: paymentData.pay_address,
+      amount: paymentData.pay_amount,
+      currency: paymentData.pay_currency,
+      status: paymentData.payment_status
+    })
+  } catch (error) {
+    console.error('Deposit creation failed:', error)
+    return NextResponse.json(
+      { error: 'Failed to create deposit' },
+      { status: 500 }
+    )
+  }
+}
+```
+
+## E-commerce Integration
+
+```tsx
+import { useState } from 'react'
+import { DepositModal, ContinueWithNowPayments } from '@taloon/nowpayments-components'
+
+interface Product {
+  id: string
+  name: string
+  price: number
+}
+
+function CheckoutPage({ cart }: { cart: Product[] }) {
+  const [showCryptoPayment, setShowCryptoPayment] = useState(false)
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'crypto' | null>(null)
+
+  const total = cart.reduce((sum, item) => sum + item.price, 0)
+
+  const handleCryptoPayment = async (formData) => {
+    const orderData = {
+      items: cart,
+      total,
+      paymentMethod: 'crypto',
+      cryptoData: formData
+    }
+
+    const response = await fetch('/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderData)
+    })
+
+    return response.json()
+  }
+
+  return (
+    <div className="checkout">
+      <h2>Checkout</h2>
+
+      <div className="order-summary">
+        {cart.map(item => (
+          <div key={item.id} className="cart-item">
+            <span>{item.name}</span>
+            <span>${item.price}</span>
+          </div>
+        ))}
+        <div className="total">
+          <strong>Total: ${total}</strong>
+        </div>
+      </div>
+
+      <div className="payment-methods">
+        <h3>Payment Method</h3>
+
+        <div className="payment-options">
+          <label className="payment-option">
+            <input
+              type="radio"
+              name="payment"
+              value="card"
+              onChange={() => setPaymentMethod('card')}
+            />
+            <span>Credit Card</span>
+          </label>
+
+          <label className="payment-option">
+            <input
+              type="radio"
+              name="payment"
+              value="crypto"
+              onChange={() => setPaymentMethod('crypto')}
+            />
+            <span>Cryptocurrency</span>
+          </label>
+        </div>
+
+        {paymentMethod === 'crypto' && (
+          <div className="crypto-payment">
+            <ContinueWithNowPayments
+              onClick={() => setShowCryptoPayment(true)}
+              size="large"
+              fullWidth
+            />
+          </div>
+        )}
+
+        {paymentMethod === 'card' && (
+          <div className="card-payment">
+            {/* Your credit card form */}
+            <button className="pay-btn">Pay with Card</button>
+          </div>
+        )}
+      </div>
+
+      <DepositModal
+        isOpen={showCryptoPayment}
+        onClose={() => setShowCryptoPayment(false)}
+        onSubmit={handleCryptoPayment}
+        onSuccess={(result) => {
+          // Redirect to order confirmation
+          window.location.href = `/orders/${result.orderId}`
+        }}
+        enableEmail={true}
+        shouldNotifyByEmail={true}
+      />
+    </div>
+  )
+}
+```
+
+## Gaming Platform Integration
+
+```tsx
+import { useState, useEffect } from 'react'
+import { DepositModal, WithdrawModal } from '@taloon/nowpayments-components'
+
+interface GameUser {
+  id: string
+  username: string
+  coins: number
+  level: number
+}
+
+function GameWallet({ user }: { user: GameUser }) {
+  const [showDeposit, setShowDeposit] = useState(false)
+  const [showWithdraw, setShowWithdraw] = useState(false)
+
+  const handleDepositSubmit = async (formData) => {
+    // Convert crypto to game coins
+    const response = await fetch('/api/game/deposit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...formData,
+        userId: user.id,
+        conversion: 'crypto-to-coins'
+      })
+    })
+
+    return response.json()
+  }
+
+  const handleWithdrawSubmit = async (formData) => {
+    // Convert game coins to crypto
+    const response = await fetch('/api/game/withdraw', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...formData,
+        userId: user.id,
+        conversion: 'coins-to-crypto'
+      })
+    })
+
+    return response.json()
+  }
+
+  const convertCoinsToUsdt = async (coins) => {
+    // Game coin to USDT conversion rate
+    const conversionRate = 0.01 // 1 coin = 0.01 USDT
+    return coins * conversionRate
+  }
+
+  return (
+    <div className="game-wallet">
+      <div className="wallet-header">
+        <h2>Game Wallet</h2>
+        <div className="balance">
+          <span className="coin-count">{user.coins.toLocaleString()}</span>
+          <span className="coin-label">Game Coins</span>
+        </div>
+      </div>
+
+      <div className="wallet-actions">
+        <button
+          onClick={() => setShowDeposit(true)}
+          className="deposit-btn"
+        >
+          Buy Coins
+        </button>
+
+        <button
+          onClick={() => setShowWithdraw(true)}
+          className="withdraw-btn"
+          disabled={user.coins < 100} // Minimum withdrawal
+        >
+          Cash Out
+        </button>
+      </div>
+
+      <DepositModal
+        isOpen={showDeposit}
+        onClose={() => setShowDeposit(false)}
+        onSubmit={handleDepositSubmit}
+        onSuccess={(result) => {
+          console.log(`Purchased ${result.coinsAdded} coins`)
+          setShowDeposit(false)
+          // Refresh user data
+          window.location.reload()
+        }}
+      />
+
+      <WithdrawModal
+        isOpen={showWithdraw}
+        onClose={() => setShowWithdraw(false)}
+        availableBalance={user.coins}
+        balanceToUsdtConverter={convertCoinsToUsdt}
+        onSubmit={handleWithdrawSubmit}
+        onSuccess={(result) => {
+          console.log(`Withdrew ${result.amount} USDT`)
+          setShowWithdraw(false)
+          // Refresh user data
+          window.location.reload()
+        }}
+      />
+    </div>
+  )
+}
+```
+
+## React Native (Expo) Integration
+
+```tsx
+// App.tsx
+import { NowPaymentsProvider } from '@taloon/nowpayments-components'
+
+export default function App() {
+  return (
+    <NowPaymentsProvider apiKey="your-api-key">
+      <WalletScreen />
+    </NowPaymentsProvider>
+  )
+}
+
+// WalletScreen.tsx
+import { useState } from 'react'
+import { View, Text, TouchableOpacity, Modal } from 'react-native'
+import { DepositModal } from '@taloon/nowpayments-components'
+
+function WalletScreen() {
+  const [showDeposit, setShowDeposit] = useState(false)
+
+  const handleDepositSubmit = async (formData) => {
+    const response = await fetch('https://your-api.com/deposits', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    })
+
+    return response.json()
+  }
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Mobile Wallet</Text>
+
+      <TouchableOpacity
+        style={styles.depositButton}
+        onPress={() => setShowDeposit(true)}
+      >
+        <Text style={styles.buttonText}>Add Funds</Text>
+      </TouchableOpacity>
+
+      <Modal
+        visible={showDeposit}
+        animationType="slide"
+        presentationStyle="pageSheet"
+      >
+        <DepositModal
+          isOpen={showDeposit}
+          onClose={() => setShowDeposit(false)}
+          onSubmit={handleDepositSubmit}
+          onSuccess={() => setShowDeposit(false)}
+        />
+      </Modal>
+    </View>
+  )
+}
+```
+
+## Environment Configuration
+
+### .env.local
+```bash
+# NOWPayments API Key (public - for currency fetching only)
+NEXT_PUBLIC_NOWPAYMENTS_API_KEY=your-public-api-key
+
+# NOWPayments API Key (private - for payment processing)
+NOWPAYMENTS_API_KEY=your-private-api-key
+
+# Your backend API URL
+NEXT_PUBLIC_API_URL=https://your-api.com
+
+# Webhook secret for IPN validation
+NOWPAYMENTS_WEBHOOK_SECRET=your-webhook-secret
+```
+
+### TypeScript Configuration
+```typescript
+// types/env.d.ts
+declare namespace NodeJS {
+  interface ProcessEnv {
+    NEXT_PUBLIC_NOWPAYMENTS_API_KEY: string
+    NOWPAYMENTS_API_KEY: string
+    NEXT_PUBLIC_API_URL: string
+    NOWPAYMENTS_WEBHOOK_SECRET: string
+  }
+}
+```

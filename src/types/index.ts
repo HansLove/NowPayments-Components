@@ -1,3 +1,5 @@
+import { ReactNode } from 'react'
+
 export interface Currency {
   id: number
   code: string
@@ -90,4 +92,9 @@ export interface ContinueWithNowPaymentsProps {
   size?: 'small' | 'medium' | 'large'
   className?: string
   variant?: 'default' | 'dark' | 'light'
+}
+
+export interface NowPaymentsProviderProps {
+  children: ReactNode
+  apiKey: string
 }

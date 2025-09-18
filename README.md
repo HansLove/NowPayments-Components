@@ -30,16 +30,39 @@ npm install @taloon/nowpayments-components
 
 ## Quick Start
 
-### 1. Setup Styles and API Key
+### 1. Setup with Provider (Recommended)
 
+```tsx
+import { NowPaymentsProvider } from '@taloon/nowpayments-components'
+import '@taloon/nowpayments-components/styles'
+
+function App() {
+  return (
+    <NowPaymentsProvider apiKey="your-nowpayments-api-key">
+      <YourApp />
+    </NowPaymentsProvider>
+  )
+}
+```
+
+**Alternative: Direct Store Setup**
 ```tsx
 import { useNowPaymentsStore } from '@taloon/nowpayments-components'
 import '@taloon/nowpayments-components/styles'
 
-// Initialize with your NOWPayments API key (for currency fetching only)
-const store = useNowPaymentsStore()
-store.setApiKey('your-nowpayments-api-key')
+function App() {
+  const store = useNowPaymentsStore()
+
+  // Initialize with your NOWPayments API key (for currency fetching only)
+  useEffect(() => {
+    store.setApiKey('your-nowpayments-api-key')
+  }, [])
+
+  return <YourApp />
+}
 ```
+
+**Important**: Always import the styles manually using `import '@taloon/nowpayments-components/styles'`
 
 ### 2. Add Deposit Modal
 
@@ -114,6 +137,27 @@ import { WithdrawModal } from '@taloon/nowpayments-components'
 />
 ```
 
+### 4. Add Branded Payment Button
+
+```tsx
+import { ContinueWithNowPayments } from '@taloon/nowpayments-components'
+
+<ContinueWithNowPayments
+  onClick={() => setShowDeposit(true)}
+  size="large"
+  fullWidth
+  variant="default"
+/>
+```
+
+**Available Props:**
+- `size`: `'small' | 'medium' | 'large'` (default: `'medium'`)
+- `variant`: `'default' | 'dark' | 'light'` (default: `'default'`)
+- `fullWidth`: `boolean` (default: `false`)
+- `disabled`: `boolean` (default: `false`)
+- `onClick`: `() => void`
+- `className`: `string` for custom styling
+
 ## Customization
 
 ### Theme with CSS Variables
@@ -138,7 +182,7 @@ import { WithdrawModal } from '@taloon/nowpayments-components'
 }
 ```
 
-See [CSS_THEMING.md](./CSS_THEMING.md) for complete theming guide.
+See [CSS_THEMING.md](./CSS_THEMING.md) for complete theming guide and [docs/styling-guide.mdx](./docs/styling-guide.mdx) for style import instructions.
 
 ## Components
 
@@ -146,6 +190,8 @@ See [CSS_THEMING.md](./CSS_THEMING.md) for complete theming guide.
 
 - **`DepositModal`** - 3-step deposit flow (currency selection, amount, confirmation)
 - **`WithdrawModal`** - Single-form withdrawal with network selection and amount slider
+- **`ContinueWithNowPayments`** - Branded button with NOWPayments logo for payment flows
+- **`NowPaymentsProvider`** - Configuration provider for API key setup
 
 ### Shared Components (Advanced Usage)
 

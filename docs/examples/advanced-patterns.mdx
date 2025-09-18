@@ -1,0 +1,808 @@
+# Advanced Integration Patterns
+
+Complex scenarios and advanced usage patterns for NOWPayments components.
+
+## Custom Hook for Payment Management
+
+```tsx
+import { useState, useCallback } from 'react'
+import { useNowPaymentsStore } from '@taloon/nowpayments-components'
+
+interface PaymentState {
+  isProcessing: boolean
+  error: string | null
+  lastPayment: any | null
+}
+
+export function usePaymentManager() {
+  const [state, setState] = useState<PaymentState>({
+    isProcessing: false,
+    error: null,
+    lastPayment: null
+  })
+
+  const { apiKey } = useNowPaymentsStore()
+
+  // Note: Make sure to import styles in your app:
+  // import '@taloon/nowpayments-components/styles'
+
+  const createDeposit = useCallback(async (formData) => {
+    if (!apiKey) {
+      throw new Error('NOWPayments API key not configured')
+    }
+
+    setState(prev => ({ ...prev, isProcessing: true, error: null }))
+
+    try {
+      const response = await fetch('/api/payments/deposit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+      }
+
+      const result = await response.json()
+
+      setState(prev => ({
+        ...prev,
+        isProcessing: false,
+        lastPayment: result
+      }))
+
+      return result
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      setState(prev => ({
+        ...prev,
+        isProcessing: false,
+        error: errorMessage
+      }))
+      throw error
+    }
+  }, [apiKey])
+
+  const createWithdrawal = useCallback(async (formData) => {
+    setState(prev => ({ ...prev, isProcessing: true, error: null }))
+
+    try {
+      const response = await fetch('/api/payments/withdraw', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+      }
+
+      const result = await response.json()
+
+      setState(prev => ({
+        ...prev,
+        isProcessing: false,
+        lastPayment: result
+      }))
+
+      return result
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      setState(prev => ({
+        ...prev,
+        isProcessing: false,
+        error: errorMessage
+      }))
+      throw error
+    }
+  }, [])
+
+  const clearError = useCallback(() => {
+    setState(prev => ({ ...prev, error: null }))
+  }, [])
+
+  return {
+    ...state,
+    createDeposit,
+    createWithdrawal,
+    clearError
+  }
+}
+```
+
+## Multi-Step Payment Flow
+
+```tsx
+import { useState } from 'react'
+import { DepositModal } from '@taloon/nowpayments-components'
+
+type PaymentStep = 'amount' | 'method' | 'confirm' | 'complete'
+
+function MultiStepPayment() {
+  const [currentStep, setCurrentStep] = useState<PaymentStep>('amount')
+  const [paymentData, setPaymentData] = useState({
+    amount: 0,
+    purpose: '',
+    method: 'crypto'
+  })
+  const [showDepositModal, setShowDepositModal] = useState(false)
+
+  const handleAmountSubmit = (amount: number, purpose: string) => {
+    setPaymentData(prev => ({ ...prev, amount, purpose }))
+    setCurrentStep('method')
+  }
+
+  const handleMethodSelect = (method: string) => {
+    setPaymentData(prev => ({ ...prev, method }))
+    if (method === 'crypto') {
+      setShowDepositModal(true)
+    } else {
+      setCurrentStep('confirm')
+    }
+  }
+
+  const handleDepositSubmit = async (formData) => {
+    const enrichedData = {
+      ...formData,
+      amount: paymentData.amount,
+      purpose: paymentData.purpose,
+      sessionId: Date.now().toString()
+    }
+
+    const response = await fetch('/api/payments/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(enrichedData)
+    })
+
+    return response.json()
+  }
+
+  const handleDepositSuccess = (result) => {
+    setShowDepositModal(false)
+    setCurrentStep('complete')
+    // Store payment result for confirmation page
+    setPaymentData(prev => ({ ...prev, result }))
+  }
+
+  return (
+    <div className="multi-step-payment">
+      <div className="progress-bar">
+        <div className={`step ${currentStep === 'amount' ? 'active' : 'completed'}`}>
+          Amount
+        </div>
+        <div className={`step ${currentStep === 'method' ? 'active' : currentStep === 'confirm' || currentStep === 'complete' ? 'completed' : ''}`}>
+          Method
+        </div>
+        <div className={`step ${currentStep === 'confirm' ? 'active' : currentStep === 'complete' ? 'completed' : ''}`}>
+          Confirm
+        </div>
+        <div className={`step ${currentStep === 'complete' ? 'active' : ''}`}>
+          Complete
+        </div>
+      </div>
+
+      {currentStep === 'amount' && (
+        <AmountStep onSubmit={handleAmountSubmit} />
+      )}
+
+      {currentStep === 'method' && (
+        <MethodStep onSelect={handleMethodSelect} />
+      )}
+
+      {currentStep === 'confirm' && (
+        <ConfirmStep
+          data={paymentData}
+          onConfirm={() => setCurrentStep('complete')}
+        />
+      )}
+
+      {currentStep === 'complete' && (
+        <CompleteStep data={paymentData} />
+      )}
+
+      <DepositModal
+        isOpen={showDepositModal}
+        onClose={() => setShowDepositModal(false)}
+        onSubmit={handleDepositSubmit}
+        onSuccess={handleDepositSuccess}
+        onError={(error) => {
+          console.error('Payment failed:', error)
+          setShowDepositModal(false)
+        }}
+      />
+    </div>
+  )
+}
+```
+
+## Payment History with Status Tracking
+
+```tsx
+import { useState, useEffect } from 'react'
+import { DepositModal, WithdrawModal } from '@taloon/nowpayments-components'
+
+interface Payment {
+  id: string
+  type: 'deposit' | 'withdrawal'
+  amount: number
+  currency: string
+  status: 'pending' | 'confirmed' | 'failed' | 'expired'
+  createdAt: string
+  txHash?: string
+}
+
+function PaymentDashboard() {
+  const [payments, setPayments] = useState<Payment[]>([])
+  const [showDeposit, setShowDeposit] = useState(false)
+  const [showWithdraw, setShowWithdraw] = useState(false)
+
+  // Fetch payment history
+  useEffect(() => {
+    const fetchPayments = async () => {
+      const response = await fetch('/api/payments/history')
+      const data = await response.json()
+      setPayments(data)
+    }
+
+    fetchPayments()
+    // Set up real-time updates
+    const interval = setInterval(fetchPayments, 30000) // Poll every 30 seconds
+
+    return () => clearInterval(interval)
+  }, [])
+
+  // Real-time payment status updates via WebSocket
+  useEffect(() => {
+    const ws = new WebSocket(`${process.env.NEXT_PUBLIC_WS_URL}/payments`)
+
+    ws.onmessage = (event) => {
+      const update = JSON.parse(event.data)
+      if (update.type === 'payment_status') {
+        setPayments(prev =>
+          prev.map(payment =>
+            payment.id === update.paymentId
+              ? { ...payment, status: update.status, txHash: update.txHash }
+              : payment
+          )
+        )
+      }
+    }
+
+    return () => ws.close()
+  }, [])
+
+  const handleNewDeposit = async (formData) => {
+    const response = await fetch('/api/payments/deposit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    })
+
+    const result = await response.json()
+
+    // Add to local state immediately
+    const newPayment: Payment = {
+      id: result.id,
+      type: 'deposit',
+      amount: formData.amount,
+      currency: formData.selectedCurrency,
+      status: 'pending',
+      createdAt: new Date().toISOString()
+    }
+
+    setPayments(prev => [newPayment, ...prev])
+
+    return result
+  }
+
+  return (
+    <div className="payment-dashboard">
+      <div className="dashboard-header">
+        <h2>Payment Dashboard</h2>
+        <div className="actions">
+          <button onClick={() => setShowDeposit(true)}>
+            New Deposit
+          </button>
+          <button onClick={() => setShowWithdraw(true)}>
+            Withdraw
+          </button>
+        </div>
+      </div>
+
+      <div className="payment-history">
+        <h3>Recent Payments</h3>
+        {payments.length === 0 ? (
+          <p>No payments yet</p>
+        ) : (
+          <div className="payment-list">
+            {payments.map(payment => (
+              <PaymentCard key={payment.id} payment={payment} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      <DepositModal
+        isOpen={showDeposit}
+        onClose={() => setShowDeposit(false)}
+        onSubmit={handleNewDeposit}
+        onSuccess={() => setShowDeposit(false)}
+      />
+
+      <WithdrawModal
+        isOpen={showWithdraw}
+        onClose={() => setShowWithdraw(false)}
+        availableBalance={1000} // Get from your state
+        balanceToUsdtConverter={async (amount) => amount * 0.95}
+        onSubmit={async (formData) => {
+          const response = await fetch('/api/payments/withdraw', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+          })
+          return response.json()
+        }}
+        onSuccess={() => setShowWithdraw(false)}
+      />
+    </div>
+  )
+}
+
+function PaymentCard({ payment }: { payment: Payment }) {
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'confirmed': return 'green'
+      case 'pending': return 'orange'
+      case 'failed': return 'red'
+      case 'expired': return 'gray'
+      default: return 'blue'
+    }
+  }
+
+  return (
+    <div className="payment-card">
+      <div className="payment-info">
+        <div className="payment-amount">
+          {payment.amount} {payment.currency.toUpperCase()}
+        </div>
+        <div className="payment-type">
+          {payment.type === 'deposit' ? '↓' : '↑'} {payment.type}
+        </div>
+        <div className="payment-date">
+          {new Date(payment.createdAt).toLocaleDateString()}
+        </div>
+      </div>
+      <div
+        className={`payment-status status-${getStatusColor(payment.status)}`}
+      >
+        {payment.status}
+      </div>
+      {payment.txHash && (
+        <div className="payment-actions">
+          <a
+            href={`https://blockchair.com/search?q=${payment.txHash}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="view-tx-btn"
+          >
+            View Transaction
+          </a>
+        </div>
+      )}
+    </div>
+  )
+}
+```
+
+## Dynamic Currency Filtering
+
+```tsx
+import { useState, useEffect } from 'react'
+import { DepositModal, useCurrencies } from '@taloon/nowpayments-components'
+
+interface CurrencyFilter {
+  minAmount?: number
+  maxAmount?: number
+  networks?: string[]
+  categories?: string[]
+}
+
+function SmartDepositModal() {
+  const [showModal, setShowModal] = useState(false)
+  const [filter, setFilter] = useState<CurrencyFilter>({
+    minAmount: 10, // Minimum $10 deposits
+    networks: ['bitcoin', 'ethereum', 'tron'], // Preferred networks
+    categories: ['stablecoin', 'defi'] // Preferred categories
+  })
+
+  const { currencies, isLoading } = useCurrencies()
+
+  // Filter currencies based on criteria
+  const filteredCurrencies = currencies.filter(currency => {
+    if (filter.minAmount && currency.min_amount > filter.minAmount) {
+      return false
+    }
+
+    if (filter.networks && !filter.networks.includes(currency.network)) {
+      return false
+    }
+
+    if (filter.categories) {
+      const currencyCategory = getCurrencyCategory(currency.code)
+      if (!filter.categories.includes(currencyCategory)) {
+        return false
+      }
+    }
+
+    return true
+  })
+
+  const getCurrencyCategory = (code: string): string => {
+    const stablecoins = ['usdt', 'usdc', 'dai', 'busd']
+    const defi = ['uni', 'aave', 'comp', 'mkr']
+    const gaming = ['axs', 'sand', 'mana', 'enj']
+
+    if (stablecoins.includes(code.toLowerCase())) return 'stablecoin'
+    if (defi.includes(code.toLowerCase())) return 'defi'
+    if (gaming.includes(code.toLowerCase())) return 'gaming'
+    return 'other'
+  }
+
+  const handleDepositSubmit = async (formData) => {
+    // Add filtering metadata
+    const enrichedData = {
+      ...formData,
+      appliedFilters: filter,
+      availableCurrencies: filteredCurrencies.length
+    }
+
+    const response = await fetch('/api/deposits/filtered', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(enrichedData)
+    })
+
+    return response.json()
+  }
+
+  return (
+    <div className="smart-deposit">
+      <div className="currency-filters">
+        <h3>Payment Preferences</h3>
+
+        <div className="filter-group">
+          <label>Minimum Amount ($)</label>
+          <input
+            type="number"
+            value={filter.minAmount || ''}
+            onChange={(e) =>
+              setFilter(prev => ({
+                ...prev,
+                minAmount: e.target.value ? Number(e.target.value) : undefined
+              }))
+            }
+          />
+        </div>
+
+        <div className="filter-group">
+          <label>Preferred Networks</label>
+          <div className="checkbox-group">
+            {['bitcoin', 'ethereum', 'tron', 'bsc', 'polygon'].map(network => (
+              <label key={network}>
+                <input
+                  type="checkbox"
+                  checked={filter.networks?.includes(network) || false}
+                  onChange={(e) => {
+                    const networks = filter.networks || []
+                    if (e.target.checked) {
+                      setFilter(prev => ({
+                        ...prev,
+                        networks: [...networks, network]
+                      }))
+                    } else {
+                      setFilter(prev => ({
+                        ...prev,
+                        networks: networks.filter(n => n !== network)
+                      }))
+                    }
+                  }}
+                />
+                {network.charAt(0).toUpperCase() + network.slice(1)}
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div className="filter-summary">
+          <p>
+            {isLoading
+              ? 'Loading currencies...'
+              : `${filteredCurrencies.length} currencies available`}
+          </p>
+        </div>
+      </div>
+
+      <button
+        onClick={() => setShowModal(true)}
+        disabled={filteredCurrencies.length === 0}
+        className="open-deposit-btn"
+      >
+        Make Deposit
+      </button>
+
+      <DepositModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onSubmit={handleDepositSubmit}
+        onSuccess={() => setShowModal(false)}
+      />
+    </div>
+  )
+}
+```
+
+## A/B Testing Integration
+
+```tsx
+import { useState } from 'react'
+import {
+  DepositModal,
+  ContinueWithNowPayments
+} from '@taloon/nowpayments-components'
+
+// Mock A/B testing hook
+function useABTest(testName: string, variants: string[]) {
+  // This would integrate with your A/B testing service
+  const userId = 'user-123'
+  const hash = userId.split('').reduce((a, b) => {
+    a = ((a << 5) - a) + b.charCodeAt(0)
+    return a & a
+  }, 0)
+
+  const variant = variants[Math.abs(hash) % variants.length]
+  return { variant }
+}
+
+function ABTestDepositFlow() {
+  const [showDeposit, setShowDeposit] = useState(false)
+
+  // Test different button styles
+  const buttonTest = useABTest('deposit-button', ['standard', 'prominent', 'minimal'])
+
+  // Test different modal flows
+  const flowTest = useABTest('deposit-flow', ['standard', 'simplified', 'guided'])
+
+  const handleDepositSubmit = async (formData) => {
+    // Include A/B test data in analytics
+    const enrichedData = {
+      ...formData,
+      abTests: {
+        buttonVariant: buttonTest.variant,
+        flowVariant: flowTest.variant
+      }
+    }
+
+    // Track conversion event
+    analytics.track('deposit_submitted', {
+      buttonVariant: buttonTest.variant,
+      flowVariant: flowTest.variant,
+      amount: formData.amount,
+      currency: formData.selectedCurrency
+    })
+
+    const response = await fetch('/api/deposits', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(enrichedData)
+    })
+
+    return response.json()
+  }
+
+  const renderDepositButton = () => {
+    switch (buttonTest.variant) {
+      case 'prominent':
+        return (
+          <ContinueWithNowPayments
+            onClick={() => setShowDeposit(true)}
+            size="large"
+            fullWidth
+            className="prominent-variant"
+          />
+        )
+
+      case 'minimal':
+        return (
+          <button
+            onClick={() => setShowDeposit(true)}
+            className="minimal-deposit-btn"
+          >
+            Add Funds
+          </button>
+        )
+
+      case 'standard':
+      default:
+        return (
+          <ContinueWithNowPayments
+            onClick={() => setShowDeposit(true)}
+            size="medium"
+          />
+        )
+    }
+  }
+
+  const getModalProps = () => {
+    const baseProps = {
+      isOpen: showDeposit,
+      onClose: () => setShowDeposit(false),
+      onSubmit: handleDepositSubmit,
+      onSuccess: () => {
+        analytics.track('deposit_completed', {
+          buttonVariant: buttonTest.variant,
+          flowVariant: flowTest.variant
+        })
+        setShowDeposit(false)
+      }
+    }
+
+    switch (flowTest.variant) {
+      case 'simplified':
+        return {
+          ...baseProps,
+          enableEmail: false, // Skip email step
+          autoAdvance: true   // Auto-advance between steps
+        }
+
+      case 'guided':
+        return {
+          ...baseProps,
+          showHelpText: true,   // Show helpful tooltips
+          enableEmail: true,
+          shouldNotifyByEmail: true
+        }
+
+      case 'standard':
+      default:
+        return baseProps
+    }
+  }
+
+  return (
+    <div className="ab-test-deposit">
+      <h2>Fund Your Account</h2>
+      <p>Choose your deposit amount and currency</p>
+
+      {renderDepositButton()}
+
+      <DepositModal {...getModalProps()} />
+    </div>
+  )
+}
+```
+
+## Error Recovery and Retry Logic
+
+```tsx
+import { useState, useCallback } from 'react'
+import { DepositModal } from '@taloon/nowpayments-components'
+
+interface RetryConfig {
+  maxAttempts: number
+  backoffMs: number
+  retryableErrors: string[]
+}
+
+function RobustPaymentFlow() {
+  const [showDeposit, setShowDeposit] = useState(false)
+  const [retryCount, setRetryCount] = useState(0)
+
+  const retryConfig: RetryConfig = {
+    maxAttempts: 3,
+    backoffMs: 1000,
+    retryableErrors: ['network_error', 'timeout', 'temporary_unavailable']
+  }
+
+  const withRetry = useCallback(
+    async (operation: () => Promise<any>, config: RetryConfig) => {
+      let lastError: Error
+
+      for (let attempt = 1; attempt <= config.maxAttempts; attempt++) {
+        try {
+          setRetryCount(attempt - 1)
+          const result = await operation()
+          setRetryCount(0) // Reset on success
+          return result
+        } catch (error) {
+          lastError = error as Error
+          const isRetryable = config.retryableErrors.some(errorType =>
+            lastError.message.toLowerCase().includes(errorType)
+          )
+
+          if (!isRetryable || attempt === config.maxAttempts) {
+            setRetryCount(0)
+            throw lastError
+          }
+
+          // Exponential backoff
+          const delay = config.backoffMs * Math.pow(2, attempt - 1)
+          await new Promise(resolve => setTimeout(resolve, delay))
+        }
+      }
+
+      throw lastError!
+    },
+    []
+  )
+
+  const handleDepositSubmit = useCallback(
+    async (formData) => {
+      return withRetry(async () => {
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 30000) // 30s timeout
+
+        try {
+          const response = await fetch('/api/deposits', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData),
+            signal: controller.signal
+          })
+
+          clearTimeout(timeoutId)
+
+          if (!response.ok) {
+            if (response.status >= 500) {
+              throw new Error('temporary_unavailable')
+            }
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+          }
+
+          return response.json()
+        } catch (error) {
+          clearTimeout(timeoutId)
+          if (error.name === 'AbortError') {
+            throw new Error('timeout')
+          }
+          if (!navigator.onLine) {
+            throw new Error('network_error')
+          }
+          throw error
+        }
+      }, retryConfig)
+    },
+    [withRetry, retryConfig]
+  )
+
+  return (
+    <div className="robust-payment-flow">
+      <button onClick={() => setShowDeposit(true)}>
+        Make Deposit
+      </button>
+
+      {retryCount > 0 && (
+        <div className="retry-indicator">
+          Retrying... (Attempt {retryCount + 1}/{retryConfig.maxAttempts})
+        </div>
+      )}
+
+      <DepositModal
+        isOpen={showDeposit}
+        onClose={() => setShowDeposit(false)}
+        onSubmit={handleDepositSubmit}
+        onSuccess={(result) => {
+          console.log('Deposit successful after retries:', result)
+          setShowDeposit(false)
+        }}
+        onError={(error) => {
+          console.error('Deposit failed after all retries:', error)
+          // Show user-friendly error message
+          alert(`Payment failed: ${error.message}. Please try again later.`)
+        }}
+      />
+    </div>
+  )
+}
+```

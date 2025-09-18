@@ -1,0 +1,412 @@
+# CSS Variables and Theming
+
+Customize the appearance of NOWPayments components using CSS custom properties (variables).
+
+## Core CSS Variables
+
+### Colors
+```css
+:root {
+  /* Primary brand colors */
+  --np-primary: #3b82f6;
+  --np-primary-hover: #2563eb;
+  --np-primary-active: #1d4ed8;
+
+  /* Surface colors */
+  --np-surface: #ffffff;
+  --np-surface-variant: #f8fafc;
+  --np-surface-hover: #f1f5f9;
+
+  /* Text colors */
+  --np-on-surface: #1f2937;
+  --np-on-surface-variant: #6b7280;
+  --np-on-primary: #ffffff;
+
+  /* Accent and status colors */
+  --np-accent: #06b6d4;
+  --np-accent-hover: #0891b2;
+  --np-secondary: #10b981;
+  --np-error: #ef4444;
+  --np-error-hover: #dc2626;
+  --np-success: #22c55e;
+  --np-success-hover: #16a34a;
+  --np-warning: #f59e0b;
+
+  /* Border colors */
+  --np-border: #e5e7eb;
+  --np-border-variant: #d1d5db;
+}
+```
+
+### Spacing and Layout
+```css
+:root {
+  /* Spacing scale */
+  --np-spacing-xs: 0.25rem;    /* 4px */
+  --np-spacing-sm: 0.5rem;     /* 8px */
+  --np-spacing-md: 1rem;       /* 16px */
+  --np-spacing-lg: 1.5rem;     /* 24px */
+  --np-spacing-xl: 2rem;       /* 32px */
+  --np-spacing-2xl: 3rem;      /* 48px */
+
+  /* Border radius */
+  --np-radius: 0.5rem;         /* 8px */
+  --np-radius-sm: 0.25rem;     /* 4px */
+  --np-radius-lg: 0.75rem;     /* 12px */
+
+  /* Shadows */
+  --np-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --np-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --np-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --np-shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+}
+```
+
+### Typography
+```css
+:root {
+  /* Font families */
+  --np-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --np-font-family-mono: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+
+  /* Font sizes */
+  --np-font-size-xs: 0.75rem;   /* 12px */
+  --np-font-size-sm: 0.875rem;  /* 14px */
+  --np-font-size-base: 1rem;    /* 16px */
+  --np-font-size-lg: 1.125rem;  /* 18px */
+  --np-font-size-xl: 1.25rem;   /* 20px */
+
+  /* Font weights */
+  --np-font-weight-normal: 400;
+  --np-font-weight-medium: 500;
+  --np-font-weight-semibold: 600;
+  --np-font-weight-bold: 700;
+}
+```
+
+## Dark Mode Support
+
+### Automatic Dark Mode
+```css
+:root {
+  /* Light mode (default) */
+  --np-surface: #ffffff;
+  --np-on-surface: #1f2937;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --np-surface: #1f2937;
+    --np-surface-variant: #374151;
+    --np-on-surface: #f9fafb;
+    --np-on-surface-variant: #d1d5db;
+    --np-border: #374151;
+  }
+}
+```
+
+### Manual Dark Mode Toggle
+```css
+/* Light theme */
+[data-theme="light"] {
+  --np-surface: #ffffff;
+  --np-on-surface: #1f2937;
+  --np-border: #e5e7eb;
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+  --np-surface: #1f2937;
+  --np-surface-variant: #374151;
+  --np-on-surface: #f9fafb;
+  --np-border: #374151;
+}
+```
+
+## Custom Theme Examples
+
+### Gaming Theme (Caos Engines Inspired)
+```css
+:root {
+  /* Primary colors */
+  --np-primary: #e53e3e;
+  --np-primary-hover: #c53030;
+  --np-primary-active: #9b2c2c;
+
+  /* Dark surfaces */
+  --np-surface: #0a0e1a;
+  --np-surface-variant: #1a1f2e;
+  --np-surface-hover: #2d3447;
+
+  /* Bright text */
+  --np-on-surface: #ffffff;
+  --np-on-surface-variant: #a0aec0;
+  --np-on-primary: #ffffff;
+
+  /* Accent colors */
+  --np-accent: #00d4ff;
+  --np-accent-hover: #0bc5ea;
+  --np-secondary: #4fd1c7;
+
+  /* Status colors */
+  --np-error: #ff6b6b;
+  --np-error-hover: #ee5a52;
+  --np-success: #06ffa5;
+  --np-success-hover: #38d9a9;
+  --np-warning: #ffd93d;
+
+  /* Borders */
+  --np-border: #2d3447;
+  --np-border-variant: #4a5568;
+
+  /* Glows and effects */
+  --np-glow-primary: 0 0 20px rgba(229, 62, 62, 0.3);
+  --np-glow-accent: 0 0 20px rgba(0, 212, 255, 0.3);
+  --np-glow-success: 0 0 20px rgba(6, 255, 165, 0.3);
+
+  /* Enhanced shadows */
+  --np-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --np-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --np-shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+  --np-shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.6);
+
+  /* Gradients */
+  --np-gradient-primary: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+  --np-gradient-surface: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+  --np-gradient-accent: linear-gradient(135deg, #00d4ff 0%, #4fd1c7 100%);
+}
+
+/* Apply gaming theme styles */
+.caos-theme .np-modal {
+  background: var(--np-gradient-surface);
+  border: 1px solid var(--np-border);
+  box-shadow: var(--np-shadow-xl), var(--np-glow-primary);
+}
+
+.caos-theme .np-button--primary {
+  background: var(--np-gradient-primary);
+  box-shadow: var(--np-glow-primary);
+  transition: all 0.3s ease;
+}
+
+.caos-theme .np-button--primary:hover {
+  box-shadow: var(--np-glow-primary), 0 0 30px rgba(229, 62, 62, 0.5);
+  transform: translateY(-1px);
+}
+
+.caos-theme .np-input {
+  background: rgba(26, 31, 46, 0.8);
+  border: 1px solid var(--np-border);
+  color: var(--np-on-surface);
+  transition: all 0.3s ease;
+}
+
+.caos-theme .np-input:focus {
+  border-color: var(--np-accent);
+  box-shadow: var(--np-glow-accent);
+}
+```
+
+### Financial/Corporate Theme
+```css
+:root {
+  /* Professional blue palette */
+  --np-primary: #1e40af;
+  --np-primary-hover: #1d4ed8;
+  --np-primary-active: #1e3a8a;
+
+  /* Clean surfaces */
+  --np-surface: #ffffff;
+  --np-surface-variant: #f8fafc;
+  --np-surface-hover: #f1f5f9;
+
+  /* Professional text */
+  --np-on-surface: #0f172a;
+  --np-on-surface-variant: #475569;
+
+  /* Corporate accent */
+  --np-accent: #0ea5e9;
+  --np-secondary: #059669;
+
+  /* Subtle borders */
+  --np-border: #e2e8f0;
+  --np-border-variant: #cbd5e1;
+
+  /* Professional shadows */
+  --np-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --np-shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+```
+
+### Crypto/DeFi Theme
+```css
+:root {
+  /* Crypto gradient colors */
+  --np-primary: #8b5cf6;
+  --np-primary-hover: #7c3aed;
+  --np-primary-active: #6d28d9;
+
+  /* Dark crypto aesthetic */
+  --np-surface: #0c0a0e;
+  --np-surface-variant: #1a1625;
+  --np-surface-hover: #2d2438;
+
+  /* Bright crypto text */
+  --np-on-surface: #fafafa;
+  --np-on-surface-variant: #a8a29e;
+
+  /* DeFi accents */
+  --np-accent: #06ffa5;
+  --np-secondary: #fbbf24;
+
+  /* Neon effects */
+  --np-glow-primary: 0 0 20px rgba(139, 92, 246, 0.4);
+  --np-glow-accent: 0 0 20px rgba(6, 255, 165, 0.4);
+
+  /* Crypto gradients */
+  --np-gradient-primary: linear-gradient(135deg, #8b5cf6 0%, #06ffa5 100%);
+  --np-gradient-surface: linear-gradient(135deg, #0c0a0e 0%, #1a1625 100%);
+}
+```
+
+## Component-Specific Customization
+
+### Modal Styling
+```css
+/* Modal backdrop */
+.np-modal-overlay {
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+}
+
+/* Modal container */
+.np-modal {
+  background: var(--np-surface);
+  border: 1px solid var(--np-border);
+  border-radius: var(--np-radius-lg);
+  box-shadow: var(--np-shadow-xl);
+}
+
+/* Modal header */
+.np-modal__header {
+  border-bottom: 1px solid var(--np-border);
+  padding: var(--np-spacing-lg);
+}
+```
+
+### Button Customization
+```css
+/* Primary button */
+.np-button--primary {
+  background: var(--np-primary);
+  color: var(--np-on-primary);
+  border: none;
+  border-radius: var(--np-radius);
+  padding: var(--np-spacing-sm) var(--np-spacing-lg);
+  font-weight: var(--np-font-weight-medium);
+  transition: all 0.2s ease;
+}
+
+.np-button--primary:hover {
+  background: var(--np-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--np-shadow-lg);
+}
+
+/* Loading state */
+.np-button--loading {
+  position: relative;
+  color: transparent;
+}
+
+.np-button--loading::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+```
+
+### Input Field Styling
+```css
+.np-input {
+  background: var(--np-surface);
+  border: 1px solid var(--np-border);
+  border-radius: var(--np-radius);
+  padding: var(--np-spacing-sm) var(--np-spacing-md);
+  font-size: var(--np-font-size-base);
+  color: var(--np-on-surface);
+  transition: all 0.2s ease;
+}
+
+.np-input:focus {
+  outline: none;
+  border-color: var(--np-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.np-input--error {
+  border-color: var(--np-error);
+}
+```
+
+## Animation Variables
+
+```css
+:root {
+  /* Transition durations */
+  --np-transition-fast: 0.15s;
+  --np-transition-base: 0.2s;
+  --np-transition-slow: 0.3s;
+
+  /* Easing functions */
+  --np-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --np-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --np-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Apply to components */
+.np-button,
+.np-input,
+.np-modal {
+  transition-duration: var(--np-transition-base);
+  transition-timing-function: var(--np-ease-out);
+}
+```
+
+## Usage Example
+
+**Important**: Always import the base styles first, then your custom overrides:
+
+```tsx
+import { NowPaymentsProvider, DepositModal } from '@taloon/nowpayments-components'
+import '@taloon/nowpayments-components/styles'  // ← Base styles first
+import './my-custom-theme.css'                   // ← Your overrides second
+
+function App() {
+  return (
+    <div className="caos-theme"> {/* Apply scoped theme */}
+      <NowPaymentsProvider apiKey="your-api-key">
+        <DepositModal {...props} />
+      </NowPaymentsProvider>
+    </div>
+  )
+}
+```
+
+### CSS Import Order Matters
+
+```tsx
+// ✅ Correct order
+import '@taloon/nowpayments-components/styles'  // Base styles
+import './my-theme-variables.css'              // Custom variables
+import './my-component-overrides.css'          // Specific overrides
+
+// ❌ Wrong order - your styles may be overridden
+import './my-custom-styles.css'
+import '@taloon/nowpayments-components/styles' // This will override your styles
+```

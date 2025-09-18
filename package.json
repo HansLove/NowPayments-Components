@@ -1,6 +1,6 @@
 {
   "name": "@taloon/nowpayments-components",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "React components for cryptocurrency payments and withdrawals using NOWPayments API",
   "type": "module",
   "main": "./dist/index.js",
@@ -11,7 +11,7 @@
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
-    "./styles": "./dist/styles/index.css"
+    "./styles": "./dist/index.css"
   },
   "files": [
     "dist",

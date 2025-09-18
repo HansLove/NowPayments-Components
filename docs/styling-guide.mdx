@@ -1,0 +1,244 @@
+# Styling Guide
+
+How to properly import and customize NOWPayments component styles.
+
+## ⚠️ Important: Manual Style Import Required
+
+NOWPayments components **do not** include styles automatically. You must import them manually:
+
+```tsx
+import '@taloon/nowpayments-components/styles'
+```
+
+## Basic Setup
+
+### 1. Import Order Matters
+
+Always import the base styles **before** your custom overrides:
+
+```tsx
+// ✅ Correct order
+import '@taloon/nowpayments-components/styles'  // Base styles first
+import './my-custom-theme.css'                  // Your overrides second
+
+// ❌ Wrong order - library styles will override yours
+import './my-custom-theme.css'
+import '@taloon/nowpayments-components/styles'  // This overrides your styles
+```
+
+### 2. Component Usage
+
+```tsx
+import { DepositModal, NowPaymentsProvider } from '@taloon/nowpayments-components'
+import '@taloon/nowpayments-components/styles'
+
+function App() {
+  return (
+    <NowPaymentsProvider apiKey="your-api-key">
+      <DepositModal {...props} />
+    </NowPaymentsProvider>
+  )
+}
+```
+
+## Integration Patterns
+
+### Next.js App Router
+
+```tsx
+// app/layout.tsx
+import '@taloon/nowpayments-components/styles'
+import './globals.css'  // Your global styles after
+
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>{children}</body>
+    </html>
+  )
+}
+```
+
+### Next.js Pages Router
+
+```tsx
+// pages/_app.tsx
+import '@taloon/nowpayments-components/styles'
+import '../styles/globals.css'
+
+export default function App({ Component, pageProps }) {
+  return <Component {...pageProps} />
+}
+```
+
+### Vite/Create React App
+
+```tsx
+// main.tsx or index.tsx
+import '@taloon/nowpayments-components/styles'
+import './index.css'
+
+import App from './App'
+ReactDOM.render(<App />, document.getElementById('root'))
+```
+
+## Customization Strategies
+
+### 1. CSS Variables Override
+
+Create a theme file that overrides CSS variables:
+
+```css
+/* theme.css */
+:root {
+  --np-primary: #your-brand-color;
+  --np-surface: #your-background;
+  --np-border: #your-border-color;
+}
+```
+
+```tsx
+// In your app
+import '@taloon/nowpayments-components/styles'
+import './theme.css'  // Your variable overrides
+```
+
+### 2. Scoped Theme Classes
+
+Apply themes to specific sections:
+
+```css
+/* gaming-theme.css */
+.gaming-theme {
+  --np-primary: #e53e3e;
+  --np-surface: #0a0e1a;
+  --np-accent: #00d4ff;
+  --np-glow-primary: 0 0 20px rgba(229, 62, 62, 0.3);
+}
+
+.gaming-theme .np-button--primary {
+  background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+  box-shadow: var(--np-glow-primary);
+}
+```
+
+```tsx
+import '@taloon/nowpayments-components/styles'
+import './gaming-theme.css'
+
+function GamingSection() {
+  return (
+    <div className="gaming-theme">
+      <DepositModal {...props} />
+    </div>
+  )
+}
+```
+
+### 3. Complete Style Replacement
+
+For complete control, you can skip the default styles and create your own:
+
+```tsx
+// Don't import default styles
+// import '@taloon/nowpayments-components/styles'  ← Skip this
+
+import './my-complete-nowpayments-styles.css'  // Your complete implementation
+
+function App() {
+  return <DepositModal {...props} />
+}
+```
+
+## CSS Class Reference
+
+The library uses these CSS classes that you can target:
+
+### Modal Components
+- `.np-modal` - Main modal container
+- `.np-modal-overlay` - Modal backdrop
+- `.np-modal__header` - Modal header
+- `.np-modal__content` - Modal content area
+
+### Buttons
+- `.np-button` - Base button class
+- `.np-button--primary` - Primary button variant
+- `.np-button--secondary` - Secondary button variant
+- `.np-button--loading` - Loading state
+
+### Forms
+- `.np-input` - Input field
+- `.np-input--error` - Error state
+- `.np-form-group` - Form group container
+
+### Continue Button
+- `.np-continue-btn` - Base continue button
+- `.np-continue-btn--small` - Small size
+- `.np-continue-btn--medium` - Medium size
+- `.np-continue-btn--large` - Large size
+- `.np-continue-btn--full-width` - Full width variant
+
+## Troubleshooting
+
+### Styles Not Applied
+
+**Problem**: Components appear unstyled
+**Solution**: Make sure you imported the styles:
+
+```tsx
+import '@taloon/nowpayments-components/styles'  // ← Add this line
+```
+
+### Styles Overridden
+
+**Problem**: Your custom styles don't work
+**Solution**: Check import order - library styles should come first:
+
+```tsx
+// ✅ Correct
+import '@taloon/nowpayments-components/styles'
+import './my-styles.css'
+
+// ❌ Wrong
+import './my-styles.css'
+import '@taloon/nowpayments-components/styles'
+```
+
+### CSS Variables Not Working
+
+**Problem**: CSS variables don't change appearance
+**Solution**: Make sure you're overriding them after the base import:
+
+```css
+/* After importing base styles */
+:root {
+  --np-primary: #your-color !important;  /* Use !important if needed */
+}
+```
+
+## Build Considerations
+
+### Bundle Size
+
+The CSS file is optimized and includes only the necessary styles. Size: ~15KB gzipped.
+
+### Tree Shaking
+
+The CSS is not tree-shakeable - it includes all component styles. For minimal bundles, consider creating your own styles.
+
+### Production Builds
+
+Make sure your build tool includes CSS from node_modules:
+
+```js
+// Vite example
+export default {
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@import "@taloon/nowpayments-components/styles";`
+      }
+    }
+  }
+}
+```

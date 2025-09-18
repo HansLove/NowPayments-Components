@@ -1,0 +1,193 @@
+# Getting Started with NOWPayments Components
+
+A React component library for cryptocurrency deposits and withdrawals using the NOWPayments API.
+
+## Installation
+
+```bash
+npm install @taloon/nowpayments-components
+```
+
+## Quick Setup
+
+### 1. Import Styles
+
+**Important**: Always import the styles manually - they are not included automatically:
+
+```tsx
+import '@taloon/nowpayments-components/styles'
+```
+
+### 2. Wrap Your App with Provider
+
+The simplest way to configure the library is using the `NowPaymentsProvider`:
+
+```tsx
+import { NowPaymentsProvider } from '@taloon/nowpayments-components'
+import '@taloon/nowpayments-components/styles'
+
+function App() {
+  return (
+    <NowPaymentsProvider apiKey="your-nowpayments-api-key">
+      <YourApp />
+    </NowPaymentsProvider>
+  )
+}
+```
+
+### 3. Alternative: Direct Store Configuration
+
+For more control, you can configure the API key directly:
+
+```tsx
+import { useEffect } from 'react'
+import { useNowPaymentsStore } from '@taloon/nowpayments-components'
+import '@taloon/nowpayments-components/styles'
+
+function App() {
+  const store = useNowPaymentsStore()
+
+  // Configure on app initialization
+  useEffect(() => {
+    store.setApiKey('your-nowpayments-api-key')
+  }, [])
+
+  return <YourApp />
+}
+```
+
+## Basic Usage
+
+### Adding a Deposit Modal
+
+```tsx
+import { useState } from 'react'
+import { DepositModal } from '@taloon/nowpayments-components'
+
+function PaymentPage() {
+  const [showDeposit, setShowDeposit] = useState(false)
+
+  const handleDepositSubmit = async (formData) => {
+    // Send to your backend
+    const response = await fetch('/api/deposits', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...formData,
+        userId: currentUser.id,
+      })
+    })
+    return response.json()
+  }
+
+  return (
+    <>
+      <button onClick={() => setShowDeposit(true)}>
+        Make Deposit
+      </button>
+
+      <DepositModal
+        isOpen={showDeposit}
+        onClose={() => setShowDeposit(false)}
+        customerEmail="user@example.com"
+        onSubmit={handleDepositSubmit}
+        onSuccess={(result) => {
+          console.log('Deposit created:', result)
+          setShowDeposit(false)
+        }}
+        onError={(error) => {
+          console.error('Deposit failed:', error)
+        }}
+      />
+    </>
+  )
+}
+```
+
+### Adding a Withdrawal Modal
+
+```tsx
+import { useState } from 'react'
+import { WithdrawModal } from '@taloon/nowpayments-components'
+
+function WithdrawPage() {
+  const [showWithdraw, setShowWithdraw] = useState(false)
+  const userBalance = 1000 // Your user's balance
+
+  const handleBalanceConversion = async (amount) => {
+    // Convert your balance to USDT for display
+    return amount * 0.95 // Example conversion rate
+  }
+
+  const handleWithdrawSubmit = async (formData) => {
+    // Process withdrawal with your backend
+    const response = await fetch('/api/withdrawals', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    })
+    return response.json()
+  }
+
+  return (
+    <>
+      <button onClick={() => setShowWithdraw(true)}>
+        Withdraw Funds
+      </button>
+
+      <WithdrawModal
+        isOpen={showWithdraw}
+        onClose={() => setShowWithdraw(false)}
+        availableBalance={userBalance}
+        balanceToUsdtConverter={handleBalanceConversion}
+        onSubmit={handleWithdrawSubmit}
+        onSuccess={(result) => {
+          console.log('Withdrawal processed:', result)
+          setShowWithdraw(false)
+        }}
+        onError={(error) => {
+          console.error('Withdrawal failed:', error)
+        }}
+      />
+    </>
+  )
+}
+```
+
+### Adding the Branded Button
+
+```tsx
+import { ContinueWithNowPayments } from '@taloon/nowpayments-components'
+
+function PaymentButton() {
+  return (
+    <ContinueWithNowPayments
+      onClick={() => console.log('Payment initiated')}
+      size="large"
+      fullWidth
+      variant="default"
+    />
+  )
+}
+```
+
+## Key Concepts
+
+### Frontend-Only Currency Display
+- The library fetches available currencies from NOWPayments for UI display only
+- Your backend handles all payment processing and webhooks
+
+### Fixed Form Schemas
+- `DepositFormData`: `{ selectedCurrency: string, amount: number, customerEmail?: string }`
+- `WithdrawFormData`: `{ currency: 'usdttrc20' | 'usdtmatic', amount: number, destinationAddress: string }`
+
+### Flexible Backend Integration
+- Your `onSubmit` functions receive fixed form data
+- Your backend can return any response schema
+- The `onSuccess` callback receives your backend's response
+
+## Next Steps
+
+- [Component Documentation](./components/) - Detailed props and usage
+- [Theming Guide](./theming/) - CSS customization examples
+- [Advanced Examples](./examples/) - Complex integration patterns
