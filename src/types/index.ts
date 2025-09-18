@@ -82,3 +82,12 @@ export interface ApiResponse<T> {
 }
 
 export type NetworkType = 'polygon' | 'tron'
+
+export interface ContinueWithNowPaymentsProps {
+  onClick?: () => void
+  disabled?: boolean
+  fullWidth?: boolean
+  size?: 'small' | 'medium' | 'large'
+  className?: string
+  variant?: 'default' | 'dark' | 'light'
+}

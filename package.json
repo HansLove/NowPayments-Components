@@ -19,10 +19,12 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
+    "build:lib": "vite build",
+    "build:storybook": "storybook build",
+    "build:all": "npm run build:lib && npm run build:storybook",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "type-check": "tsc --noEmit"
   },
@@ -42,9 +44,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/taloon/nowpayments-components.git"
+    "url": "https://github.com/HansLove/NowPayments-Components.git"
   },
-  "homepage": "https://github.com/taloon/nowpayments-components#readme",
+  "homepage": "https://github.com/HansLove/NowPayments-Components#readme",
+  "publishConfig": {
+    "access": "public"
+  },
   "peerDependencies": {
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0"

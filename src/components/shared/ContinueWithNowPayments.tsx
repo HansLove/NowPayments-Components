@@ -1,11 +1,4 @@
-export interface ContinueWithNowPaymentsProps {
-  onClick?: () => void
-  disabled?: boolean
-  fullWidth?: boolean
-  size?: 'small' | 'medium' | 'large'
-  className?: string
-  variant?: 'default' | 'dark' | 'light'
-}
+import type { ContinueWithNowPaymentsProps } from '@/types'
 
 export function ContinueWithNowPayments({
   onClick,
