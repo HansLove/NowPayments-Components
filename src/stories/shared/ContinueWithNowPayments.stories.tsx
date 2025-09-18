@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ContinueWithNowPayments } from '@/components/shared/ContinueWithNowPayments'
 
 const meta: Meta<typeof ContinueWithNowPayments> = {
-  title: 'NOWPayments/Components/ContinueWithNowPayments',
+  title: 'NOWPayments/Components/1ContinueWithNowPayments',
   component: ContinueWithNowPayments,
   parameters: {
     layout: 'centered',
