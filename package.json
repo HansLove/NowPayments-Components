@@ -26,7 +26,12 @@
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run type-check && npm run build",
+    "publish:patch": "npm run clean && npm run type-check && npm run build && npm version patch && npm publish",
+    "publish:minor": "npm run clean && npm run type-check && npm run build && npm version minor && npm publish",
+    "publish:major": "npm run clean && npm run type-check && npm run build && npm version major && npm publish"
   },
   "keywords": [
     "react",
