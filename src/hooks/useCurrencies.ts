@@ -1,6 +1,6 @@
 import { useEffect, useCallback } from 'react'
 import { NowPaymentsAPI } from '@/utils/api'
-import { useNowPaymentsStore } from '@/stores/nowPaymentsStore'
+import { useNowPayments } from '@/hooks/useNowPayments'
 import type { Currency } from '@/types'
 
 export function useCurrencies() {
@@ -13,7 +13,7 @@ export function useCurrencies() {
     setCurrencies,
     setEnabledCurrencies,
     setIsLoadingCurrencies,
-  } = useNowPaymentsStore()
+  } = useNowPayments()
 
   const loadCurrencies = useCallback(async () => {
     if (!apiKey) {

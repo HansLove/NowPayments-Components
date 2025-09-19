@@ -1,5 +1,6 @@
 import { useEffect, ReactNode } from 'react'
-import { useNowPaymentsStore } from '@/stores/nowPaymentsStore'
+import { NowPaymentsContextProvider } from './NowPaymentsContext'
+import { useNowPaymentsContext } from '@/hooks/useNowPaymentsContext'
 
 interface NowPaymentsProviderProps {
   children: ReactNode
@@ -7,23 +8,31 @@ interface NowPaymentsProviderProps {
 }
 
 /**
- * Provider component for NOWPayments API key configuration
- * Simply configures the API key in the global store
+ * Internal component to handle API key updates
  */
-export function NowPaymentsProvider({
-  children,
-  apiKey,
-}: NowPaymentsProviderProps) {
-  const { setApiKey } = useNowPaymentsStore()
+function ApiKeyUpdater({ apiKey }: { apiKey: string }) {
+  const { dispatch } = useNowPaymentsContext()
 
-  // Set API key when provider mounts or apiKey changes
   useEffect(() => {
     if (apiKey) {
-      setApiKey(apiKey)
+      dispatch({ type: 'SET_API_KEY', payload: apiKey })
     }
-  }, [apiKey, setApiKey])
+  }, [apiKey, dispatch])
 
-  return <>{children}</>
+  return null
+}
+
+/**
+ * Provider component for NOWPayments API key configuration
+ * Uses React Context instead of Zustand for better HMR compatibility
+ */
+export function NowPaymentsProvider({ children, apiKey }: NowPaymentsProviderProps) {
+  return (
+    <NowPaymentsContextProvider initialApiKey={apiKey}>
+      <ApiKeyUpdater apiKey={apiKey} />
+      {children}
+    </NowPaymentsContextProvider>
+  )
 }
 
 export type { NowPaymentsProviderProps }
