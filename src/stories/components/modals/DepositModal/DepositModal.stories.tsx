@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useEffect } from 'react'
 import { DepositModal } from '@/components/DepositModal'
-import { useNowPaymentsStore } from '@/stores/nowPaymentsStore'
+import { NowPaymentsProvider } from '@/providers/NowPaymentsProvider'
+import { useNowPaymentsStore } from '@/hooks/useNowPaymentsStore'
 import {
   mockCurrencies,
   mockEnabledCurrencies,
@@ -9,9 +10,16 @@ import {
   mockEmailProviders,
 } from './mocks'
 
+// Wrapper component that provides the context
+const DepositModalWithProvider = (props: any) => (
+  <NowPaymentsProvider apiKey="mock-storybook-api-key">
+    <DepositModal {...props} />
+  </NowPaymentsProvider>
+)
+
 const meta = {
   title: 'NOWPayments/Components/Modals/DepositModal',
-  component: DepositModal,
+  component: DepositModalWithProvider,
   parameters: {
     layout: 'centered',
     docs: {
@@ -75,15 +83,22 @@ The component fetches available currencies for display only. All payment process
   },
   decorators: [
     Story => {
+      const {
+        setCurrencies,
+        setEnabledCurrencies,
+        setApiKey,
+        setError,
+        setIsLoadingCurrencies
+      } = useNowPaymentsStore()
+
       // Setup mock store data for all stories
       useEffect(() => {
-        const store = useNowPaymentsStore.getState()
-        store.setCurrencies(mockCurrencies)
-        store.setEnabledCurrencies(mockEnabledCurrencies)
-        store.setApiKey('mock-api-key-for-storybook')
-        store.setError(null)
-        store.setIsLoadingCurrencies(false)
-      }, [])
+        setCurrencies(mockCurrencies)
+        setEnabledCurrencies(mockEnabledCurrencies)
+        setApiKey('mock-api-key-for-storybook')
+        setError(null)
+        setIsLoadingCurrencies(false)
+      }, [setCurrencies, setEnabledCurrencies, setApiKey, setError, setIsLoadingCurrencies])
 
       return <Story />
     },
@@ -148,13 +163,14 @@ export const LoadingCurrencies: Story = {
   },
   decorators: [
     Story => {
+      const { setCurrencies, setEnabledCurrencies, setIsLoadingCurrencies, setError } = useNowPaymentsStore()
+
       useEffect(() => {
-        const store = useNowPaymentsStore.getState()
-        store.setCurrencies([])
-        store.setEnabledCurrencies([])
-        store.setIsLoadingCurrencies(true)
-        store.setError(null)
-      }, [])
+        setCurrencies([])
+        setEnabledCurrencies([])
+        setIsLoadingCurrencies(true)
+        setError(null)
+      }, [setCurrencies, setEnabledCurrencies, setIsLoadingCurrencies, setError])
       return <Story />
     },
   ],
@@ -177,13 +193,14 @@ export const ErrorState: Story = {
   },
   decorators: [
     Story => {
+      const { setCurrencies, setEnabledCurrencies, setIsLoadingCurrencies, setError } = useNowPaymentsStore()
+
       useEffect(() => {
-        const store = useNowPaymentsStore.getState()
-        store.setCurrencies([])
-        store.setEnabledCurrencies([])
-        store.setIsLoadingCurrencies(false)
-        store.setError('Failed to load currencies. Please check your API key and try again.')
-      }, [])
+        setCurrencies([])
+        setEnabledCurrencies([])
+        setIsLoadingCurrencies(false)
+        setError('Failed to load currencies. Please check your API key and try again.')
+      }, [setCurrencies, setEnabledCurrencies, setIsLoadingCurrencies, setError])
       return <Story />
     },
   ],
@@ -206,17 +223,18 @@ export const LimitedCurrencies: Story = {
   },
   decorators: [
     Story => {
+      const { setCurrencies, setEnabledCurrencies, setError, setIsLoadingCurrencies } = useNowPaymentsStore()
+
       useEffect(() => {
-        const store = useNowPaymentsStore.getState()
         // Only show Bitcoin and Ethereum
         const limitedCurrencies = mockCurrencies.slice(0, 2)
         const limitedEnabled = ['bitcoin', 'ethereum']
 
-        store.setCurrencies(limitedCurrencies)
-        store.setEnabledCurrencies(limitedEnabled)
-        store.setError(null)
-        store.setIsLoadingCurrencies(false)
-      }, [])
+        setCurrencies(limitedCurrencies)
+        setEnabledCurrencies(limitedEnabled)
+        setError(null)
+        setIsLoadingCurrencies(false)
+      }, [setCurrencies, setEnabledCurrencies, setError, setIsLoadingCurrencies])
       return <Story />
     },
   ],

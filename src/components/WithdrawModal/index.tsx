@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import Modal from '../shared/Modal'
 import Input from '../shared/Input'
 import Button from '../shared/Button'
-import { useNowPaymentsStore } from '@/stores/nowPaymentsStore'
+import { useNowPaymentsStore } from '@/hooks/useNowPaymentsStore'
 import type { WithdrawModalProps, WithdrawFormData } from '@/types'
 
 // Network Icons

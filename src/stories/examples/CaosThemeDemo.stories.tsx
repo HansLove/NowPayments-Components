@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useEffect } from 'react'
 import { DepositModal } from '@/components/DepositModal'
 import { WithdrawModal } from '@/components/WithdrawModal'
-import { useNowPaymentsStore } from '@/stores/nowPaymentsStore'
+import { NowPaymentsProvider } from '@/providers/NowPaymentsProvider'
+import { useNowPaymentsStore } from '@/hooks/useNowPaymentsStore'
 import {
   mockCurrencies,
   mockEnabledCurrencies,
@@ -42,15 +43,22 @@ const ThemeShowcase = ({
   showDeposit: boolean
   showWithdraw: boolean
 }) => {
+  const {
+    setCurrencies,
+    setEnabledCurrencies,
+    setApiKey,
+    setError,
+    setIsLoadingCurrencies
+  } = useNowPaymentsStore()
+
   useEffect(() => {
     // Setup store
-    const store = useNowPaymentsStore.getState()
-    store.setCurrencies(mockCurrencies)
-    store.setEnabledCurrencies(mockEnabledCurrencies)
-    store.setApiKey('caos-engines-demo-key')
-    store.setError(null)
-    store.setIsLoadingCurrencies(false)
-  }, [])
+    setCurrencies(mockCurrencies)
+    setEnabledCurrencies(mockEnabledCurrencies)
+    setApiKey('caos-engines-demo-key')
+    setError(null)
+    setIsLoadingCurrencies(false)
+  }, [setCurrencies, setEnabledCurrencies, setApiKey, setError, setIsLoadingCurrencies])
 
   return (
     <>
@@ -155,9 +163,16 @@ const ThemeShowcase = ({
   )
 }
 
+// Wrapper component that provides the context
+const ThemeShowcaseWithProvider = (props: any) => (
+  <NowPaymentsProvider apiKey="caos-engines-demo-key">
+    <ThemeShowcase {...props} />
+  </NowPaymentsProvider>
+)
+
 const meta = {
   title: 'NOWPayments/Examples/Caos Engines Theme',
-  component: ThemeShowcase,
+  component: ThemeShowcaseWithProvider,
   parameters: {
     layout: 'fullscreen',
     docs: {

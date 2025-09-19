@@ -1,5 +1,6 @@
-import { useEffect, ReactNode } from 'react'
-import { useNowPaymentsStore } from '@/stores/nowPaymentsStore'
+import { useEffect, ReactNode, useState } from 'react'
+import { createNowPaymentsStore } from '@/stores/nowPaymentsStore'
+import { NowPaymentsStoreContext } from '@/hooks/useNowPaymentsStore'
 
 interface NowPaymentsProviderProps {
   children: ReactNode
@@ -8,22 +9,22 @@ interface NowPaymentsProviderProps {
 
 /**
  * Provider component for NOWPayments API key configuration
- * Simply configures the API key in the global store
+ * Creates and manages the store instance to avoid premature initialization
  */
-export function NowPaymentsProvider({
-  children,
-  apiKey,
-}: NowPaymentsProviderProps) {
-  const { setApiKey } = useNowPaymentsStore()
+export function NowPaymentsProvider({ children, apiKey }: NowPaymentsProviderProps) {
+  // Create store instance only once when component mounts
+  const [store] = useState(() => createNowPaymentsStore(apiKey))
 
-  // Set API key when provider mounts or apiKey changes
+  // Update API key when it changes
   useEffect(() => {
-    if (apiKey) {
-      setApiKey(apiKey)
+    if (apiKey && store) {
+      store.getState().setApiKey(apiKey)
     }
-  }, [apiKey, setApiKey])
+  }, [apiKey, store])
 
-  return <>{children}</>
+  return (
+    <NowPaymentsStoreContext.Provider value={store}>{children}</NowPaymentsStoreContext.Provider>
+  )
 }
 
 export type { NowPaymentsProviderProps }

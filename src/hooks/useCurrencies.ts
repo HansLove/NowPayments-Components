@@ -1,6 +1,6 @@
 import { useEffect, useCallback } from 'react'
 import { NowPaymentsAPI } from '@/utils/api'
-import { useNowPaymentsStore } from '@/stores/nowPaymentsStore'
+import { useNowPaymentsStore } from '@/hooks/useNowPaymentsStore'
 import type { Currency } from '@/types'
 
 export function useCurrencies() {

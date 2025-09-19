@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import type { Currency } from '../types'
 
-interface NowPaymentsState {
+export interface NowPaymentsState {
   // API Configuration
   apiKey: string | null
   setApiKey: (key: string) => void
@@ -21,22 +21,28 @@ interface NowPaymentsState {
   setError: (error: string | null) => void
 }
 
-export const useNowPaymentsStore = create<NowPaymentsState>((set) => ({
-  // API Configuration
-  apiKey: null,
-  setApiKey: (key: string) => set({ apiKey: key }),
+// Factory function to create store instance
+export function createNowPaymentsStore(initialApiKey?: string) {
+  return create<NowPaymentsState>((set) => ({
+    // API Configuration
+    apiKey: initialApiKey || null,
+    setApiKey: (key: string) => set({ apiKey: key }),
 
-  // Currencies
-  currencies: [],
-  enabledCurrencies: [],
-  setCurrencies: (currencies: Currency[]) => set({ currencies }),
-  setEnabledCurrencies: (enabled: string[]) => set({ enabledCurrencies: enabled }),
+    // Currencies
+    currencies: [],
+    enabledCurrencies: [],
+    setCurrencies: (currencies: Currency[]) => set({ currencies }),
+    setEnabledCurrencies: (enabled: string[]) => set({ enabledCurrencies: enabled }),
 
-  // Loading states
-  isLoadingCurrencies: false,
-  setIsLoadingCurrencies: (loading: boolean) => set({ isLoadingCurrencies: loading }),
+    // Loading states
+    isLoadingCurrencies: false,
+    setIsLoadingCurrencies: (loading: boolean) => set({ isLoadingCurrencies: loading }),
 
-  // Error handling
-  error: null,
-  setError: (error: string | null) => set({ error }),
-}))
+    // Error handling
+    error: null,
+    setError: (error: string | null) => set({ error }),
+  }))
+}
+
+// Type for the store instance
+export type NowPaymentsStore = ReturnType<typeof createNowPaymentsStore>

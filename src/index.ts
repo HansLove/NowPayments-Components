@@ -7,8 +7,7 @@ export { default as ContinueWithNowPayments } from './components/shared/Continue
 export { NowPaymentsProvider } from './providers/NowPaymentsProvider'
 
 // Hooks
-export { useNowPaymentsStore } from './stores/nowPaymentsStore'
-export { useNowPayments } from './hooks/useNowPayments'
+export { useNowPaymentsStore } from './hooks/useNowPaymentsStore'
 export { useCurrencies } from './hooks/useCurrencies'
 
 // Essential Types for Component Usage

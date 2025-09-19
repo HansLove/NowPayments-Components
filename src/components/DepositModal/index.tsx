@@ -7,7 +7,7 @@ import Input from '../shared/Input'
 import Button from '../shared/Button'
 import QRCode from '../shared/QRCode'
 import { Copy, ExternalLink } from 'lucide-react'
-import { useNowPaymentsStore } from '@/stores/nowPaymentsStore'
+import { useNowPaymentsStore } from '@/hooks/useNowPaymentsStore'
 import type { DepositModalProps, DepositFormData, Currency, StepperStep } from '@/types'
 
 // @ts-expect-error File exists
