@@ -1,6 +1,6 @@
 {
   "name": "@taloon/nowpayments-components",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "React components for cryptocurrency payments and withdrawals using NOWPayments API",
   "type": "module",
   "main": "./dist/index.js",
@@ -56,9 +56,9 @@
     "access": "public"
   },
   "peerDependencies": {
+    "framer-motion": ">=11.0.0",
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0",
-    "framer-motion": ">=11.0.0",
     "react-hook-form": ">=7.0.0"
   },
   "dependencies": {
@@ -71,6 +71,7 @@
     "@storybook/addon-docs": "^9.1.6",
     "@storybook/addon-onboarding": "^9.1.6",
     "@storybook/react-vite": "^9.1.6",
+    "@types/node": "^24.5.2",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@typescript-eslint/eslint-plugin": "^8.44.0",
