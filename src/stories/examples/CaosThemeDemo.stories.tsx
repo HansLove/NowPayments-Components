@@ -2,10 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useEffect } from 'react'
 import { DepositModal } from '@/components/DepositModal'
 import { WithdrawModal } from '@/components/WithdrawModal'
-import { useNowPaymentsStore } from '@/stores/nowPaymentsStore'
 import {
-  mockCurrencies,
-  mockEnabledCurrencies,
   createDepositActions,
   mockEmailProviders,
 } from '../components/modals/DepositModal/mocks'
@@ -42,16 +39,6 @@ const ThemeShowcase = ({
   showDeposit: boolean
   showWithdraw: boolean
 }) => {
-  useEffect(() => {
-    // Setup store
-    const store = useNowPaymentsStore.getState()
-    store.setCurrencies(mockCurrencies)
-    store.setEnabledCurrencies(mockEnabledCurrencies)
-    store.setApiKey('caos-engines-demo-key')
-    store.setError(null)
-    store.setIsLoadingCurrencies(false)
-  }, [])
-
   return (
     <>
       <CaosThemeLoader />

@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import Modal from '../shared/Modal'
 import Input from '../shared/Input'
 import Button from '../shared/Button'
-import { useNowPaymentsStore } from '@/stores/nowPaymentsStore'
+import { useNowPayments } from '@/hooks/useNowPayments'
 import type { WithdrawModalProps, WithdrawFormData } from '@/types'
 
 // Network Icons
@@ -39,7 +39,7 @@ export function WithdrawModal({
   onSuccess,
   onError,
 }: WithdrawModalProps) {
-  const { error: storeError } = useNowPaymentsStore()
+  const { error } = useNowPayments()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [usdtAmount, setUsdtAmount] = useState<number | null>(null)
   const [isConverting, setIsConverting] = useState(false)
@@ -137,9 +137,9 @@ export function WithdrawModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Withdraw Funds">
       <div className="nowpayments-modal">
-        {storeError && (
+        {error && (
           <div className="nowpayments-error" style={{ marginBottom: 'var(--nowpayments-spacing-lg)' }}>
-            {storeError}
+            {error}
           </div>
         )}
 

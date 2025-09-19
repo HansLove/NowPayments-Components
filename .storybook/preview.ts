@@ -4,6 +4,9 @@ import React from 'react'
 // Import component styles
 import '../src/styles/index.css'
 
+// Import NOWPayments Provider for global context
+import { NowPaymentsProvider } from '../src/providers/NowPaymentsProvider'
+
 const preview: Preview = {
   parameters: {
     // Controls configuration
@@ -78,11 +81,24 @@ const preview: Preview = {
   },
   // Global decorators
   decorators: [
-    (Story: any) => React.createElement(
-      'div',
-      { style: { fontFamily: 'system-ui, sans-serif' } },
-      React.createElement(Story)
-    ),
+    (Story: any) => {
+      const apiKey = import.meta.env.VITE_STORYBOOK_NOWPAYMENTS_API_KEY
+
+      if (!apiKey) {
+        console.error('VITE_STORYBOOK_NOWPAYMENTS_API_KEY is required for Storybook. Please add it to your .env file.')
+        throw new Error('Missing NOWPayments API key for Storybook')
+      }
+
+      return React.createElement(
+        NowPaymentsProvider,
+        { apiKey: apiKey || '', children: React.createElement(Story) },
+        React.createElement(
+          'div',
+          { style: { fontFamily: 'system-ui, sans-serif' } },
+          React.createElement(Story)
+        )
+      )
+    },
   ],
 };
 

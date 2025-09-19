@@ -1,3 +1,5 @@
+import type { WithdrawFormData } from '@/types'
+
 // Mock withdraw API response
 export const mockWithdrawResponse = {
   success: true,
@@ -25,7 +27,7 @@ export const mockBalanceToUsdtConverter = async (amount: number): Promise<number
 
 // Withdraw-specific action creators
 export const createWithdrawActions = () => ({
-  onSubmit: async (formData: any) => {
+  onSubmit: async (formData: WithdrawFormData) => {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 2000))
 
@@ -39,6 +41,7 @@ export const createWithdrawActions = () => ({
     }
   },
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Mock can receive any response structure
   onSuccess: (response: any) => {
     console.log('Withdraw success callback:', response)
     alert(`Withdrawal successful! Transaction ID: ${response.data.transactionId}`)

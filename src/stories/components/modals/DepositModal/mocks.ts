@@ -1,4 +1,4 @@
-import type { Currency } from '@/types'
+import type { Currency, DepositFormData } from '@/types'
 
 // Mock currencies for deposit stories
 export const mockCurrencies: Currency[] = [
@@ -173,7 +173,7 @@ export const mockEmailProviders = {
 
 // Deposit-specific action creators
 export const createDepositActions = () => ({
-  onSubmit: async (formData: any) => {
+  onSubmit: async (formData: DepositFormData) => {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 2000))
 
@@ -187,6 +187,7 @@ export const createDepositActions = () => ({
     }
   },
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Mock can receive any response structure
   onSuccess: (response: any) => {
     console.log('Deposit success callback:', response)
     alert(`Deposit successful! Payment ID: ${response.data.paymentId}`)

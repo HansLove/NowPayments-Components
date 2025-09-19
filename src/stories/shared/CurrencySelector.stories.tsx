@@ -1,83 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { useEffect } from 'react'
 
 // Simple mock function for actions
 const mockFn = () => {}
 import { CurrencySelector } from '@/components/shared/CurrencySelector'
-import { useNowPaymentsStore } from '@/stores/nowPaymentsStore'
 import type { Currency } from '@/types'
 
-// Mock currencies for stories
-const mockCurrencies: Currency[] = [
-  {
-    id: 1,
-    cg_id: 'bitcoin',
-    code: 'btc',
-    name: 'Bitcoin',
-    enable: true,
-    wallet_regex: '^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$',
-    priority: 1,
-    extra_id_exists: false,
-    extra_id_regex: null,
-    logo_url: '/images/coins/bitcoin.svg',
-    track: true,
-    is_maxlimit: false,
-    network: 'btc',
-    smart_contract: null,
-    network_precision: 8,
-  },
-  {
-    id: 2,
-    cg_id: 'ethereum',
-    code: 'eth',
-    name: 'Ethereum',
-    enable: true,
-    wallet_regex: '^0x[a-fA-F0-9]{40}$',
-    priority: 2,
-    extra_id_exists: false,
-    extra_id_regex: null,
-    logo_url: '/images/coins/ethereum.svg',
-    track: true,
-    is_maxlimit: false,
-    network: 'eth',
-    smart_contract: null,
-    network_precision: 18,
-  },
-  {
-    id: 3,
-    cg_id: 'litecoin',
-    code: 'ltc',
-    name: 'Litecoin',
-    enable: true,
-    wallet_regex: '^[LM3][a-km-zA-HJ-NP-Z1-9]{26,33}$',
-    priority: 3,
-    extra_id_exists: false,
-    extra_id_regex: null,
-    logo_url: '/images/coins/litecoin.svg',
-    track: true,
-    is_maxlimit: false,
-    network: 'ltc',
-    smart_contract: null,
-    network_precision: 8,
-  },
-  {
-    id: 4,
-    cg_id: 'cardano',
-    code: 'ada',
-    name: 'Cardano',
-    enable: true,
-    wallet_regex: '^addr1[a-z0-9]+$',
-    priority: 4,
-    extra_id_exists: false,
-    extra_id_regex: null,
-    logo_url: '/images/coins/cardano.svg',
-    track: true,
-    is_maxlimit: false,
-    network: 'ada',
-    smart_contract: null,
-    network_precision: 6,
-  },
-]
 
 const meta: Meta<typeof CurrencySelector> = {
   title: 'NOWPayments/Shared Components/CurrencySelector',
@@ -108,9 +35,8 @@ The CurrencySelector component is used in deposit and withdrawal flows to let us
   },
   argTypes: {
     selectedCurrency: {
-      control: 'select',
-      options: ['', 'bitcoin', 'ethereum', 'litecoin'],
-      description: 'Currently selected currency ID',
+      control: 'text',
+      description: 'Currently selected currency ID (use currency cg_id from API)',
       table: {
         type: { summary: 'string' },
       },
@@ -147,21 +73,6 @@ The CurrencySelector component is used in deposit and withdrawal flows to let us
   args: {
     onSelect: mockFn,
   },
-  decorators: [
-    Story => {
-      // Setup mock store data for all stories
-      useEffect(() => {
-        const store = useNowPaymentsStore.getState()
-        store.setCurrencies(mockCurrencies)
-        store.setEnabledCurrencies(mockCurrencies.map(c => c.cg_id))
-        store.setApiKey('mock-api-key-for-storybook')
-        store.setError(null)
-        store.setIsLoadingCurrencies(false)
-      }, [])
-
-      return <Story />
-    },
-  ],
 }
 
 export default meta
@@ -184,7 +95,7 @@ export const WithSelection: Story = {
     docs: {
       description: {
         story:
-          'Currency selector with Bitcoin pre-selected. The selected currency is displayed with its logo and name.',
+          'Currency selector with a currency pre-selected. The selected currency is displayed with its logo and name. Use actual currency cg_id values from your API.',
       },
     },
   },
@@ -243,7 +154,7 @@ export const DisabledWithSelection: Story = {
     docs: {
       description: {
         story:
-          'Disabled currency selector with a pre-selected currency. Shows the selection but prevents changes.',
+          'Disabled currency selector with a pre-selected currency. Shows the selection but prevents changes. Use valid currency cg_id from API.',
       },
     },
   },
@@ -254,23 +165,11 @@ export const LoadingState: Story = {
   args: {
     label: 'Currency',
   },
-  decorators: [
-    Story => {
-      useEffect(() => {
-        const store = useNowPaymentsStore.getState()
-        store.setCurrencies([])
-        store.setEnabledCurrencies([])
-        store.setIsLoadingCurrencies(true)
-        store.setError(null)
-      }, [])
-      return <Story />
-    },
-  ],
   parameters: {
     docs: {
       description: {
         story:
-          'Currency selector in loading state while currencies are being fetched from the API.',
+          'Currency selector behavior during loading state. The actual loading is managed by the NOWPayments Provider when fetching from the API.',
       },
     },
   },
@@ -281,22 +180,10 @@ export const ErrorState: Story = {
   args: {
     label: 'Currency',
   },
-  decorators: [
-    Story => {
-      useEffect(() => {
-        const store = useNowPaymentsStore.getState()
-        store.setCurrencies([])
-        store.setEnabledCurrencies([])
-        store.setIsLoadingCurrencies(false)
-        store.setError('Failed to load currencies')
-      }, [])
-      return <Story />
-    },
-  ],
   parameters: {
     docs: {
       description: {
-        story: 'Currency selector when no currencies are available, showing an error message.',
+        story: 'Currency selector behavior when API errors occur. Error handling is managed by the Provider based on real API responses.',
       },
     },
   },
@@ -306,27 +193,13 @@ export const ErrorState: Story = {
 export const LimitedCurrencies: Story = {
   args: {
     label: 'Available Currencies',
-    placeholder: 'Select from limited options...',
+    placeholder: 'Select from available options...',
   },
-  decorators: [
-    Story => {
-      useEffect(() => {
-        const store = useNowPaymentsStore.getState()
-        // Only show Bitcoin and Ethereum
-        const limitedCurrencies = mockCurrencies.slice(0, 2)
-        store.setCurrencies(limitedCurrencies)
-        store.setEnabledCurrencies(limitedCurrencies.map(c => c.cg_id))
-        store.setError(null)
-        store.setIsLoadingCurrencies(false)
-      }, [])
-      return <Story />
-    },
-  ],
   parameters: {
     docs: {
       description: {
         story:
-          'Currency selector with limited currency options. Useful for testing scenarios with fewer choices.',
+          'Currency selector showing available currencies from your NOWPayments API configuration. Currencies depend on your account settings.',
       },
     },
   },
@@ -395,7 +268,7 @@ export const SelectionShowcase: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Showcase of different selection states with various currencies selected.',
+        story: 'Showcase of different selection states. Uses real currency data from the NOWPayments API.',
       },
     },
   },

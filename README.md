@@ -30,7 +30,7 @@ npm install @taloon/nowpayments-components
 
 ## Quick Start
 
-### 1. Setup with Provider (Recommended)
+### 1. Setup with Provider
 
 ```tsx
 import { NowPaymentsProvider } from '@taloon/nowpayments-components'
@@ -42,23 +42,6 @@ function App() {
       <YourApp />
     </NowPaymentsProvider>
   )
-}
-```
-
-**Alternative: Direct Store Setup**
-```tsx
-import { useNowPaymentsStore } from '@taloon/nowpayments-components'
-import '@taloon/nowpayments-components/styles'
-
-function App() {
-  const store = useNowPaymentsStore()
-
-  // Initialize with your NOWPayments API key (for currency fetching only)
-  useEffect(() => {
-    store.setApiKey('your-nowpayments-api-key')
-  }, [])
-
-  return <YourApp />
 }
 ```
 

@@ -7,7 +7,7 @@ import Input from '../shared/Input'
 import Button from '../shared/Button'
 import QRCode from '../shared/QRCode'
 import { Copy, ExternalLink } from 'lucide-react'
-import { useNowPaymentsStore } from '@/stores/nowPaymentsStore'
+import { useNowPayments } from '@/hooks/useNowPayments'
 import type { DepositModalProps, DepositFormData, Currency, StepperStep } from '@/types'
 
 // @ts-expect-error File exists
@@ -29,7 +29,7 @@ export function DepositModal({
   enableEmail = false,
   shouldNotifyByEmail = false,
 }: DepositModalProps) {
-  const { error: storeError } = useNowPaymentsStore()
+  const { error } = useNowPayments()
   const [currentStep, setCurrentStep] = useState(1)
   const [selectedCurrency, setSelectedCurrency] = useState<Currency | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -101,6 +101,7 @@ export function DepositModal({
 
       // Extract payment details from result for QR display
       if (result && typeof result === 'object') {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Backend response structure is unknown and flexible
         const details = result as any
         setPaymentDetails({
           address: details.depositAddress || details.address || 'No address provided',
@@ -303,12 +304,12 @@ export function DepositModal({
       <div className="nowpayments-modal">
         <Stepper steps={steps} />
 
-        {storeError && (
+        {error && (
           <div
             className="nowpayments-error"
             style={{ marginBottom: 'var(--nowpayments-spacing-lg)' }}
           >
-            {storeError}
+            {error}
           </div>
         )}
 
