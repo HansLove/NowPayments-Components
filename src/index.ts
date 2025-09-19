@@ -1,3 +1,6 @@
+// Styles - Include in bundle
+import './styles/index.css'
+
 // Main Components - Public API
 export { default as DepositModal } from './components/DepositModal'
 export { default as WithdrawModal } from './components/WithdrawModal'
@@ -22,5 +25,3 @@ export type {
   NowPaymentsProviderProps,
 } from './types'
 
-// Styles are exported separately - import manually:
-// import '@taloon/nowpayments-components/styles'

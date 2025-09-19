@@ -26,8 +26,13 @@ export default defineConfig({
           react: 'React',
           'react-dom': 'ReactDOM',
         },
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.names?.[0] === 'style.css') return 'index.css'
+          return assetInfo.names?.[0] || 'asset'
+        },
       },
     },
+    cssCodeSplit: false,
   },
   resolve: {
     alias: {

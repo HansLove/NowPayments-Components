@@ -34,7 +34,6 @@ npm install @taloon/nowpayments-components
 
 ```tsx
 import { NowPaymentsProvider } from '@taloon/nowpayments-components'
-import '@taloon/nowpayments-components/styles'
 
 function App() {
   return (
@@ -48,7 +47,6 @@ function App() {
 **Alternative: Direct Store Setup**
 ```tsx
 import { useNowPaymentsStore } from '@taloon/nowpayments-components'
-import '@taloon/nowpayments-components/styles'
 
 function App() {
   const store = useNowPaymentsStore()
@@ -62,7 +60,7 @@ function App() {
 }
 ```
 
-**Important**: Always import the styles manually using `import '@taloon/nowpayments-components/styles'`
+**Note**: Styles are automatically included when you import components from the library.
 
 ### 2. Add Deposit Modal
 
