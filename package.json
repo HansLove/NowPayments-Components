@@ -65,7 +65,7 @@
     "lucide-react": "^0.544.0",
     "qrcode.react": "^4.2.0",
     "react-hook-form": "^7.53.2",
-    "zustand": "^5.0.8"
+    "zustand": "^4.5.7"
   },
   "devDependencies": {
     "@storybook/addon-docs": "^9.1.6",
