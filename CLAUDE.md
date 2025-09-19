@@ -2,15 +2,17 @@
 
 React component library for cryptocurrency payments with NOWPayments API integration. This document provides technical documentation for development and maintenance.
 
-See [README.md](./README.md) for business context and usage examples.
+See @README.md for business context and usage examples.
 
 ## Quick Reference
 
-- **README.md**: [link](./README.md) - Business context and user documentation
+- **@README.md**: Business context and user documentation
 - **Build**: `npm run build` - Builds the library using Vite
 - **Test**: `npm run lint && npm run type-check` - Runs linting and type checking
 - **Dev**: `npm run storybook` - Starts Storybook on port 6006
 - **CSS Guide**: [CSS_THEMING.md](./CSS_THEMING.md) - Complete theming guide
+- **CSS Prefix**: `nowpayments-` (for clarity and namespace isolation)
+- **State Management**: Zustand v4.5.7 (stable production version)
 
 ## Code Standards
 
@@ -41,9 +43,9 @@ src/
 - **Variables**: descriptive `camelCase`
 
 **CSS and Classes:**
-- **BEM methodology**: `.np-modal__header`, `.np-button--primary`
-- **CSS Variables**: `--np-primary`, `--np-surface`
-- **Consistent prefix**: `np-` to avoid collisions
+- **BEM methodology**: `.nowpayments-modal__header`, `.nowpayments-button--primary`
+- **CSS Variables**: `--nowpayments-primary`, `--nowpayments-surface`
+- **Consistent prefix**: `nowpayments-` for clarity and namespace isolation
 
 ### Common Patterns
 
@@ -84,7 +86,7 @@ export function ComponentName({
 
   // 6. Render
   return (
-    <div className="np-component">
+    <div className="nowpayments-component">
       {/* JSX content */}
     </div>
   )
@@ -160,7 +162,142 @@ setCurrencies(prev => [...prev, newCurrency])
 **✅ CSS variables and classes:**
 ```tsx
 // Correct
-<div className="np-component__header">
+<div className="nowpayments-component__header">
+```
+
+### Established Project Patterns
+
+**Import Organization (Consistent Order):**
+```tsx
+// ✅ Standard import structure observed in all components
+import { useState, useEffect } from 'react'        // 1. React hooks
+import { useForm } from 'react-hook-form'           // 2. Third-party hooks
+import Modal from '../shared/Modal'                 // 3. Local components
+import { Copy, ExternalLink } from 'lucide-react'   // 4. Icons
+import { useNowPaymentsStore } from '@/stores'      // 5. Store hooks
+import type { ComponentProps } from '@/types'       // 6. Type imports
+```
+
+**Asset Handling Pattern:**
+```tsx
+// ✅ Consistent asset import with TypeScript workaround
+// @ts-expect-error File exists
+import NowPaymentsLogo from '@/assets/nowpayments-logo.png'
+```
+
+**Inline Styles for CSS Variables:**
+```tsx
+// ✅ Acceptable pattern for dynamic CSS variable usage
+<div style={{
+  marginBottom: 'var(--nowpayments-spacing-lg)',
+  fontSize: 'var(--nowpayments-font-size-sm)'
+}}>
+```
+
+**Modal State Management Pattern:**
+```tsx
+// ✅ Standard modal state structure
+const [currentStep, setCurrentStep] = useState(1)
+const [isSubmitting, setIsSubmitting] = useState(false)
+const [steps, setSteps] = useState(INITIAL_STEPS)
+const [modalData, setModalData] = useState<DataType | null>(null)
+```
+
+**Form Integration Pattern:**
+```tsx
+// ✅ React Hook Form integration standard
+const { register, handleSubmit, watch, formState: { errors }, reset } = useForm<FormType>()
+
+// ✅ Error handling in forms
+{errors.fieldName?.message && (
+  <div className="nowpayments-error">{errors.fieldName.message}</div>
+)}
+```
+
+**Event Handler Naming:**
+```tsx
+// ✅ Consistent event handler patterns
+const handleSubmit = async () => { /* form submission */ }
+const handleClose = () => { /* modal closure */ }
+const handleSelect = (item: Type) => { /* selection */ }
+const handleCopy = async () => { /* copy to clipboard */ }
+```
+
+**Props Destructuring Pattern:**
+```tsx
+// ✅ Props with defaults and clear separation
+export function Component({
+  isOpen,
+  onClose,
+  customerEmail,
+  onSubmit,
+  onSuccess,
+  onError,
+  enableEmail = false,        // Defaults grouped together
+  shouldNotifyByEmail = false,
+}: ComponentProps) {
+```
+
+**Constants Definition:**
+```tsx
+// ✅ Component-level constants in UPPER_CASE
+const STEPS: StepperStep[] = [
+  { id: 1, title: 'Select Currency', completed: false, active: true },
+  // ...
+]
+```
+
+**Error Boundary Pattern:**
+```tsx
+// ✅ Consistent error handling with user-friendly messages
+const errorMessage = error instanceof Error
+  ? error.message
+  : 'An unexpected error occurred'
+setError(errorMessage)
+onError?.(new Error(errorMessage))
+```
+
+**Loading State Management:**
+```tsx
+// ✅ Standard loading states across components
+const [isLoading, setIsLoading] = useState(false)
+
+// Usage in async operations
+setIsLoading(true)
+try {
+  const result = await operation()
+  onSuccess?.(result)
+} finally {
+  setIsLoading(false)
+}
+```
+
+**Conditional Rendering Patterns:**
+```tsx
+// ✅ Guard clauses for early returns
+if (!isOpen) return null
+
+// ✅ Conditional content with logical AND
+{error && (
+  <div className="nowpayments-error">{error}</div>
+)}
+
+// ✅ Logical AND to render multiple cases
+{isLoading && <LoadingSpinner /> }
+{!isLoading && <Content />}
+```
+
+**TypeScript Interface Naming:**
+```tsx
+// ✅ Props interfaces follow ComponentNameProps pattern
+interface DepositModalProps { /* ... */ }
+interface WithdrawModalProps { /* ... */ }
+interface CurrencySelectoryProps { /* ... */ }
+
+// ✅ Data interfaces describe content
+interface DepositFormData { /* ... */ }
+interface Currency { /* ... */ }
+interface StepperStep { /* ... */ }
 ```
 
 ## Architecture
@@ -197,7 +334,9 @@ setCurrencies(prev => [...prev, newCurrency])
 └─────────────────────────────────────┘
 ```
 
-### State Management (Zustand)
+### State Management (Zustand v4)
+
+**Version**: Uses Zustand v4.5.7 for maximum stability and reliability.
 
 ```typescript
 interface NowPaymentsState {
@@ -221,6 +360,8 @@ interface NowPaymentsState {
   setError: (error: string | null) => void
 }
 ```
+
+**Why Zustand v4**: Chosen over v5 to avoid development mode issues and ensure production stability.
 
 ### Type System
 
@@ -266,6 +407,16 @@ npm run type-check      # TypeScript compiler sin emit
 
 # Preview
 npm run preview         # Preview del build de Vite
+```
+
+### Development Workflow
+
+**Quality Assurance Pipeline:**
+```bash
+# ✅ Standard pre-commit/development workflow
+npm run lint && npm run type-check  # Always run before commits
+npm run build                       # Verify build works
+npm run storybook                   # Manual component testing
 ```
 
 ### Build Configuration
@@ -362,6 +513,11 @@ npm run build-storybook
 
 - **CSS Theming**: [CSS_THEMING.md](./CSS_THEMING.md) - Complete theming guide
 - **Business Context**: [README.md](./README.md) - User documentation
+- **Comprehensive Documentation**: [docs/](./docs/) - Complete user guides and examples
+  - `getting-started.mdx` - Installation and quick setup
+  - `styling-guide.mdx` - CSS integration patterns
+  - `components/` - Component-specific documentation
+  - `examples/` - Advanced integration patterns
 - **Development Progress**: [progress.md](./progress.md) - Current development status
 - **Original Plan**: [nowpayments.md](./nowpayments.md) - Initial project plan
 
@@ -405,9 +561,9 @@ const { register, handleSubmit, formState: { errors } } = useForm()
 ### CSS Variable System
 ```css
 /* Fallback pattern for maximum compatibility */
-.np-button--primary {
-  background-color: var(--np-primary, #3b82f6);
-  color: var(--np-on-primary, #ffffff);
+.nowpayments-button--primary {
+  background-color: var(--nowpayments-primary, #3b82f6);
+  color: var(--nowpayments-on-primary, #ffffff);
 }
 ```
 
