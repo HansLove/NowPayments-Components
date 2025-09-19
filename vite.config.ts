@@ -20,13 +20,15 @@ export default defineConfig({
       fileName: 'index',
     },
     rollupOptions: {
-      external: ['react', 'react-dom'],
+      external: ['react', 'react-dom', 'framer-motion', 'react-hook-form'],
       output: {
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',
+          'framer-motion': 'framerMotion',
+          'react-hook-form': 'ReactHookForm',
         },
-        assetFileNames: (assetInfo) => {
+        assetFileNames: assetInfo => {
           if (assetInfo.names?.[0] === 'style.css') return 'index.css'
           return assetInfo.names?.[0] || 'asset'
         },
