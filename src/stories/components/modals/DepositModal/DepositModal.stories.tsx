@@ -1,10 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { useEffect } from 'react'
 import { DepositModal } from '@/components/DepositModal'
-import { useNowPaymentsStore } from '@/stores/nowPaymentsStore'
 import {
-  mockCurrencies,
-  mockEnabledCurrencies,
   createDepositActions,
   mockEmailProviders,
 } from './mocks'
@@ -73,21 +69,6 @@ The component fetches available currencies for display only. All payment process
       description: 'Callback when modal is closed',
     },
   },
-  decorators: [
-    Story => {
-      // Setup mock store data for all stories
-      useEffect(() => {
-        const store = useNowPaymentsStore.getState()
-        store.setCurrencies(mockCurrencies)
-        store.setEnabledCurrencies(mockEnabledCurrencies)
-        store.setApiKey('mock-api-key-for-storybook')
-        store.setError(null)
-        store.setIsLoadingCurrencies(false)
-      }, [])
-
-      return <Story />
-    },
-  ],
 } satisfies Meta<typeof DepositModal>
 
 export default meta
@@ -146,23 +127,11 @@ export const LoadingCurrencies: Story = {
     customerEmail: mockEmailProviders.static,
     ...createDepositActions(),
   },
-  decorators: [
-    Story => {
-      useEffect(() => {
-        const store = useNowPaymentsStore.getState()
-        store.setCurrencies([])
-        store.setEnabledCurrencies([])
-        store.setIsLoadingCurrencies(true)
-        store.setError(null)
-      }, [])
-      return <Story />
-    },
-  ],
   parameters: {
     docs: {
       description: {
         story:
-          'Shows the loading state while currencies are being fetched from the NOWPayments API.',
+          'Shows the component behavior when currencies are being loaded from the NOWPayments API. The loading state is managed by the Provider.',
       },
     },
   },
@@ -175,23 +144,11 @@ export const ErrorState: Story = {
     customerEmail: mockEmailProviders.static,
     ...createDepositActions(),
   },
-  decorators: [
-    Story => {
-      useEffect(() => {
-        const store = useNowPaymentsStore.getState()
-        store.setCurrencies([])
-        store.setEnabledCurrencies([])
-        store.setIsLoadingCurrencies(false)
-        store.setError('Failed to load currencies. Please check your API key and try again.')
-      }, [])
-      return <Story />
-    },
-  ],
   parameters: {
     docs: {
       description: {
         story:
-          'Displays error state when currency loading fails. Users can retry or contact support.',
+          'Component behavior when there are API errors. Error handling is managed by the Provider and real API responses.',
       },
     },
   },
@@ -204,27 +161,11 @@ export const LimitedCurrencies: Story = {
     customerEmail: mockEmailProviders.static,
     ...createDepositActions(),
   },
-  decorators: [
-    Story => {
-      useEffect(() => {
-        const store = useNowPaymentsStore.getState()
-        // Only show Bitcoin and Ethereum
-        const limitedCurrencies = mockCurrencies.slice(0, 2)
-        const limitedEnabled = ['bitcoin', 'ethereum']
-
-        store.setCurrencies(limitedCurrencies)
-        store.setEnabledCurrencies(limitedEnabled)
-        store.setError(null)
-        store.setIsLoadingCurrencies(false)
-      }, [])
-      return <Story />
-    },
-  ],
   parameters: {
     docs: {
       description: {
         story:
-          'Example with limited currency options. Useful for testing scenarios where only specific cryptocurrencies are available.',
+          'Uses real currency data from NOWPayments API. Available currencies depend on your API configuration and enabled currencies.',
       },
     },
   },

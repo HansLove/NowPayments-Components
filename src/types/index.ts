@@ -29,7 +29,9 @@ export interface DepositModalProps {
    * @param formData - Fixed schema from the form
    * @returns Promise with any shape - will be passed to onSuccess
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Backend response can have any shape
   onSubmit: (formData: DepositFormData) => Promise<any>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Backend response can have any shape
   onSuccess?: (backendResponse: any) => void
   onError?: (error: Error) => void
 }
@@ -44,7 +46,9 @@ export interface WithdrawModalProps {
    * @param formData - Fixed schema from the form
    * @returns Promise with any shape - will be passed to onSuccess
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Backend response can have any shape
   onSubmit: (formData: WithdrawFormData) => Promise<any>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Backend response can have any shape
   onSuccess?: (backendResponse: any) => void
   onError?: (error: Error) => void
 }

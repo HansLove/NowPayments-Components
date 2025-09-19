@@ -6,10 +6,8 @@ export { default as ContinueWithNowPayments } from './components/shared/Continue
 // Provider for API Configuration
 export { NowPaymentsProvider } from './providers/NowPaymentsProvider'
 
-// Hooks
-export { useNowPaymentsStore } from './stores/nowPaymentsStore'
-export { useNowPayments } from './hooks/useNowPayments'
-export { useCurrencies } from './hooks/useCurrencies'
+// Note: All hooks are now internal to the library
+// Use the Provider + Component pattern instead
 
 // Essential Types for Component Usage
 export type {
