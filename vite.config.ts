@@ -20,12 +20,11 @@ export default defineConfig({
       fileName: 'index',
     },
     rollupOptions: {
-      external: ['react', 'react-dom', 'framer-motion', 'react-hook-form'],
+      external: ['react', 'react-dom', 'react-hook-form'],
       output: {
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',
-          'framer-motion': 'framerMotion',
           'react-hook-form': 'ReactHookForm',
         },
         assetFileNames: assetInfo => {
