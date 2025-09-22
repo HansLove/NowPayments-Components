@@ -96,7 +96,7 @@ export function DepositModal({
       }
 
       const formData: DepositFormData = {
-        selectedCurrency: selectedCurrency.cg_id,
+        selectedCurrency: selectedCurrency.code,
         amount,
         customerEmail: finalEmail,
       }
