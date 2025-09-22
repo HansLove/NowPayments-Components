@@ -12,7 +12,6 @@ See @README.md for business context and usage examples.
 - **Dev**: `npm run storybook` - Starts Storybook on port 6006
 - **CSS Guide**: [CSS_THEMING.md](./CSS_THEMING.md) - Complete theming guide
 - **CSS Prefix**: `nowpayments-` (for clarity and namespace isolation)
-- **State Management**: Zustand v4.5.7 (stable production version)
 
 ## Code Standards
 
@@ -26,7 +25,7 @@ src/
 │   ├── WithdrawModal/   # Main withdrawal modal
 │   └── shared/          # Reusable components
 ├── hooks/               # Custom hooks with 'use' prefix
-├── stores/              # Zustand stores with 'Store' suffix
+├── hooks/               # Custom hooks for state management
 ├── types/               # TypeScript interfaces
 ├── utils/               # General utilities
 └── styles/              # CSS with BEM methodology
@@ -37,9 +36,8 @@ src/
 - **Files**: `index.tsx` for main component
 - **Props interfaces**: `ComponentNameProps`
 
-**Hooks and Stores:**
+**Hooks:**
 - **Hooks**: `useNowPayments`, `useCurrencies`
-- **Stores**: `nowPaymentsStore` (Zustand)
 - **Variables**: descriptive `camelCase`
 
 **CSS and Classes:**
@@ -71,8 +69,8 @@ export function ComponentName({
   // 2. Form hooks
   const { register, handleSubmit, formState: { errors } } = useForm()
 
-  // 3. Store hooks
-  const { currencies, isLoading } = useNowPaymentsStore()
+  // 3. Custom hooks
+  const { currencies, isLoading } = useCurrencies()
 
   // 4. Effects
   useEffect(() => {
@@ -135,10 +133,10 @@ const getEmail = async () => {
 </Modal>
 ```
 
-**✅ Use context or store:**
+**✅ Use React Context or custom hooks:**
 ```tsx
-// Better - use global store or context
-const { isLoading, error } = useNowPaymentsStore()
+// Better - use React Context or custom hooks
+const { isLoading, error } = useCurrencies()
 ```
 
 **❌ Direct state mutation:**
@@ -174,7 +172,7 @@ import { useState, useEffect } from 'react'        // 1. React hooks
 import { useForm } from 'react-hook-form'           // 2. Third-party hooks
 import Modal from '../shared/Modal'                 // 3. Local components
 import { Copy, ExternalLink } from 'lucide-react'   // 4. Icons
-import { useNowPaymentsStore } from '@/stores'      // 5. Store hooks
+import { useNowPayments } from '@/hooks'            // 5. Custom hooks
 import type { ComponentProps } from '@/types'       // 6. Type imports
 ```
 
@@ -376,59 +374,21 @@ interface AmountEntryStepProps {
 └─────────────────────────────────────┘
 ```
 
-### State Management (Zustand v4)
+### State Management
 
-**Version**: Uses Zustand v4.5.7 for maximum stability and reliability.
+**Architecture**: Uses React's built-in state management with hooks and Context API.
 
-```typescript
-interface NowPaymentsState {
-  // API Configuration
-  apiKey: string | null
+See @src/hooks/useNowPayments.ts and @src/components/NowPaymentsProvider/index.tsx for current implementation details including context setup, custom hooks, and state management patterns.
 
-  // Currency Data
-  currencies: Currency[]
-  enabledCurrencies: string[]
-
-  // Loading States
-  isLoadingCurrencies: boolean
-
-  // Error Handling
-  error: string | null
-
-  // Actions
-  setApiKey: (key: string) => void
-  fetchCurrencies: () => Promise<void>
-  setCurrencies: (currencies: Currency[]) => void
-  setError: (error: string | null) => void
-}
-```
-
-**Why Zustand v4**: Chosen over v5 to avoid development mode issues and ensure production stability.
+**Why React Context**: Simpler architecture, better React 18 compatibility, and reduced bundle size.
 
 ### Type System
 
 **Fixed Schemas (Frontend → Backend):**
-```typescript
-// Estos esquemas son fijos y no deben cambiar
-interface DepositFormData {
-  selectedCurrency: string
-  amount: number
-  customerEmail?: string
-}
-
-interface WithdrawFormData {
-  currency: 'usdttrc20' | 'usdtmatic'
-  amount: number
-  destinationAddress: string
-}
-```
+See @src/types/index.ts for current `DepositFormData` and `WithdrawFormData` interfaces - these schemas are fixed and provide consistent structure for backend integration.
 
 **Flexible Response Handling:**
-```typescript
-// El backend puede retornar cualquier esquema
-onSubmit: (formData: FixedFormData) => Promise<any>
-onSuccess?: (backendResponse: any) => void
-```
+The `onSubmit` and `onSuccess` patterns allow any backend response schema while maintaining type safety through the fixed form schemas.
 
 ## Build & Development
 
@@ -464,69 +424,19 @@ npm run storybook                   # Manual component testing
 ### Build Configuration
 
 **Vite Library Mode:**
-```typescript
-// vite.config.ts
-export default defineConfig({
-  build: {
-    lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
-      name: 'NowpaymentsComponents',
-      formats: ['es'],              // ES modules only
-      fileName: 'index',
-    },
-    rollupOptions: {
-      external: ['react', 'react-dom'], // Peer dependencies
-    },
-  },
-})
-```
+See @vite.config.ts for current build configuration including library mode setup, external dependencies, and output formats.
 
 **Path Aliases:**
-```typescript
-// Configured in vite.config.ts
-'@': './src'
-'@/components': './src/components'
-'@/hooks': './src/hooks'
-'@/types': './src/types'
-'@/utils': './src/utils'
-'@/stores': './src/stores'
-'@/styles': './src/styles'
-```
+Configured in @vite.config.ts - all `@/*` paths resolve to `./src/*` for clean imports across the codebase.
 
 ### ESLint Configuration
 
-**Main Rules:**
-- TypeScript strict mode enabled
-- React hooks rules enforcement
-- Unused variables as error (except `_` prefix)
-- `no-explicit-any` as warning
-- Storybook rules for stories
+See @eslint.config.js for current linting rules including TypeScript strict mode, React hooks enforcement, and Storybook-specific configurations.
 
 ### Deployment Strategy
 
 **Package Structure:**
-```
-dist/
-├── index.js           # Componentes y hooks
-├── index.d.ts         # Type definitions
-└── styles/
-    └── index.css      # CSS con variables
-```
-
-**NPM Publishing:**
-```json
-{
-  "name": "@taloon/nowpayments-components",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./styles": "./dist/styles/index.css"
-  },
-  "files": ["dist", "README.md"]
-}
-```
+See @package.json for current export configuration, build outputs, and publishing setup including package name, exports mapping, and included files.
 
 ## Testing Strategy
 
@@ -551,18 +461,6 @@ npm run build-storybook
 - Interactive examples with mock data
 - Documented theme variations
 
-## Cross-References
-
-- **CSS Theming**: [CSS_THEMING.md](./CSS_THEMING.md) - Complete theming guide
-- **Business Context**: [README.md](./README.md) - User documentation
-- **Comprehensive Documentation**: [docs/](./docs/) - Complete user guides and examples
-  - `getting-started.mdx` - Installation and quick setup
-  - `styling-guide.mdx` - CSS integration patterns
-  - `components/` - Component-specific documentation
-  - `examples/` - Advanced integration patterns
-- **Development Progress**: [progress.md](./progress.md) - Current development status
-- **Original Plan**: [nowpayments.md](./nowpayments.md) - Initial project plan
-
 ## Key Implementation Details
 
 ### Modal Portal Strategy
@@ -585,27 +483,20 @@ return createPortal(
 />
 ```
 
-### Form Validation Integration
-```tsx
-// React Hook Form with component integration
-const { register, handleSubmit, formState: { errors } } = useForm()
-
-<Input
-  {...register('amount', {
-    required: 'Amount is required',
-    min: { value: 0.01, message: 'Amount must be greater than 0' },
-  })}
-  error={errors.amount?.message}
-  label="Amount"
-/>
-```
 
 ### CSS Variable System
 ```css
-/* Fallback pattern for maximum compatibility */
+/* Dual-layer CSS variable system */
+/* Internal variables (--nowpayments-*) */
 .nowpayments-button--primary {
   background-color: var(--nowpayments-primary, #3b82f6);
   color: var(--nowpayments-on-primary, #ffffff);
+}
+
+/* Public API variables (--np-*) that map to internal ones */
+:root {
+  --nowpayments-primary: var(--np-primary, #3b82f6);
+  --nowpayments-surface: var(--np-surface, #ffffff);
 }
 ```
 
