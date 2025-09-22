@@ -127,7 +127,7 @@ const ThemeShowcase = ({
       <DepositModal
         isOpen={showDeposit}
         customerEmail={mockEmailProviders.static}
-        enableEmail={false}
+        showEmailInput={false}
         {...createDepositActions()}
       />
 

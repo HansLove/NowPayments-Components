@@ -78,6 +78,12 @@ function App() {
         onSuccess={(backendResponse) => {
           console.log('Deposit created:', backendResponse)
           setShowDeposit(false)
+
+          // Return PaymentDetails for the component to display
+          return {
+            address: backendResponse.depositAddress, // Map from your backend response
+            paymentId: backendResponse.id,
+          }
         }}
         onError={(error) => {
           console.error('Deposit failed:', error)
@@ -137,6 +143,29 @@ import { ContinueWithNowPayments } from '@taloon/nowpayments-components'
 - `disabled`: `boolean` (default: `false`)
 - `onClick`: `() => void`
 - `className`: `string` for custom styling
+
+### 5. Email Input Options
+
+```tsx
+// Option 1: Provide customer email directly (no input shown)
+<DepositModal
+  customerEmail="user@example.com"
+  shouldNotifyByEmail={true}
+  // ... other props
+/>
+
+// Option 2: Show email input for user to fill
+<DepositModal
+  showEmailInput={true}
+  shouldNotifyByEmail={true}
+  // ... other props
+/>
+
+// Option 3: No email handling
+<DepositModal
+  // No email-related props
+/>
+```
 
 ## Customization
 
@@ -209,6 +238,12 @@ interface WithdrawFormData {
   currency: 'usdttrc20' | 'usdtmatic'
   amount: number
   destinationAddress: string
+}
+
+// Return type for onSuccess callback (new in v2.0.0)
+interface PaymentDetails {
+  address: string
+  paymentId: string
 }
 ```
 

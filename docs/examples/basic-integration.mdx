@@ -85,6 +85,12 @@ function App() {
               setShowDeposit(false)
               // Update balance
               setBalance(prev => prev + result.amount)
+
+              // Return PaymentDetails for component
+              return {
+                address: result.depositAddress,
+                paymentId: result.paymentId
+              }
             }}
             onError={(error) => {
               console.error('Deposit failed:', error)
@@ -181,10 +187,16 @@ export default function PaymentPage() {
         isOpen={showDeposit}
         onClose={() => setShowDeposit(false)}
         onSubmit={handleDepositSubmit}
-        onSuccess={() => {
+        onSuccess={(result) => {
           setShowDeposit(false)
           // Redirect to success page
           window.location.href = '/payment/success'
+
+          // Return PaymentDetails for component
+          return {
+            address: result.depositAddress,
+            paymentId: result.paymentId
+          }
         }}
       />
     </div>
@@ -336,8 +348,14 @@ function CheckoutPage({ cart }: { cart: Product[] }) {
         onSuccess={(result) => {
           // Redirect to order confirmation
           window.location.href = `/orders/${result.orderId}`
+
+          // Return PaymentDetails for component
+          return {
+            address: result.depositAddress,
+            paymentId: result.paymentId
+          }
         }}
-        enableEmail={true}
+        showEmailInput={true}
         shouldNotifyByEmail={true}
       />
     </div>
@@ -434,6 +452,12 @@ function GameWallet({ user }: { user: GameUser }) {
           setShowDeposit(false)
           // Refresh user data
           window.location.reload()
+
+          // Return PaymentDetails for component
+          return {
+            address: result.depositAddress,
+            paymentId: result.paymentId
+          }
         }}
       />
 
@@ -507,7 +531,15 @@ function WalletScreen() {
           isOpen={showDeposit}
           onClose={() => setShowDeposit(false)}
           onSubmit={handleDepositSubmit}
-          onSuccess={() => setShowDeposit(false)}
+          onSuccess={(result) => {
+            setShowDeposit(false)
+
+            // Return PaymentDetails for component
+            return {
+              address: result.depositAddress,
+              paymentId: result.paymentId
+            }
+          }}
         />
       </Modal>
     </View>

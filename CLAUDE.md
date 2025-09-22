@@ -298,6 +298,48 @@ interface CurrencySelectoryProps { /* ... */ }
 interface DepositFormData { /* ... */ }
 interface Currency { /* ... */ }
 interface StepperStep { /* ... */ }
+interface PaymentDetails { /* ... */ }
+```
+
+**New Patterns (v2.0.0):**
+
+**Email Handling Pattern:**
+```tsx
+// ✅ Mutually exclusive email props
+interface DepositModalProps {
+  customerEmail?: string | (() => Promise<string>)  // Provided email
+  showEmailInput?: boolean                          // Show input for user
+}
+
+// Implementation
+const shouldShowEmailInput = showEmailInput && !customerEmail
+```
+
+**onSuccess Return Pattern:**
+```tsx
+// ✅ onSuccess now returns PaymentDetails for controlled mapping
+onSuccess?: (backendResponse: any) => PaymentDetails | Promise<PaymentDetails>
+
+// Usage
+onSuccess: (response) => {
+  // Map backend response to required format
+  return {
+    address: response.data.depositAddress,
+    paymentId: response.data.id,
+  }
+}
+```
+
+**Step Component Pattern:**
+```tsx
+// ✅ Presentation components with clear props
+interface AmountEntryStepProps {
+  register: UseFormRegister<{ amount: number; email?: string }>
+  errors: FieldErrors<{ amount: number; email?: string }>
+  showEmailInput: boolean
+  customerEmail?: string | (() => Promise<string>)
+  // ... other presentation props
+}
 ```
 
 ## Architecture

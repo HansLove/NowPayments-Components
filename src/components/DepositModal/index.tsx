@@ -2,16 +2,17 @@ import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import Modal from '../shared/Modal'
 import Stepper from '../shared/Stepper'
-import CurrencySelector from '../shared/CurrencySelector'
-import Input from '../shared/Input'
-import Button from '../shared/Button'
-import QRCode from '../shared/QRCode'
-import { Copy, ExternalLink } from 'lucide-react'
+import CurrencySelectionStep from './CurrencySelectionStep'
+import AmountEntryStep from './AmountEntryStep'
+import PaymentDetailsStep from './PaymentDetailsStep'
 import { useNowPaymentsContext } from '@/hooks/useNowPaymentsContext'
-import type { DepositModalProps, DepositFormData, Currency, StepperStep } from '@/types'
-
-// @ts-expect-error File exists
-import NowPaymentsLogo from '@/assets/nowpayments-logo.png'
+import type {
+  DepositModalProps,
+  DepositFormData,
+  Currency,
+  StepperStep,
+  PaymentDetails,
+} from '@/types'
 
 const STEPS: StepperStep[] = [
   { id: 1, title: 'Select Currency', completed: false, active: true },
@@ -26,7 +27,7 @@ export function DepositModal({
   onSubmit,
   onSuccess,
   onError,
-  enableEmail = false,
+  showEmailInput = false,
   shouldNotifyByEmail = false,
 }: DepositModalProps) {
   const { error } = useNowPaymentsContext()
@@ -34,11 +35,7 @@ export function DepositModal({
   const [selectedCurrency, setSelectedCurrency] = useState<Currency | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [steps, setSteps] = useState(STEPS)
-  const [paymentDetails, setPaymentDetails] = useState<{
-    address: string
-    paymentId: string
-    explorerUrl?: string
-  } | null>(null)
+  const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | null>(null)
   const [userEmail, setUserEmail] = useState<string>('')
 
   const {
@@ -47,9 +44,10 @@ export function DepositModal({
     watch,
     formState: { errors },
     reset,
-  } = useForm<{ amount: number }>()
+  } = useForm<{ amount: number; email?: string }>()
 
   const amount = watch('amount')
+  const email = watch('email')
 
   // Reset form when modal opens/closes
   useEffect(() => {
@@ -84,33 +82,33 @@ export function DepositModal({
     setIsSubmitting(true)
 
     try {
-      // Get customer email only if enabled
-      let email: string | undefined
-      if (enableEmail && customerEmail) {
-        email = typeof customerEmail === 'function' ? await customerEmail() : customerEmail
-        setUserEmail(email || '')
+      // Determine which email to use
+      let finalEmail: string | undefined
+
+      if (customerEmail) {
+        // Use provided customerEmail (takes precedence)
+        finalEmail = typeof customerEmail === 'function' ? await customerEmail() : customerEmail
+        setUserEmail(finalEmail || '')
+      } else if (email) {
+        // Use email from form input
+        finalEmail = email
+        setUserEmail(email)
       }
 
       const formData: DepositFormData = {
         selectedCurrency: selectedCurrency.cg_id,
         amount,
-        customerEmail: email,
+        customerEmail: finalEmail,
       }
 
       const result = await onSubmit(formData)
 
-      // Extract payment details from result for QR display
-      if (result && typeof result === 'object') {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Backend response structure is unknown and flexible
-        const details = result as any
-        setPaymentDetails({
-          address: details.depositAddress || details.address || 'No address provided',
-          paymentId: details.paymentId || details.id || 'Unknown',
-          explorerUrl: details.explorerUrl,
-        })
+      // Get payment details from onSuccess callback
+      if (onSuccess) {
+        const paymentDetailsFromCallback = await onSuccess(result)
+        setPaymentDetails(paymentDetailsFromCallback)
       }
 
-      onSuccess?.(result)
       setCurrentStep(3) // Go to payment details step
     } catch (error) {
       const errorObj = error instanceof Error ? error : new Error('Unknown error occurred')
@@ -124,174 +122,36 @@ export function DepositModal({
     switch (currentStep) {
       case 1:
         return (
-          <div>
-            <h3 style={{ marginBottom: 'var(--nowpayments-spacing-lg)' }}>
-              Choose your preferred cryptocurrency
-            </h3>
-            <CurrencySelector
-              selectedCurrency={selectedCurrency?.cg_id}
-              onSelect={handleCurrencySelect}
-              disabled={isSubmitting}
-            />
-          </div>
+          <CurrencySelectionStep
+            selectedCurrency={selectedCurrency}
+            onCurrencySelect={handleCurrencySelect}
+            isSubmitting={isSubmitting}
+          />
         )
 
       case 2:
         return (
-          <div>
-            <h3 style={{ marginBottom: 'var(--nowpayments-spacing-lg)' }}>Enter deposit amount</h3>
-            <form onSubmit={handleSubmit(handleAmountSubmit)}>
-              <Input
-                label="Amount"
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="0.00"
-                error={errors.amount?.message}
-                {...register('amount', {
-                  required: 'Amount is required',
-                  min: { value: 0.01, message: 'Amount must be greater than 0' },
-                })}
-              />
-              <div
-                style={{
-                  display: 'flex',
-                  gap: 'var(--nowpayments-spacing-md)',
-                  marginTop: 'var(--nowpayments-spacing-lg)',
-                }}
-              >
-                <Button
-                  variant="secondary"
-                  onClick={() => setCurrentStep(1)}
-                  disabled={isSubmitting}
-                  type="button"
-                >
-                  Back
-                </Button>
-                <Button
-                  variant="primary"
-                  disabled={!amount || amount <= 0 || isSubmitting}
-                  loading={isSubmitting}
-                  type="submit"
-                >
-                  Create Deposit
-                </Button>
-              </div>
-            </form>
-          </div>
+          <AmountEntryStep
+            register={register}
+            errors={errors}
+            amount={amount}
+            isSubmitting={isSubmitting}
+            showEmailInput={showEmailInput}
+            customerEmail={customerEmail}
+            onBack={() => setCurrentStep(1)}
+            onSubmit={handleSubmit(handleAmountSubmit)}
+          />
         )
 
       case 3:
         return (
-          <div>
-            <div className="nowpayments-payment-status">
-              <div className="nowpayments-payment-status__indicator">
-                <div className="nowpayments-payment-status__dot"></div>
-                <span className="nowpayments-payment-status__text">Waiting for payment</span>
-              </div>
-            </div>
-
-            {paymentDetails && (
-              <div className="nowpayments-payment-details--compact">
-                <div className="nowpayments-payment-layout">
-                  <div className="nowpayments-payment-qr">
-                    <QRCode
-                      value={paymentDetails.address}
-                      size={180}
-                      title="Payment Address"
-                      showActions={false}
-                      showRawValue={false}
-                    />
-                  </div>
-
-                  <div className="nowpayments-payment-info--compact">
-                    <div className="nowpayments-payment-info__grid--compact">
-                      <div className="nowpayments-payment-info__item">
-                        <span className="nowpayments-payment-info__label">Amount:</span>
-                        <span className="nowpayments-payment-info__value">
-                          {amount} {selectedCurrency?.code.toUpperCase()}
-                        </span>
-                      </div>
-                      <div className="nowpayments-payment-info__item">
-                        <span className="nowpayments-payment-info__label">Payment ID:</span>
-                        <span className="nowpayments-payment-info__value">
-                          {paymentDetails.paymentId.length > 12
-                            ? `${paymentDetails.paymentId.slice(0, 12)}...`
-                            : paymentDetails.paymentId}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="nowpayments-payment-address--compact">
-                      <span className="nowpayments-payment-address__label">
-                        Send payment to this address:
-                      </span>
-                      <div className="nowpayments-payment-address__container--compact">
-                        <code className="nowpayments-payment-address__value--compact">
-                          {paymentDetails.address.length > 30
-                            ? `${paymentDetails.address.slice(
-                                0,
-                                30
-                              )}...${paymentDetails.address.slice(-12)}`
-                            : paymentDetails.address}
-                        </code>
-                        <button
-                          type="button"
-                          className="nowpayments-payment-address__copy-btn"
-                          onClick={() => navigator.clipboard.writeText(paymentDetails.address)}
-                          title="Copy address"
-                        >
-                          <Copy size={14} />
-                        </button>
-                      </div>
-                    </div>
-
-                    {shouldNotifyByEmail && userEmail && (
-                      <div className="nowpayments-email-notification">
-                        <p className="nowpayments-email-notification__text">
-                          A confirmation email will be sent to:
-                        </p>
-                        <p className="nowpayments-email-notification__email">{userEmail}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="nowpayments-payment-warning--compact">
-                  <div className="nowpayments-payment-warning__icon">⚠</div>
-                  <div className="nowpayments-payment-warning__content">
-                    <span className="nowpayments-payment-warning__title">Important:</span>
-                    <span className="nowpayments-payment-warning__text">
-                      Only send {selectedCurrency?.code.toUpperCase()} to this address. Payment will
-                      be processed automatically.
-                    </span>
-                  </div>
-                </div>
-
-                <div className="nowpayments-payment-actions">
-                  {paymentDetails.explorerUrl && (
-                    <Button
-                      variant="secondary"
-                      onClick={() => window.open(paymentDetails.explorerUrl, '_blank')}
-                      className="nowpayments-payment-action"
-                    >
-                      <ExternalLink size={18} />
-                      Explorer
-                    </Button>
-                  )}
-                </div>
-
-                <div className="nowpayments-powered-by">
-                  <p className="nowpayments-powered-by__text">This transaction is processed by</p>
-                  <img
-                    src={NowPaymentsLogo}
-                    alt="NOWPayments"
-                    className="nowpayments-powered-by__logo nowpayments-powered-by__logo--with-background"
-                  />
-                </div>
-              </div>
-            )}
-          </div>
+          <PaymentDetailsStep
+            paymentDetails={paymentDetails}
+            amount={amount}
+            selectedCurrency={selectedCurrency}
+            shouldNotifyByEmail={shouldNotifyByEmail}
+            userEmail={userEmail}
+          />
         )
 
       default:

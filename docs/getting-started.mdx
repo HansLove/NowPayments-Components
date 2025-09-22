@@ -94,6 +94,12 @@ function PaymentPage() {
         onSuccess={(result) => {
           console.log('Deposit created:', result)
           setShowDeposit(false)
+
+          // Return PaymentDetails for component
+          return {
+            address: result.depositAddress,
+            paymentId: result.paymentId
+          }
         }}
         onError={(error) => {
           console.error('Deposit failed:', error)

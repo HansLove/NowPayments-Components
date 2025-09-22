@@ -191,6 +191,12 @@ export const createDepositActions = () => ({
   onSuccess: (response: any) => {
     console.log('Deposit success callback:', response)
     alert(`Deposit successful! Payment ID: ${response.data.paymentId}`)
+
+    // Return PaymentDetails for the component to display
+    return {
+      address: response.data.address,
+      paymentId: response.data.paymentId,
+    }
   },
 
   onError: (error: Error) => {

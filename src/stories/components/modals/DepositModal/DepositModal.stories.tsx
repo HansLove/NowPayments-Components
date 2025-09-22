@@ -44,9 +44,9 @@ The component fetches available currencies for display only. All payment process
       control: 'text',
       description: 'Customer email (string) or async function that returns email',
     },
-    enableEmail: {
+    showEmailInput: {
       control: 'boolean',
-      description: 'Show email input field in the form',
+      description: 'Show email input field in the form when customerEmail is not provided',
     },
     shouldNotifyByEmail: {
       control: 'boolean',
@@ -79,7 +79,7 @@ export const Default: Story = {
   args: {
     isOpen: true,
     customerEmail: mockEmailProviders.static,
-    enableEmail: true,
+    showEmailInput: true,
     ...createDepositActions(),
     shouldNotifyByEmail: true,
   },
@@ -89,14 +89,14 @@ export const Default: Story = {
 export const WithEmailInput: Story = {
   args: {
     isOpen: true,
-    enableEmail: true,
+    showEmailInput: true,
     ...createDepositActions(),
   },
   parameters: {
     docs: {
       description: {
         story:
-          'Enables the email input field in the form. When `enableEmail` is true, users can enter their email address.',
+          'Enables the email input field in the form. When `showEmailInput` is true and `customerEmail` is not provided, users can enter their email address.',
       },
     },
   },
@@ -107,7 +107,7 @@ export const WithAsyncEmail: Story = {
   args: {
     isOpen: true,
     customerEmail: mockEmailProviders.async,
-    enableEmail: false,
+    showEmailInput: false,
     ...createDepositActions(),
   },
   parameters: {
@@ -197,7 +197,7 @@ export const WithEmailNotification: Story = {
   args: {
     isOpen: true,
     customerEmail: 'user@example.com',
-    enableEmail: true,
+    showEmailInput: true,
     shouldNotifyByEmail: true,
     ...createDepositActions(),
   },

@@ -9,10 +9,10 @@ interface DepositModalProps {
   isOpen: boolean
   onClose: () => void
   customerEmail?: string | (() => Promise<string>)
-  enableEmail?: boolean
+  showEmailInput?: boolean
   shouldNotifyByEmail?: boolean
   onSubmit: (formData: DepositFormData) => Promise<any>
-  onSuccess?: (backendResponse: any) => void
+  onSuccess?: (backendResponse: any) => PaymentDetails | Promise<PaymentDetails>
   onError?: (error: Error) => void
 }
 
@@ -20,6 +20,11 @@ interface DepositFormData {
   selectedCurrency: string // e.g., 'btc', 'eth'
   amount: number
   customerEmail?: string
+}
+
+interface PaymentDetails {
+  address: string
+  paymentId: string
 }
 ```
 
@@ -64,6 +69,12 @@ function DepositExample() {
         onSuccess={(result) => {
           console.log('Deposit created:', result)
           setIsOpen(false)
+
+          // Return PaymentDetails for the component to display
+          return {
+            address: result.depositAddress,
+            paymentId: result.paymentId
+          }
         }}
         onError={(error) => {
           console.error('Error:', error.message)
@@ -74,7 +85,9 @@ function DepositExample() {
 }
 ```
 
-## With Email Configuration
+## Email Configuration Options
+
+### Option 1: Provided Customer Email
 
 ```tsx
 function DepositWithEmail() {
@@ -90,8 +103,7 @@ function DepositWithEmail() {
     <DepositModal
       isOpen={isOpen}
       onClose={() => setIsOpen(false)}
-      customerEmail={getCustomerEmail}
-      enableEmail={true}
+      customerEmail={getCustomerEmail} // Email provided - no input shown
       shouldNotifyByEmail={true}
       onSubmit={handleSubmit}
       onSuccess={handleSuccess}
@@ -100,7 +112,26 @@ function DepositWithEmail() {
 }
 ```
 
-## Static Email
+### Option 2: User Email Input
+
+```tsx
+function DepositWithEmailInput() {
+  const [isOpen, setIsOpen] = useState(false)
+
+  return (
+    <DepositModal
+      isOpen={isOpen}
+      onClose={() => setIsOpen(false)}
+      showEmailInput={true} // Shows email input field
+      shouldNotifyByEmail={true}
+      onSubmit={handleSubmit}
+      onSuccess={handleSuccess}
+    />
+  )
+}
+```
+
+### Option 3: Static Email
 
 ```tsx
 function DepositWithStaticEmail() {
@@ -108,8 +139,7 @@ function DepositWithStaticEmail() {
     <DepositModal
       isOpen={isOpen}
       onClose={() => setIsOpen(false)}
-      customerEmail="user@example.com"
-      enableEmail={true}
+      customerEmail="user@example.com" // Static email - no input shown
       shouldNotifyByEmail={true}
       onSubmit={handleSubmit}
       onSuccess={handleSuccess}
@@ -136,28 +166,46 @@ The component sends a fixed schema to your backend:
 }
 ```
 
-### 3. Backend Response
-Your backend can return any structure. Common patterns:
+### 3. Backend Response & Payment Details Mapping
+
+Your backend can return any structure. The `onSuccess` callback maps it to `PaymentDetails`:
 
 ```javascript
-// Minimal response
+// Backend response (any structure)
 {
-  paymentId: "payment_123",
-  depositAddress: "1A2B3C4D5E...",
+  id: "dep_123",
+  paymentData: {
+    address: "1A2B3C4D5E...",
+    reference: "payment_123"
+  },
+  amount: 0.001,
+  currency: "btc",
   status: "waiting"
 }
 
-// Rich response
-{
-  id: "dep_123",
-  paymentId: "payment_123",
-  depositAddress: "1A2B3C4D5E...",
-  explorerUrl: "https://blockchair.com/bitcoin/transaction/...",
-  amount: 0.001,
-  currency: "btc",
-  status: "waiting",
-  expiresAt: "2024-01-01T12:00:00Z"
+// onSuccess mapping
+onSuccess: (backendResponse) => {
+  return {
+    address: backendResponse.paymentData.address,
+    paymentId: backendResponse.paymentData.reference
+  }
 }
+```
+
+Alternative response structures:
+
+```javascript
+// Minimal backend response
+{
+  depositAddress: "1A2B3C4D5E...",
+  paymentId: "payment_123"
+}
+
+// Direct mapping
+onSuccess: (response) => ({
+  address: response.depositAddress,
+  paymentId: response.paymentId
+})
 ```
 
 ## Payment Confirmation Step
@@ -168,7 +216,7 @@ The final step automatically displays:
 - Payment ID (truncated for display)
 - Copy button for the address
 - Warning about sending correct currency
-- Optional blockchain explorer link
+- Email notification message (if configured)
 - NOWPayments branding
 
 ## Error Handling
@@ -210,7 +258,13 @@ function DepositWithErrorHandling() {
         onClose={() => setIsOpen(false)}
         onSubmit={handleSubmit}
         onError={handleError}
-        onSuccess={() => setError(null)}
+        onSuccess={(result) => {
+          setError(null)
+          return {
+            address: result.depositAddress,
+            paymentId: result.paymentId
+          }
+        }}
       />
     </>
   )

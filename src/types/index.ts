@@ -18,11 +18,19 @@ export interface Currency {
   network_precision: number | null
 }
 
+/**
+ * Payment details returned from onSuccess callback
+ */
+export interface PaymentDetails {
+  address: string
+  paymentId: string
+}
+
 export interface DepositModalProps {
   isOpen: boolean
   onClose: () => void
   customerEmail?: string | (() => Promise<string>)
-  enableEmail?: boolean
+  showEmailInput?: boolean
   shouldNotifyByEmail?: boolean
   /**
    * Callback when form is submitted
@@ -31,8 +39,13 @@ export interface DepositModalProps {
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Backend response can have any shape
   onSubmit: (formData: DepositFormData) => Promise<any>
+  /**
+   * Callback when form is successfully submitted
+   * @param backendResponse - Response from your backend
+   * @returns PaymentDetails to display in the payment step
+   */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Backend response can have any shape
-  onSuccess?: (backendResponse: any) => void
+  onSuccess?: (backendResponse: any) => PaymentDetails | Promise<PaymentDetails>
   onError?: (error: Error) => void
 }
 
