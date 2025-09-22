@@ -11,13 +11,13 @@ interface NowPaymentsProviderProps {
  * Internal component to handle API key updates
  */
 function ApiKeyUpdater({ apiKey }: { apiKey: string }) {
-  const { dispatch } = useNowPaymentsContext()
+  const { setApiKey } = useNowPaymentsContext()
 
   useEffect(() => {
     if (apiKey) {
-      dispatch({ type: 'SET_API_KEY', payload: apiKey })
+      setApiKey(apiKey)
     }
-  }, [apiKey, dispatch])
+  }, [apiKey, setApiKey])
 
   return null
 }

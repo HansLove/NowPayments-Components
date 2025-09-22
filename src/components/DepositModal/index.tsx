@@ -7,7 +7,7 @@ import Input from '../shared/Input'
 import Button from '../shared/Button'
 import QRCode from '../shared/QRCode'
 import { Copy, ExternalLink } from 'lucide-react'
-import { useNowPayments } from '@/hooks/useNowPayments'
+import { useNowPaymentsContext } from '@/hooks/useNowPaymentsContext'
 import type { DepositModalProps, DepositFormData, Currency, StepperStep } from '@/types'
 
 // @ts-expect-error File exists
@@ -29,7 +29,7 @@ export function DepositModal({
   enableEmail = false,
   shouldNotifyByEmail = false,
 }: DepositModalProps) {
-  const { error } = useNowPayments()
+  const { error } = useNowPaymentsContext()
   const [currentStep, setCurrentStep] = useState(1)
   const [selectedCurrency, setSelectedCurrency] = useState<Currency | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)

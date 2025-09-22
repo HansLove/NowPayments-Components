@@ -1,37 +1,21 @@
-import { createContext, useReducer, ReactNode, Dispatch } from 'react'
-import type { NowPaymentsState, NowPaymentsAction } from './types'
-
-// Initial state
-const initialState: NowPaymentsState = {
-  apiKey: null,
-  currencies: [],
-  enabledCurrencies: [],
-  isLoadingCurrencies: false,
-  error: null,
-}
-
-// Reducer function
-function nowPaymentsReducer(state: NowPaymentsState, action: NowPaymentsAction): NowPaymentsState {
-  switch (action.type) {
-    case 'SET_API_KEY':
-      return { ...state, apiKey: action.payload }
-    case 'SET_CURRENCIES':
-      return { ...state, currencies: action.payload }
-    case 'SET_ENABLED_CURRENCIES':
-      return { ...state, enabledCurrencies: action.payload }
-    case 'SET_IS_LOADING_CURRENCIES':
-      return { ...state, isLoadingCurrencies: action.payload }
-    case 'SET_ERROR':
-      return { ...state, error: action.payload }
-    default:
-      return state
-  }
-}
+import { createContext, useState, ReactNode } from 'react'
+import type { Currency } from '@/types'
 
 // Context types
 export interface NowPaymentsContextType {
-  state: NowPaymentsState
-  dispatch: Dispatch<NowPaymentsAction>
+  // State
+  apiKey: string | null
+  currencies: Currency[]
+  enabledCurrencies: string[]
+  isLoadingCurrencies: boolean
+  error: string | null
+
+  // Setters
+  setApiKey: (key: string | null) => void
+  setCurrencies: (currencies: Currency[]) => void
+  setEnabledCurrencies: (enabled: string[]) => void
+  setIsLoadingCurrencies: (loading: boolean) => void
+  setError: (error: string | null) => void
 }
 
 // Create context
@@ -47,13 +31,30 @@ export function NowPaymentsContextProvider({
   children,
   initialApiKey,
 }: NowPaymentsContextProviderProps) {
-  const [state, dispatch] = useReducer(nowPaymentsReducer, {
-    ...initialState,
-    apiKey: initialApiKey || null,
-  })
+  const [apiKey, setApiKey] = useState<string | null>(initialApiKey || null)
+  const [currencies, setCurrencies] = useState<Currency[]>([])
+  const [enabledCurrencies, setEnabledCurrencies] = useState<string[]>([])
+  const [isLoadingCurrencies, setIsLoadingCurrencies] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const contextValue: NowPaymentsContextType = {
+    // State
+    apiKey,
+    currencies,
+    enabledCurrencies,
+    isLoadingCurrencies,
+    error,
+
+    // Setters
+    setApiKey,
+    setCurrencies,
+    setEnabledCurrencies,
+    setIsLoadingCurrencies,
+    setError,
+  }
 
   return (
-    <NowPaymentsContext.Provider value={{ state, dispatch }}>
+    <NowPaymentsContext.Provider value={contextValue}>
       {children}
     </NowPaymentsContext.Provider>
   )

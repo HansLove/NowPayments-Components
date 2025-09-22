@@ -1,0 +1,1 @@
+declare module '@taloon/nowpayments-components/styles'

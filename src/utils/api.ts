@@ -3,6 +3,14 @@ import type { Currency, ApiResponse } from '../types'
 
 const NOWPAYMENTS_API_URL = 'https://api.nowpayments.io'
 
+export interface EnabledCurrenciesResponse {
+  selectedCurrencies: string[]
+}
+
+export interface AllCurrenciesResponse {
+  currencies: Currency[]
+}
+
 /**
  * NOWPayments API wrapper for frontend operations
  * Only handles currency fetching - payments/withdrawals are handled by backend
@@ -24,9 +32,9 @@ export class NowPaymentsAPI {
    * Get enabled currencies for the merchant
    * Used to filter which currencies to show in the UI
    */
-  async getEnabledCurrencies(): Promise<ApiResponse<{ selectedCurrencies: string[] }>> {
+  async getEnabledCurrencies(): Promise<ApiResponse<EnabledCurrenciesResponse>> {
     try {
-      const response = await this.client.get('/v1/merchant/coins')
+      const response = await this.client.get<EnabledCurrenciesResponse>('/v1/merchant/coins')
       return {
         success: true,
         data: response.data,
@@ -43,9 +51,9 @@ export class NowPaymentsAPI {
    * Get full currency details with logos, names, etc.
    * Used to display currency information in the UI
    */
-  async getAllCurrencies(): Promise<ApiResponse<{ currencies: Currency[] }>> {
+  async getAllCurrencies(): Promise<ApiResponse<AllCurrenciesResponse>> {
     try {
-      const response = await this.client.get('/v1/full-currencies')
+      const response = await this.client.get<AllCurrenciesResponse>('/v1/full-currencies')
       return {
         success: true,
         data: response.data,

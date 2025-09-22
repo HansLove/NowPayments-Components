@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import Modal from '../shared/Modal'
 import Input from '../shared/Input'
 import Button from '../shared/Button'
-import { useNowPayments } from '@/hooks/useNowPayments'
+import { useNowPaymentsContext } from '@/hooks/useNowPaymentsContext'
 import type { WithdrawModalProps, WithdrawFormData } from '@/types'
 
 // Network Icons
@@ -39,7 +39,7 @@ export function WithdrawModal({
   onSuccess,
   onError,
 }: WithdrawModalProps) {
-  const { error } = useNowPayments()
+  const { error } = useNowPaymentsContext()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [usdtAmount, setUsdtAmount] = useState<number | null>(null)
   const [isConverting, setIsConverting] = useState(false)

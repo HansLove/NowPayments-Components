@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import dts from 'vite-plugin-dts'
 import { resolve } from 'path'
 import { fileURLToPath, URL } from 'node:url'
+import { copyFileSync, existsSync } from 'fs'
 
 export default defineConfig({
   plugins: [
@@ -11,6 +12,17 @@ export default defineConfig({
       insertTypesEntry: true,
       tsconfigPath: './tsconfig.build.json',
     }),
+    {
+      name: 'copy-styles-declaration',
+      writeBundle() {
+        const srcPath = resolve(fileURLToPath(new URL('.', import.meta.url)), 'src/styles.d.ts')
+        const destPath = resolve(fileURLToPath(new URL('.', import.meta.url)), 'dist/styles.d.ts')
+        if (existsSync(srcPath)) {
+          copyFileSync(srcPath, destPath)
+          console.log('✓ Copied src/styles.d.ts to dist/styles.d.ts')
+        }
+      },
+    },
   ],
   build: {
     lib: {
