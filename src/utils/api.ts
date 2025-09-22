@@ -24,7 +24,7 @@ export class NowPaymentsAPI {
    * Get enabled currencies for the merchant
    * Used to filter which currencies to show in the UI
    */
-  async getEnabledCurrencies(): Promise<ApiResponse<{ currencies: string[] }>> {
+  async getEnabledCurrencies(): Promise<ApiResponse<{ selectedCurrencies: string[] }>> {
     try {
       const response = await this.client.get('/v1/merchant/coins')
       return {

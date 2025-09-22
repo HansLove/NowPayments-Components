@@ -39,7 +39,7 @@ export function useCurrencies() {
         throw new Error(allResponse.error || 'Failed to fetch currency details')
       }
 
-      const enabledCurrencyIds = enabledResponse.data.currencies
+      const enabledCurrencyIds = enabledResponse.data.selectedCurrencies
       const allCurrencies = allResponse.data.currencies
 
       // Filter currencies to only include enabled ones
@@ -54,7 +54,7 @@ export function useCurrencies() {
     } finally {
       setIsLoadingCurrencies(false)
     }
-  }, [apiKey, setError, setCurrencies, setEnabledCurrencies, setIsLoadingCurrencies])
+  }, [apiKey])
 
   const getCurrencyLogo = useCallback((path: string) => {
     return `https://nowpayments.io/${path}`
@@ -76,7 +76,7 @@ export function useCurrencies() {
     if (apiKey && currencies.length === 0 && !isLoadingCurrencies) {
       loadCurrencies()
     }
-  }, [apiKey, currencies.length, isLoadingCurrencies, loadCurrencies])
+  }, [apiKey, currencies.length, isLoadingCurrencies])
 
   return {
     currencies: getEnabledCurrencies(),
