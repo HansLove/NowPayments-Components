@@ -21,5 +21,6 @@ export type {
   WithdrawFormData,
   ContinueWithNowPaymentsProps,
   NowPaymentsProviderProps,
+  PaymentDetails,
 } from './types'
 
