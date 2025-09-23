@@ -1,3 +1,6 @@
+// Import styles to ensure they're bundled
+import './styles/index.css'
+
 // Main Components - Public API
 export { default as DepositModal } from './components/DepositModal'
 export { default as WithdrawModal } from './components/WithdrawModal'
@@ -17,4 +20,3 @@ export type {
   NowPaymentsProviderProps,
   PaymentDetails,
 } from './types'
-
