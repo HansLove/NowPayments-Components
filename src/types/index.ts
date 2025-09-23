@@ -46,7 +46,12 @@ export interface DepositModalProps {
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Backend response can have any shape
   onSuccess?: (backendResponse: any) => PaymentDetails | Promise<PaymentDetails>
-  onError?: (error: Error) => void
+  /**
+   * Callback when form submission fails
+   * @param error - Error that occurred during submission
+   * @returns Optional error message to display to the user
+   */
+  onError?: (error: Error) => string | undefined | void
 }
 
 export interface WithdrawModalProps {

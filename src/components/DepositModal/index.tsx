@@ -37,6 +37,7 @@ export function DepositModal({
   const [steps, setSteps] = useState(STEPS)
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | null>(null)
   const [userEmail, setUserEmail] = useState<string>('')
+  const [errorMessage, setErrorMessage] = useState<string>('')
 
   const {
     register,
@@ -57,6 +58,7 @@ export function DepositModal({
       setSelectedCurrency(null)
       setIsSubmitting(false)
       setSteps(STEPS)
+      setErrorMessage('')
     }
   }, [isOpen, reset])
 
@@ -112,7 +114,8 @@ export function DepositModal({
       setCurrentStep(3) // Go to payment details step
     } catch (error) {
       const errorObj = error instanceof Error ? error : new Error('Unknown error occurred')
-      onError?.(errorObj)
+      const customMessage = onError?.(errorObj)
+      setErrorMessage(customMessage || errorObj.message)
     } finally {
       setIsSubmitting(false)
     }
@@ -138,6 +141,7 @@ export function DepositModal({
             isSubmitting={isSubmitting}
             showEmailInput={showEmailInput}
             customerEmail={customerEmail}
+            errorMessage={errorMessage}
             onBack={() => setCurrentStep(1)}
             onSubmit={handleSubmit(handleAmountSubmit)}
           />

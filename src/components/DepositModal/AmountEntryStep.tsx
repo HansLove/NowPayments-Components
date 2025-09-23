@@ -10,6 +10,7 @@ interface AmountEntryStepProps {
   isSubmitting: boolean
   showEmailInput: boolean
   customerEmail?: string | (() => Promise<string>)
+  errorMessage?: string
   onBack: () => void
   onSubmit: React.FormEventHandler<HTMLFormElement>
 }
@@ -21,6 +22,7 @@ export function AmountEntryStep({
   isSubmitting,
   showEmailInput,
   customerEmail,
+  errorMessage,
   onBack,
   onSubmit,
 }: AmountEntryStepProps) {
@@ -28,6 +30,14 @@ export function AmountEntryStep({
   return (
     <div>
       <h3 style={{ marginBottom: 'var(--nowpayments-spacing-lg)' }}>Enter deposit amount</h3>
+      {errorMessage && (
+        <div
+          className="nowpayments-error"
+          style={{ marginBottom: 'var(--nowpayments-spacing-md)' }}
+        >
+          {errorMessage}
+        </div>
+      )}
       <form onSubmit={onSubmit}>
         <Input
           label="Amount"
