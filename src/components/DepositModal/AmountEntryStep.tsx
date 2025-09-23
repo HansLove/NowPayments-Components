@@ -39,6 +39,7 @@ export function AmountEntryStep({
           {...register('amount', {
             required: 'Amount is required',
             min: { value: 0.01, message: 'Amount must be greater than 0' },
+            valueAsNumber: true,
           })}
         />
         {shouldShowEmailInput && (
@@ -51,8 +52,8 @@ export function AmountEntryStep({
               {...register('email', {
                 pattern: {
                   value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  message: 'Please enter a valid email address'
-                }
+                  message: 'Please enter a valid email address',
+                },
               })}
             />
           </div>
@@ -64,12 +65,7 @@ export function AmountEntryStep({
             marginTop: 'var(--nowpayments-spacing-lg)',
           }}
         >
-          <Button
-            variant="secondary"
-            onClick={onBack}
-            disabled={isSubmitting}
-            type="button"
-          >
+          <Button variant="secondary" onClick={onBack} disabled={isSubmitting} type="button">
             Back
           </Button>
           <Button
