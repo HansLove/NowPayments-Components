@@ -29,6 +29,7 @@ export function DepositModal({
   onError,
   showEmailInput = false,
   shouldNotifyByEmail = false,
+  showPoweredByNowpayments = true,
 }: DepositModalProps) {
   const { error } = useNowPaymentsContext()
   const [currentStep, setCurrentStep] = useState(1)
@@ -155,6 +156,7 @@ export function DepositModal({
             selectedCurrency={selectedCurrency}
             shouldNotifyByEmail={shouldNotifyByEmail}
             userEmail={userEmail}
+            showPoweredByNowpayments={showPoweredByNowpayments}
           />
         )
 

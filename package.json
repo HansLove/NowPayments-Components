@@ -33,9 +33,9 @@
     "type-check": "tsc --noEmit",
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run clean && npm run type-check && npm run build",
-    "publish:patch": "npm run clean && npm run type-check && npm run build && npm version patch && npm publish",
-    "publish:minor": "npm run clean && npm run type-check && npm run build && npm version minor && npm publish",
-    "publish:major": "npm run clean && npm run type-check && npm run build && npm version major && npm publish"
+    "publish:patch": "npm version patch && npm publish",
+    "publish:minor": "npm version minor && npm publish",
+    "publish:major": "npm version major && npm publish"
   },
   "keywords": [
     "react",

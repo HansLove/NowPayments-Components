@@ -11,6 +11,7 @@ interface PaymentDetailsStepProps {
   selectedCurrency: Currency | null
   shouldNotifyByEmail: boolean
   userEmail: string
+  showPoweredByNowpayments: boolean
 }
 
 export function PaymentDetailsStep({
@@ -19,6 +20,7 @@ export function PaymentDetailsStep({
   selectedCurrency,
   shouldNotifyByEmail,
   userEmail,
+  showPoweredByNowpayments,
 }: PaymentDetailsStepProps) {
   return (
     <div>
@@ -106,15 +108,16 @@ export function PaymentDetailsStep({
             </div>
           </div>
 
-
-          <div className="nowpayments-powered-by">
-            <p className="nowpayments-powered-by__text">This transaction is processed by</p>
-            <img
-              src={NowPaymentsLogo}
-              alt="NOWPayments"
-              className="nowpayments-powered-by__logo nowpayments-powered-by__logo--with-background"
-            />
-          </div>
+          {showPoweredByNowpayments && (
+            <div className="nowpayments-powered-by">
+              <p className="nowpayments-powered-by__text">This transaction is processed by</p>
+              <img
+                src={NowPaymentsLogo}
+                alt="NOWPayments"
+                className="nowpayments-powered-by__logo nowpayments-powered-by__logo--with-background"
+              />
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -32,6 +32,7 @@ export interface DepositModalProps {
   customerEmail?: string | (() => Promise<string>)
   showEmailInput?: boolean
   shouldNotifyByEmail?: boolean
+  showPoweredByNowpayments?: boolean
   /**
    * Callback when form is submitted
    * @param formData - Fixed schema from the form
