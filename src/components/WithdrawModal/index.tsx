@@ -5,24 +5,10 @@ import Input from '../shared/Input'
 import Button from '../shared/Button'
 import { useNowPaymentsContext } from '@/hooks/useNowPaymentsContext'
 import type { WithdrawModalProps, WithdrawFormData } from '@/types'
-
-// Network Icons
-const TronIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 0L24 6L20.25 18L12 24L3.75 18L0 6L12 0Z" fill="#FF0013"/>
-    <path d="M12 4.5L19.5 8.25L16.875 16.5L12 19.5L7.125 16.5L4.5 8.25L12 4.5Z" fill="white"/>
-    <path d="M12 7.5L16.5 9.75L14.625 14.25L12 15.75L9.375 14.25L7.5 9.75L12 7.5Z" fill="#FF0013"/>
-  </svg>
-)
-
-const PolygonIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 0L24 12L12 24L0 12L12 0Z" fill="#8247E5"/>
-    <path d="M12 3L21 12L12 21L3 12L12 3Z" fill="white"/>
-    <path d="M8.5 9.5L12 6L15.5 9.5L12 13L8.5 9.5Z" fill="#8247E5"/>
-    <path d="M8.5 14.5L12 11L15.5 14.5L12 18L8.5 14.5Z" fill="#8247E5"/>
-  </svg>
-)
+// @ts-expect-error File exists
+import TronLogo from '@/assets/tron-trx-logo.png'
+// @ts-expect-error File exists
+import PolygonLogo from '@/assets/polygon-matic-logo.png'
 
 interface WithdrawForm {
   currency: 'usdttrc20' | 'usdtmatic'
@@ -103,8 +89,11 @@ export function WithdrawModal({
   const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const percentage = Number(event.target.value)
     const amount = (availableBalance * percentage) / 100
-    setValue('amount', Number(amount.toFixed(2)))
-    setShouldFocusAmount(true)
+
+    if (!isNaN(amount) && isFinite(amount)) {
+      setValue('amount', Number(amount.toFixed(2)))
+      setShouldFocusAmount(true)
+    }
   }
 
   const getWithdrawPercentage = () => {
@@ -160,7 +149,7 @@ export function WithdrawModal({
                 />
                 <div className="nowpayments-network-option__content">
                   <div className="nowpayments-network-option__icon">
-                    <TronIcon />
+                    <img src={TronLogo} alt="Tron" width="24" height="24" />
                   </div>
                   <div className="nowpayments-network-option__info">
                     <span className="nowpayments-network-option__name">USDT</span>
@@ -177,7 +166,7 @@ export function WithdrawModal({
                 />
                 <div className="nowpayments-network-option__content">
                   <div className="nowpayments-network-option__icon">
-                    <PolygonIcon />
+                    <img src={PolygonLogo} alt="Polygon" width="24" height="24" />
                   </div>
                   <div className="nowpayments-network-option__info">
                     <span className="nowpayments-network-option__name">USDT</span>
@@ -260,7 +249,9 @@ export function WithdrawModal({
                 fontWeight: 'var(--nowpayments-font-weight-semibold)',
                 marginTop: 'var(--nowpayments-spacing-xs)'
               }}>
-                {isConverting ? 'Converting...' : usdtAmount ? `${usdtAmount.toFixed(2)} USDT` : 'N/A'}
+                {isConverting && 'Converting...'}
+                {!isConverting && usdtAmount !== null && !isNaN(usdtAmount) && isFinite(usdtAmount) && `${usdtAmount.toFixed(2)} USDT`}
+                {!isConverting && (usdtAmount === null || isNaN(usdtAmount) || !isFinite(usdtAmount)) && 'N/A'}
               </div>
             </div>
           )}
