@@ -1,6 +1,6 @@
 # WithdrawModal Component
 
-A single-form withdrawal interface with network selection, amount slider, and destination address input.
+A 2-step withdrawal interface with network selection, amount slider, destination address input, and withdrawal confirmation details.
 
 ## Props Interface
 
@@ -10,15 +10,20 @@ interface WithdrawModalProps {
   onClose: () => void
   availableBalance: number
   balanceToUsdtConverter: (amount: number) => Promise<number>
+  showPoweredByNowpayments?: boolean
   onSubmit: (formData: WithdrawFormData) => Promise<any>
-  onSuccess?: (backendResponse: any) => void
-  onError?: (error: Error) => void
+  onSuccess?: (backendResponse: any) => WithdrawalDetails | Promise<WithdrawalDetails>
+  onError?: (error: Error) => string | undefined | void
 }
 
 interface WithdrawFormData {
   currency: 'usdttrc20' | 'usdtmatic'
   amount: number
   destinationAddress: string
+}
+
+interface WithdrawalDetails {
+  transactionId: string
 }
 ```
 
@@ -71,15 +76,49 @@ function WithdrawExample() {
         onSubmit={handleSubmit}
         onSuccess={(result) => {
           console.log('Withdrawal created:', result)
-          setIsOpen(false)
+
+          // Map backend response to WithdrawalDetails
+          return {
+            transactionId: result.data.id // or result.withdrawalId, etc.
+          }
         }}
         onError={(error) => {
           console.error('Error:', error.message)
+          // Optionally return custom error message
+          return 'Failed to process withdrawal. Please try again.'
         }}
       />
     </>
   )
 }
+```
+
+## Two-Step Workflow
+
+The WithdrawModal follows a 2-step flow:
+
+### Step 1: Withdrawal Form
+- Network selection (USDT-TRC20 or USDT-MATIC)
+- Amount selection via slider or exact input
+- USDT conversion display
+- Destination address input
+- Form validation and submission
+
+### Step 2: Withdrawal Details
+- Display withdrawal amount
+- Show selected network with logo
+- Display destination address (read-only)
+- Show transaction ID from backend
+- Network-specific warning message
+- Optional "Powered by NOWPayments" branding
+
+## Data Flow
+
+```
+1. User fills form → WithdrawFormData
+2. onSubmit(formData) → Your backend → Any response shape
+3. onSuccess(backendResponse) → Map to WithdrawalDetails
+4. Component displays step 2 with withdrawal details
 ```
 
 ## Real-time Balance Conversion
@@ -117,7 +156,9 @@ function WithdrawWithLiveRates() {
       availableBalance={userBalance}
       balanceToUsdtConverter={convertToUsdt}
       onSubmit={handleSubmit}
-      onSuccess={handleSuccess}
+      onSuccess={(result) => ({
+        transactionId: result.data.transactionId
+      })}
     />
   )
 }
@@ -220,6 +261,7 @@ Common backend response patterns:
 // Detailed response
 {
   id: "withdraw_123",
+  transactionId: "txn_abc123def456",
   amount: 100,
   currency: "usdttrc20",
   destinationAddress: "TYour1WalletAddress2Here3...",
@@ -228,6 +270,35 @@ Common backend response patterns:
   networkFee: 1.5,
   transactionHash: null // Set after processing
 }
+```
+
+## onSuccess Mapping Examples
+
+```tsx
+// Example 1: Simple ID mapping
+onSuccess={(response) => ({
+  transactionId: response.id
+})}
+
+// Example 2: Nested data structure
+onSuccess={(response) => ({
+  transactionId: response.data.transactionId
+})}
+
+// Example 3: Async processing
+onSuccess={async (response) => {
+  // Optionally do additional processing
+  await logWithdrawal(response)
+
+  return {
+    transactionId: response.withdrawalId
+  }
+}}
+
+// Example 4: Conditional mapping
+onSuccess={(response) => ({
+  transactionId: response.txId || response.id || 'PENDING'
+})}
 ```
 
 ## Error Handling
@@ -254,11 +325,16 @@ function WithdrawWithErrorHandling() {
     // Log error for monitoring
     logWithdrawalError(error)
 
-    // Show user-friendly message
-    showNotification({
-      type: 'error',
-      message: error.message
-    })
+    // Return custom user-friendly message
+    if (error.message.includes('insufficient')) {
+      return 'Insufficient balance for this withdrawal'
+    }
+
+    if (error.message.includes('limit')) {
+      return 'You have reached your daily withdrawal limit'
+    }
+
+    return 'Unable to process withdrawal. Please contact support.'
   }
 
   return (
@@ -269,6 +345,22 @@ function WithdrawWithErrorHandling() {
     />
   )
 }
+```
+
+## Branding Control
+
+```tsx
+// Hide NOWPayments branding (default: true)
+<WithdrawModal
+  showPoweredByNowpayments={false}
+  // ... other props
+/>
+
+// Show NOWPayments branding (explicit)
+<WithdrawModal
+  showPoweredByNowpayments={true}
+  // ... other props
+/>
 ```
 
 ## Styling
@@ -296,6 +388,15 @@ input[type="range"] {
   border-radius: var(--np-radius);
   padding: var(--np-spacing-md);
 }
+
+/* Customize withdrawal details step */
+.nowpayments-payment-status {
+  /* Status indicator styles */
+}
+
+.nowpayments-payment-info--compact {
+  /* Details display styles */
+}
 ```
 
 ## Integration Notes
@@ -304,3 +405,4 @@ input[type="range"] {
 - **Network Fees**: Consider displaying network fees to users before confirmation
 - **Rate Updates**: Implement real-time exchange rate updates for accurate conversions
 - **Transaction Tracking**: Your backend should provide transaction status updates via webhooks or polling
+- **Two-Step Flow**: Users see withdrawal details after successful submission, providing confirmation before closing the modal

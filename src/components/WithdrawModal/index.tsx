@@ -1,20 +1,22 @@
 import React, { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import Modal from '../shared/Modal'
-import Input from '../shared/Input'
-import Button from '../shared/Button'
+import Stepper from '../shared/Stepper'
+import WithdrawFormStep from './WithdrawFormStep'
+import WithdrawDetailsStep from './WithdrawDetailsStep'
 import { useNowPaymentsContext } from '@/hooks/useNowPaymentsContext'
-import type { WithdrawModalProps, WithdrawFormData } from '@/types'
-// @ts-expect-error File exists
-import TronLogo from '@/assets/tron-trx-logo.png'
-// @ts-expect-error File exists
-import PolygonLogo from '@/assets/polygon-matic-logo.png'
+import type { WithdrawModalProps, WithdrawFormData, StepperStep, WithdrawalDetails } from '@/types'
 
 interface WithdrawForm {
   currency: 'usdttrc20' | 'usdtmatic'
   amount: number | undefined
   destinationAddress: string
 }
+
+const STEPS: StepperStep[] = [
+  { id: 1, title: 'Withdrawal Form', completed: false, active: true },
+  { id: 2, title: 'Withdrawal Details', completed: false, active: false },
+]
 
 export function WithdrawModal({
   isOpen,
@@ -24,12 +26,17 @@ export function WithdrawModal({
   onSubmit,
   onSuccess,
   onError,
+  showPoweredByNowpayments = true,
 }: WithdrawModalProps) {
   const { error } = useNowPaymentsContext()
+  const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [steps, setSteps] = useState(STEPS)
+  const [withdrawalDetails, setWithdrawalDetails] = useState<WithdrawalDetails | null>(null)
   const [usdtAmount, setUsdtAmount] = useState<number | null>(null)
   const [isConverting, setIsConverting] = useState(false)
   const [shouldFocusAmount, setShouldFocusAmount] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string>('')
 
   const {
     register,
@@ -47,6 +54,8 @@ export function WithdrawModal({
   })
 
   const watchedAmount = watch('amount')
+  const watchedCurrency = watch('currency')
+  const watchedAddress = watch('destinationAddress')
 
   // Reset form when modal opens/closes
   useEffect(() => {
@@ -56,10 +65,25 @@ export function WithdrawModal({
         amount: undefined,
         destinationAddress: '',
       })
+      setCurrentStep(1)
       setIsSubmitting(false)
+      setSteps(STEPS)
+      setWithdrawalDetails(null)
       setUsdtAmount(null)
+      setErrorMessage('')
     }
   }, [isOpen, reset])
+
+  // Update steps based on current step
+  useEffect(() => {
+    setSteps(prevSteps =>
+      prevSteps.map(step => ({
+        ...step,
+        completed: step.id < currentStep,
+        active: step.id === currentStep,
+      }))
+    )
+  }, [currentStep])
 
   // Convert balance to USDT when amount changes
   useEffect(() => {
@@ -102,186 +126,83 @@ export function WithdrawModal({
   }
 
   const onFormSubmit = async (data: WithdrawForm) => {
+    if (!data.amount) return
+
     setIsSubmitting(true)
+    setErrorMessage('')
 
     try {
       const formData: WithdrawFormData = {
         currency: data.currency,
-        amount: data.amount || 0,
+        amount: data.amount,
         destinationAddress: data.destinationAddress,
       }
 
       const result = await onSubmit(formData)
 
-      onSuccess?.(result)
-      onClose()
+      // Get withdrawal details from onSuccess callback
+      if (onSuccess) {
+        const details = await onSuccess(result)
+        setWithdrawalDetails(details)
+      }
+
+      setCurrentStep(2) // Go to withdrawal details step
     } catch (error) {
       const errorObj = error instanceof Error ? error : new Error('Unknown error occurred')
-      onError?.(errorObj)
+      const customMessage = onError?.(errorObj)
+      setErrorMessage(customMessage || errorObj.message)
     } finally {
       setIsSubmitting(false)
+    }
+  }
+
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <WithdrawFormStep
+            register={register}
+            errors={errors}
+            watchedAmount={watchedAmount}
+            availableBalance={availableBalance}
+            isSubmitting={isSubmitting}
+            usdtAmount={usdtAmount}
+            isConverting={isConverting}
+            errorMessage={errorMessage}
+            onSubmit={handleSubmit(onFormSubmit)}
+            handleSliderChange={handleSliderChange}
+            getWithdrawPercentage={getWithdrawPercentage}
+          />
+        )
+
+      case 2:
+        return (
+          <WithdrawDetailsStep
+            withdrawalDetails={withdrawalDetails}
+            amount={watchedAmount || 0}
+            currency={watchedCurrency}
+            destinationAddress={watchedAddress}
+            showPoweredByNowpayments={showPoweredByNowpayments}
+          />
+        )
+
+      default:
+        return null
     }
   }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Withdraw Funds">
       <div className="nowpayments-modal">
+        <Stepper steps={steps} />
+
         {error && (
           <div className="nowpayments-error" style={{ marginBottom: 'var(--nowpayments-spacing-lg)' }}>
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit(onFormSubmit)}>
-          {/* Network Selection */}
-          <div style={{ marginBottom: 'var(--nowpayments-spacing-lg)' }}>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: 'var(--nowpayments-spacing-sm)'
-            }}>
-              <label className="nowpayments-network-option">
-                <input
-                  type="radio"
-                  value="usdttrc20"
-                  {...register('currency')}
-                  className="nowpayments-network-option__input"
-                />
-                <div className="nowpayments-network-option__content">
-                  <div className="nowpayments-network-option__icon">
-                    <img src={TronLogo} alt="Tron" width="24" height="24" />
-                  </div>
-                  <div className="nowpayments-network-option__info">
-                    <span className="nowpayments-network-option__name">USDT</span>
-                    <span className="nowpayments-network-option__network">Tron Network</span>
-                  </div>
-                </div>
-              </label>
-              <label className="nowpayments-network-option">
-                <input
-                  type="radio"
-                  value="usdtmatic"
-                  {...register('currency')}
-                  className="nowpayments-network-option__input"
-                />
-                <div className="nowpayments-network-option__content">
-                  <div className="nowpayments-network-option__icon">
-                    <img src={PolygonLogo} alt="Polygon" width="24" height="24" />
-                  </div>
-                  <div className="nowpayments-network-option__info">
-                    <span className="nowpayments-network-option__name">USDT</span>
-                    <span className="nowpayments-network-option__network">Polygon Network</span>
-                  </div>
-                </div>
-              </label>
-            </div>
-          </div>
-
-          {/* Amount Slider */}
-          <div style={{ marginBottom: 'var(--nowpayments-spacing-lg)' }}>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'flex-end', 
-              alignItems: 'center',
-              marginBottom: 'var(--nowpayments-spacing-xs)'
-            }}>
-              <span style={{ 
-                fontSize: 'var(--nowpayments-font-size-sm)',
-                color: 'var(--nowpayments-on-surface-variant)'
-              }}>
-                {getWithdrawPercentage()}% of balance
-              </span>
-            </div>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={getWithdrawPercentage()}
-              onChange={handleSliderChange}
-              disabled={isSubmitting}
-              style={{
-                width: '100%',
-                marginTop: 'var(--nowpayments-spacing-sm)',
-                marginBottom: 'var(--nowpayments-spacing-md)'
-              }}
-            />
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              fontSize: 'var(--nowpayments-font-size-sm)',
-              color: 'var(--nowpayments-on-surface-variant)'
-            }}>
-              <span>0</span>
-              <span>Available: {availableBalance}</span>
-            </div>
-          </div>
-
-          {/* Exact Amount Input */}
-          <Input
-            label="Exact Amount"
-            type="number"
-            step="0.01"
-            min="0"
-            max={availableBalance}
-            placeholder="0.00"
-            error={errors.amount?.message}
-            disabled={isSubmitting}
-            {...register('amount', {
-              required: 'Amount is required',
-              min: { value: 0.01, message: 'Amount must be greater than 0' },
-              max: { value: availableBalance, message: 'Amount exceeds available balance' },
-            })}
-          />
-
-          {/* USDT Conversion Display */}
-          {watchedAmount && watchedAmount > 0 && (
-            <div style={{
-              padding: 'var(--nowpayments-spacing-md)',
-              backgroundColor: 'var(--nowpayments-surface-variant)',
-              borderRadius: 'var(--nowpayments-radius)',
-              marginBottom: 'var(--nowpayments-spacing-lg)'
-            }}>
-              <div style={{ fontSize: 'var(--nowpayments-font-size-sm)' }}>
-                You will receive approximately:
-              </div>
-              <div style={{
-                fontSize: 'var(--nowpayments-font-size-lg)',
-                fontWeight: 'var(--nowpayments-font-weight-semibold)',
-                marginTop: 'var(--nowpayments-spacing-xs)'
-              }}>
-                {isConverting && 'Converting...'}
-                {!isConverting && usdtAmount !== null && !isNaN(usdtAmount) && isFinite(usdtAmount) && `${usdtAmount.toFixed(2)} USDT`}
-                {!isConverting && (usdtAmount === null || isNaN(usdtAmount) || !isFinite(usdtAmount)) && 'N/A'}
-              </div>
-            </div>
-          )}
-
-          {/* Destination Address */}
-          <Input
-            label="Destination Address"
-            placeholder="Enter your wallet address"
-            error={errors.destinationAddress?.message}
-            disabled={isSubmitting}
-            {...register('destinationAddress', {
-              required: 'Destination address is required',
-              minLength: { value: 20, message: 'Invalid wallet address' },
-            })}
-          />
-
-          {/* Submit Button */}
-          <Button
-            variant="primary"
-            type="submit"
-            loading={isSubmitting}
-            disabled={isSubmitting || !watchedAmount || watchedAmount <= 0}
-            style={{
-              width: '100%',
-              marginTop: 'var(--nowpayments-spacing-xl)'
-            }}
-          >
-            Create Withdrawal
-          </Button>
-        </form>
+        {renderStepContent()}
       </div>
     </Modal>
   )

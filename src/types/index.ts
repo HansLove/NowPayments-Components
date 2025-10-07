@@ -26,6 +26,13 @@ export interface PaymentDetails {
   paymentId: string
 }
 
+/**
+ * Withdrawal details returned from onSuccess callback
+ */
+export interface WithdrawalDetails {
+  transactionId: string
+}
+
 export interface DepositModalProps {
   isOpen: boolean
   onClose: () => void
@@ -60,6 +67,7 @@ export interface WithdrawModalProps {
   onClose: () => void
   availableBalance: number
   balanceToUsdtConverter: (amount: number) => Promise<number>
+  showPoweredByNowpayments?: boolean
   /**
    * Callback when form is submitted
    * @param formData - Fixed schema from the form
@@ -67,9 +75,19 @@ export interface WithdrawModalProps {
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Backend response can have any shape
   onSubmit: (formData: WithdrawFormData) => Promise<any>
+  /**
+   * Callback when form is successfully submitted
+   * @param backendResponse - Response from your backend
+   * @returns WithdrawalDetails to display in the details step
+   */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Backend response can have any shape
-  onSuccess?: (backendResponse: any) => void
-  onError?: (error: Error) => void
+  onSuccess?: (backendResponse: any) => WithdrawalDetails | Promise<WithdrawalDetails>
+  /**
+   * Callback when form submission fails
+   * @param error - Error that occurred during submission
+   * @returns Optional error message to display to the user
+   */
+  onError?: (error: Error) => string | undefined | void
 }
 
 /**

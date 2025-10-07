@@ -45,6 +45,11 @@ export const createWithdrawActions = () => ({
   onSuccess: (response: any) => {
     console.log('Withdraw success callback:', response)
     alert(`Withdrawal successful! Transaction ID: ${response.data.transactionId}`)
+
+    // Return WithdrawalDetails for the component to display
+    return {
+      transactionId: response.data.transactionId
+    }
   },
 
   onError: (error: Error) => {
