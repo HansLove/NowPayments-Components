@@ -9,14 +9,14 @@ import PolygonLogo from '@/assets/polygon-matic-logo.png'
 
 interface WithdrawForm {
   currency: 'usdttrc20' | 'usdtmatic'
-  amount: number | undefined
+  amount: number
   destinationAddress: string
 }
 
 interface WithdrawFormStepProps {
   register: UseFormRegister<WithdrawForm>
   errors: FieldErrors<WithdrawForm>
-  watchedAmount: number | undefined
+  watchedAmount: number
   availableBalance: number
   isSubmitting: boolean
   usdtAmount: number | null
@@ -24,7 +24,7 @@ interface WithdrawFormStepProps {
   errorMessage: string
   onSubmit: React.FormEventHandler<HTMLFormElement>
   handleSliderChange: (event: React.ChangeEvent<HTMLInputElement>) => void
-  getWithdrawPercentage: () => number
+  withdrawPercentage: number
 }
 
 export function WithdrawFormStep({
@@ -38,7 +38,7 @@ export function WithdrawFormStep({
   errorMessage,
   onSubmit,
   handleSliderChange,
-  getWithdrawPercentage,
+  withdrawPercentage,
 }: WithdrawFormStepProps) {
   return (
     <div>
@@ -114,14 +114,14 @@ export function WithdrawFormStep({
                 color: 'var(--nowpayments-on-surface-variant)',
               }}
             >
-              {getWithdrawPercentage()}% of balance
+              {withdrawPercentage}% of balance
             </span>
           </div>
           <input
             type="range"
             min="0"
             max="100"
-            value={getWithdrawPercentage()}
+            value={withdrawPercentage}
             onChange={handleSliderChange}
             disabled={isSubmitting}
             style={{
@@ -155,13 +155,14 @@ export function WithdrawFormStep({
           disabled={isSubmitting}
           {...register('amount', {
             required: 'Amount is required',
+            valueAsNumber: true,
             min: { value: 0.01, message: 'Amount must be greater than 0' },
             max: { value: availableBalance, message: 'Amount exceeds available balance' },
           })}
         />
 
         {/* USDT Conversion Display */}
-        {watchedAmount && watchedAmount > 0 && (
+        {watchedAmount > 0 && (
           <div
             style={{
               padding: 'var(--nowpayments-spacing-md)',
@@ -210,7 +211,7 @@ export function WithdrawFormStep({
           variant="primary"
           type="submit"
           loading={isSubmitting}
-          disabled={isSubmitting || !watchedAmount || watchedAmount <= 0}
+          disabled={isSubmitting || watchedAmount <= 0}
           style={{
             width: '100%',
             marginTop: 'var(--nowpayments-spacing-xl)',

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import Modal from '../shared/Modal'
 import Stepper from '../shared/Stepper'
@@ -9,7 +9,7 @@ import type { WithdrawModalProps, WithdrawFormData, StepperStep, WithdrawalDetai
 
 interface WithdrawForm {
   currency: 'usdttrc20' | 'usdtmatic'
-  amount: number | undefined
+  amount: number
   destinationAddress: string
 }
 
@@ -48,7 +48,7 @@ export function WithdrawModal({
   } = useForm<WithdrawForm>({
     defaultValues: {
       currency: 'usdttrc20',
-      amount: undefined,
+      amount: 0,
       destinationAddress: '',
     },
   })
@@ -62,7 +62,7 @@ export function WithdrawModal({
     if (isOpen) {
       reset({
         currency: 'usdttrc20',
-        amount: undefined,
+        amount: 0,
         destinationAddress: '',
       })
       setCurrentStep(1)
@@ -87,7 +87,7 @@ export function WithdrawModal({
 
   // Convert balance to USDT when amount changes
   useEffect(() => {
-    if (watchedAmount && watchedAmount > 0) {
+    if (watchedAmount > 0) {
       setIsConverting(true)
       balanceToUsdtConverter(watchedAmount)
         .then(setUsdtAmount)
@@ -120,13 +120,13 @@ export function WithdrawModal({
     }
   }
 
-  const getWithdrawPercentage = () => {
-    if (!watchedAmount || availableBalance === 0) return 0
+  const withdrawPercentage = useMemo(() => {
+    if (watchedAmount === 0 || availableBalance === 0) return 0
     return Math.round((watchedAmount / availableBalance) * 100)
-  }
+  }, [watchedAmount, availableBalance])
 
   const onFormSubmit = async (data: WithdrawForm) => {
-    if (!data.amount) return
+    if (data.amount <= 0) return
 
     setIsSubmitting(true)
     setErrorMessage('')
@@ -156,41 +156,6 @@ export function WithdrawModal({
     }
   }
 
-  const renderStepContent = () => {
-    switch (currentStep) {
-      case 1:
-        return (
-          <WithdrawFormStep
-            register={register}
-            errors={errors}
-            watchedAmount={watchedAmount}
-            availableBalance={availableBalance}
-            isSubmitting={isSubmitting}
-            usdtAmount={usdtAmount}
-            isConverting={isConverting}
-            errorMessage={errorMessage}
-            onSubmit={handleSubmit(onFormSubmit)}
-            handleSliderChange={handleSliderChange}
-            getWithdrawPercentage={getWithdrawPercentage}
-          />
-        )
-
-      case 2:
-        return (
-          <WithdrawDetailsStep
-            withdrawalDetails={withdrawalDetails}
-            amount={watchedAmount || 0}
-            currency={watchedCurrency}
-            destinationAddress={watchedAddress}
-            showPoweredByNowpayments={showPoweredByNowpayments}
-          />
-        )
-
-      default:
-        return null
-    }
-  }
-
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Withdraw Funds">
       <div className="nowpayments-modal">
@@ -202,7 +167,31 @@ export function WithdrawModal({
           </div>
         )}
 
-        {renderStepContent()}
+        {currentStep === 1 && (
+          <WithdrawFormStep
+            register={register}
+            errors={errors}
+            watchedAmount={watchedAmount}
+            availableBalance={availableBalance}
+            isSubmitting={isSubmitting}
+            usdtAmount={usdtAmount}
+            isConverting={isConverting}
+            errorMessage={errorMessage}
+            onSubmit={handleSubmit(onFormSubmit)}
+            handleSliderChange={handleSliderChange}
+            withdrawPercentage={withdrawPercentage}
+          />
+        )}
+
+        {currentStep === 2 && (
+          <WithdrawDetailsStep
+            withdrawalDetails={withdrawalDetails}
+            amount={watchedAmount}
+            currency={watchedCurrency}
+            destinationAddress={watchedAddress}
+            showPoweredByNowpayments={showPoweredByNowpayments}
+          />
+        )}
       </div>
     </Modal>
   )
