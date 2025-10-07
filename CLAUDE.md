@@ -212,6 +212,32 @@ const { register, handleSubmit, watch, formState: { errors }, reset } = useForm<
 )}
 ```
 
+**Number Input Pattern:**
+```tsx
+// ✅ Use valueAsNumber for numeric inputs
+<input
+  type="number"
+  {...register('amount', {
+    required: 'Amount is required',
+    valueAsNumber: true,  // Converts string to number automatically
+    min: { value: 0.01, message: 'Amount must be greater than 0' },
+    max: { value: maxValue, message: 'Amount exceeds maximum' },
+  })}
+/>
+
+// ✅ Type safety: define amount as number (not number | undefined)
+interface FormData {
+  amount: number  // Not number | undefined
+}
+
+// ✅ Default values should be numbers
+const { register } = useForm<FormData>({
+  defaultValues: {
+    amount: 0,  // Not undefined
+  },
+})
+```
+
 **Event Handler Naming:**
 ```tsx
 // ✅ Consistent event handler patterns
