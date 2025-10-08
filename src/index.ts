@@ -19,4 +19,8 @@ export type {
   ContinueWithNowPaymentsProps,
   NowPaymentsProviderProps,
   PaymentDetails,
+  WithdrawalDetails,
 } from './types'
+
+// Enums for Configuration
+export { USDTNetwork } from './types'

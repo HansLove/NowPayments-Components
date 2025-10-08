@@ -1,17 +1,14 @@
 import Input from '../shared/Input'
+import { getNetworkConfig } from '@/utils/networkConfig'
 import type { WithdrawalDetails } from '@/types'
 
 // @ts-expect-error File exists
 import NowPaymentsLogo from '@/assets/nowpayments-logo.png'
-// @ts-expect-error File exists
-import TronLogo from '@/assets/tron-trx-logo.png'
-// @ts-expect-error File exists
-import PolygonLogo from '@/assets/polygon-matic-logo.png'
 
 interface WithdrawDetailsStepProps {
   withdrawalDetails: WithdrawalDetails | null
   amount: number
-  currency: 'usdttrc20' | 'usdtmatic'
+  currency: string
   destinationAddress: string
   showPoweredByNowpayments: boolean
 }
@@ -23,9 +20,10 @@ export function WithdrawDetailsStep({
   destinationAddress,
   showPoweredByNowpayments,
 }: WithdrawDetailsStepProps) {
-  const networkName = currency === 'usdttrc20' ? 'Tron Network' : 'Polygon Network'
-  const NetworkLogo = currency === 'usdttrc20' ? TronLogo : PolygonLogo
-  const networkAlt = currency === 'usdttrc20' ? 'Tron' : 'Polygon'
+  const networkConfig = getNetworkConfig(currency)
+  const networkName = networkConfig?.displayName || 'Unknown Network'
+  const NetworkLogo = networkConfig?.logoPath || ''
+  const networkAlt = networkConfig?.name || 'Network'
 
   return (
     <div>

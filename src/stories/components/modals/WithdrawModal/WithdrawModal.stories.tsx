@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { WithdrawModal } from '@/components/WithdrawModal'
+import { USDTNetwork } from '@/index'
 import {
   createWithdrawActions,
   mockBalanceToUsdtConverter,
@@ -202,6 +203,68 @@ export const EdgeCases: Story = {
     docs: {
       description: {
         story: 'Testing edge cases with minimal balance above withdrawal minimum. Use controls to test different balance amounts and edge scenarios.'
+      }
+    }
+  }
+}
+
+// Network Configuration Stories
+
+// Single network - Static display
+export const SingleNetwork: Story = {
+  args: {
+    isOpen: true,
+    availableBalance: 1000,
+    balanceToUsdtConverter: mockBalanceToUsdtConverter,
+    supportedNetworks: [USDTNetwork.USDTTRC20],
+    ...createWithdrawActions()
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Only one network available (Tron). Shows static network info instead of selection UI. The user sees a notice indicating their address must be on the Tron Network.'
+      }
+    }
+  }
+}
+
+// Two networks - Binary selection (default behavior)
+export const TwoNetworks: Story = {
+  args: {
+    isOpen: true,
+    availableBalance: 1000,
+    balanceToUsdtConverter: mockBalanceToUsdtConverter,
+    supportedNetworks: [USDTNetwork.USDTTRC20, USDTNetwork.USDTMATIC],
+    ...createWithdrawActions()
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Two networks available (Tron and Polygon). Shows a grid with radio buttons for binary selection - the default UI pattern.'
+      }
+    }
+  }
+}
+
+// Multiple networks - Searchable dropdown
+export const MultipleNetworks: Story = {
+  args: {
+    isOpen: true,
+    availableBalance: 1000,
+    balanceToUsdtConverter: mockBalanceToUsdtConverter,
+    supportedNetworks: [
+      USDTNetwork.USDTTRC20,
+      USDTNetwork.USDTMATIC,
+      USDTNetwork.USDTBSC,
+      USDTNetwork.USDTARB,
+      USDTNetwork.USDTSOL
+    ],
+    ...createWithdrawActions()
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Five networks available (Tron, Polygon, BSC, Arbitrum, Solana). Shows a searchable dropdown selector for easier navigation when multiple options exist.'
       }
     }
   }

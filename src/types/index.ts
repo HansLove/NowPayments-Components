@@ -69,6 +69,11 @@ export interface WithdrawModalProps {
   balanceToUsdtConverter: (amount: number) => Promise<number>
   showPoweredByNowpayments?: boolean
   /**
+   * Array of supported USDT networks for withdrawal
+   * @default [USDTNetwork.USDTTRC20, USDTNetwork.USDTMATIC]
+   */
+  supportedNetworks?: USDTNetwork[]
+  /**
    * Callback when form is submitted
    * @param formData - Fixed schema from the form
    * @returns Promise with any shape - will be passed to onSuccess
@@ -105,7 +110,7 @@ export interface DepositFormData {
  * This structure is defined by the component and won't change
  */
 export interface WithdrawFormData {
-  currency: 'usdttrc20' | 'usdtmatic'
+  currency: string // USDT network code (e.g., 'USDTTRC20', 'USDTMATIC', etc.)
   amount: number
   destinationAddress: string
 }
@@ -125,6 +130,30 @@ export interface ApiResponse<T> {
 }
 
 export type NetworkType = 'polygon' | 'tron'
+
+/**
+ * Supported USDT networks for withdrawals
+ */
+export enum USDTNetwork {
+  USDTTRC20 = 'USDTTRC20',
+  USDTMATIC = 'USDTMATIC',
+  USDTBSC = 'USDTBSC',
+  USDTARB = 'USDTARB',
+  USDTSOL = 'USDTSOL',
+  USDTNEAR = 'USDTNEAR',
+  USDTOP = 'USDTOP',
+  USDTDOT = 'USDTDOT',
+}
+
+/**
+ * Network configuration metadata
+ */
+export interface NetworkConfig {
+  code: string
+  name: string
+  displayName: string
+  logoPath: string
+}
 
 export interface ContinueWithNowPaymentsProps {
   onClick?: () => void

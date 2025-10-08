@@ -5,10 +5,11 @@ import Stepper from '../shared/Stepper'
 import WithdrawFormStep from './WithdrawFormStep'
 import WithdrawDetailsStep from './WithdrawDetailsStep'
 import { useNowPaymentsContext } from '@/hooks/useNowPaymentsContext'
+import { getNetworkConfigs, DEFAULT_NETWORKS } from '@/utils/networkConfig'
 import type { WithdrawModalProps, WithdrawFormData, StepperStep, WithdrawalDetails } from '@/types'
 
 interface WithdrawForm {
-  currency: 'usdttrc20' | 'usdtmatic'
+  currency: string
   amount: number
   destinationAddress: string
 }
@@ -27,6 +28,7 @@ export function WithdrawModal({
   onSuccess,
   onError,
   showPoweredByNowpayments = true,
+  supportedNetworks = DEFAULT_NETWORKS,
 }: WithdrawModalProps) {
   const { error } = useNowPaymentsContext()
   const [currentStep, setCurrentStep] = useState(1)
@@ -38,6 +40,9 @@ export function WithdrawModal({
   const [shouldFocusAmount, setShouldFocusAmount] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
 
+  const networkConfigs = useMemo(() => getNetworkConfigs(supportedNetworks), [supportedNetworks])
+  const defaultNetwork = networkConfigs[0]?.code || 'USDTTRC20'
+
   const {
     register,
     handleSubmit,
@@ -47,7 +52,7 @@ export function WithdrawModal({
     reset,
   } = useForm<WithdrawForm>({
     defaultValues: {
-      currency: 'usdttrc20',
+      currency: defaultNetwork,
       amount: 0,
       destinationAddress: '',
     },
@@ -61,7 +66,7 @@ export function WithdrawModal({
   useEffect(() => {
     if (isOpen) {
       reset({
-        currency: 'usdttrc20',
+        currency: defaultNetwork,
         amount: 0,
         destinationAddress: '',
       })
@@ -72,7 +77,7 @@ export function WithdrawModal({
       setUsdtAmount(null)
       setErrorMessage('')
     }
-  }, [isOpen, reset])
+  }, [isOpen, reset, defaultNetwork])
 
   // Update steps based on current step
   useEffect(() => {
@@ -125,6 +130,10 @@ export function WithdrawModal({
     return Math.round((watchedAmount / availableBalance) * 100)
   }, [watchedAmount, availableBalance])
 
+  const handleNetworkSelect = (networkCode: string) => {
+    setValue('currency', networkCode)
+  }
+
   const onFormSubmit = async (data: WithdrawForm) => {
     if (data.amount <= 0) return
 
@@ -172,6 +181,7 @@ export function WithdrawModal({
             register={register}
             errors={errors}
             watchedAmount={watchedAmount}
+            watchedCurrency={watchedCurrency}
             availableBalance={availableBalance}
             isSubmitting={isSubmitting}
             usdtAmount={usdtAmount}
@@ -180,6 +190,8 @@ export function WithdrawModal({
             onSubmit={handleSubmit(onFormSubmit)}
             handleSliderChange={handleSliderChange}
             withdrawPercentage={withdrawPercentage}
+            networkConfigs={networkConfigs}
+            onNetworkSelect={handleNetworkSelect}
           />
         )}
 

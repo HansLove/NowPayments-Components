@@ -2,13 +2,11 @@ import React from 'react'
 import { UseFormRegister, FieldErrors } from 'react-hook-form'
 import Input from '../shared/Input'
 import Button from '../shared/Button'
-// @ts-expect-error File exists
-import TronLogo from '@/assets/tron-trx-logo.png'
-// @ts-expect-error File exists
-import PolygonLogo from '@/assets/polygon-matic-logo.png'
+import NetworkSelector from './NetworkSelector'
+import type { NetworkConfig } from '@/types'
 
 interface WithdrawForm {
-  currency: 'usdttrc20' | 'usdtmatic'
+  currency: string
   amount: number
   destinationAddress: string
 }
@@ -17,6 +15,7 @@ interface WithdrawFormStepProps {
   register: UseFormRegister<WithdrawForm>
   errors: FieldErrors<WithdrawForm>
   watchedAmount: number
+  watchedCurrency: string
   availableBalance: number
   isSubmitting: boolean
   usdtAmount: number | null
@@ -25,12 +24,15 @@ interface WithdrawFormStepProps {
   onSubmit: React.FormEventHandler<HTMLFormElement>
   handleSliderChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   withdrawPercentage: number
+  networkConfigs: NetworkConfig[]
+  onNetworkSelect: (networkCode: string) => void
 }
 
 export function WithdrawFormStep({
   register,
   errors,
   watchedAmount,
+  watchedCurrency,
   availableBalance,
   isSubmitting,
   usdtAmount,
@@ -39,6 +41,8 @@ export function WithdrawFormStep({
   onSubmit,
   handleSliderChange,
   withdrawPercentage,
+  networkConfigs,
+  onNetworkSelect,
 }: WithdrawFormStepProps) {
   return (
     <div>
@@ -53,50 +57,13 @@ export function WithdrawFormStep({
 
       <form onSubmit={onSubmit}>
         {/* Network Selection */}
-        <div style={{ marginBottom: 'var(--nowpayments-spacing-lg)' }}>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: 'var(--nowpayments-spacing-sm)',
-            }}
-          >
-            <label className="nowpayments-network-option">
-              <input
-                type="radio"
-                value="usdttrc20"
-                {...register('currency')}
-                className="nowpayments-network-option__input"
-              />
-              <div className="nowpayments-network-option__content">
-                <div className="nowpayments-network-option__icon">
-                  <img src={TronLogo} alt="Tron" width="24" height="24" />
-                </div>
-                <div className="nowpayments-network-option__info">
-                  <span className="nowpayments-network-option__name">USDT</span>
-                  <span className="nowpayments-network-option__network">Tron Network</span>
-                </div>
-              </div>
-            </label>
-            <label className="nowpayments-network-option">
-              <input
-                type="radio"
-                value="usdtmatic"
-                {...register('currency')}
-                className="nowpayments-network-option__input"
-              />
-              <div className="nowpayments-network-option__content">
-                <div className="nowpayments-network-option__icon">
-                  <img src={PolygonLogo} alt="Polygon" width="24" height="24" />
-                </div>
-                <div className="nowpayments-network-option__info">
-                  <span className="nowpayments-network-option__name">USDT</span>
-                  <span className="nowpayments-network-option__network">Polygon Network</span>
-                </div>
-              </div>
-            </label>
-          </div>
-        </div>
+        <NetworkSelector
+          networks={networkConfigs}
+          selectedNetwork={watchedCurrency}
+          onSelect={onNetworkSelect}
+          register={register}
+          disabled={isSubmitting}
+        />
 
         {/* Amount Slider */}
         <div style={{ marginBottom: 'var(--nowpayments-spacing-lg)' }}>

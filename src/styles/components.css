@@ -1260,6 +1260,232 @@
   line-height: 1.2;
 }
 
+.nowpayments-network-option__hint {
+  font-size: var(--nowpayments-font-size-xs);
+  color: var(--nowpayments-on-surface-variant);
+  line-height: 1.4;
+  margin-top: var(--nowpayments-spacing-xs);
+}
+
+/* Readonly network option (single network) */
+.nowpayments-network-option--readonly {
+  cursor: default;
+  border-color: var(--nowpayments-primary);
+  background-color: rgb(from var(--nowpayments-primary) r g b / 0.03);
+}
+
+.nowpayments-network-option--readonly:hover {
+  border-color: var(--nowpayments-primary);
+  box-shadow: none;
+}
+
+.nowpayments-network-option--readonly .nowpayments-network-option__content {
+  background-color: transparent;
+  border-color: transparent;
+}
+
+/* Network Selector (for 3+ networks) */
+.nowpayments-network-selector {
+  position: relative;
+  width: 100%;
+}
+
+.nowpayments-network-selector__label {
+  display: block;
+  font-size: var(--nowpayments-font-size-sm);
+  font-weight: var(--nowpayments-font-weight-medium);
+  color: var(--nowpayments-on-surface);
+  margin-bottom: var(--nowpayments-spacing-xs);
+}
+
+.nowpayments-network-selector__trigger {
+  width: 100%;
+  padding: var(--nowpayments-spacing-sm) var(--nowpayments-spacing-md);
+  background-color: var(--nowpayments-surface);
+  border: 2px solid var(--nowpayments-border);
+  border-radius: var(--nowpayments-radius-lg);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--nowpayments-spacing-md);
+  transition: all 0.2s ease;
+  font-size: var(--nowpayments-font-size-base);
+  color: var(--nowpayments-on-surface);
+}
+
+.nowpayments-network-selector__trigger:hover:not(:disabled) {
+  border-color: var(--nowpayments-primary);
+}
+
+.nowpayments-network-selector__trigger--open {
+  border-color: var(--nowpayments-primary);
+  box-shadow: 0 0 0 3px rgb(from var(--nowpayments-primary) r g b / 0.1);
+}
+
+.nowpayments-network-selector__trigger--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.nowpayments-network-selector__selected {
+  display: flex;
+  align-items: center;
+  gap: var(--nowpayments-spacing-sm);
+}
+
+.nowpayments-network-selector__logo {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: var(--nowpayments-radius);
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.nowpayments-network-selector__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+}
+
+.nowpayments-network-selector__name {
+  font-weight: var(--nowpayments-font-weight-medium);
+  color: var(--nowpayments-on-surface);
+  text-align: center;
+}
+
+.nowpayments-network-selector__code {
+  font-size: var(--nowpayments-font-size-xs);
+  color: var(--nowpayments-on-surface-variant);
+}
+
+.nowpayments-network-selector__placeholder {
+  color: var(--nowpayments-on-surface-variant);
+}
+
+.nowpayments-network-selector__chevron {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+  color: var(--nowpayments-on-surface-variant);
+}
+
+.nowpayments-network-selector__chevron--open {
+  transform: rotate(180deg);
+}
+
+.nowpayments-network-selector__dropdown {
+  position: absolute;
+  top: calc(100% + var(--nowpayments-spacing-xs));
+  left: 0;
+  right: 0;
+  background-color: var(--nowpayments-surface);
+  border: 2px solid var(--nowpayments-border);
+  border-radius: var(--nowpayments-radius-lg);
+  box-shadow: var(--nowpayments-shadow-lg);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.nowpayments-network-selector__search {
+  padding: var(--nowpayments-spacing-sm);
+  border-bottom: 1px solid var(--nowpayments-border);
+  display: flex;
+  align-items: center;
+  gap: var(--nowpayments-spacing-sm);
+}
+
+.nowpayments-network-selector__search-icon {
+  color: var(--nowpayments-on-surface-variant);
+  flex-shrink: 0;
+}
+
+.nowpayments-network-selector__search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: var(--nowpayments-font-size-sm);
+  color: var(--nowpayments-on-surface);
+  padding: var(--nowpayments-spacing-xs);
+}
+
+.nowpayments-network-selector__search-input::placeholder {
+  color: var(--nowpayments-on-surface-variant);
+}
+
+.nowpayments-network-selector__list {
+  max-height: 16rem;
+  overflow-y: auto;
+}
+
+.nowpayments-network-selector__option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--nowpayments-spacing-sm);
+  padding: var(--nowpayments-spacing-md);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  text-align: left;
+}
+
+.nowpayments-network-selector__option:hover {
+  background-color: var(--nowpayments-surface-variant);
+}
+
+.nowpayments-network-selector__option--selected {
+  background-color: rgb(from var(--nowpayments-primary) r g b / 0.1);
+}
+
+.nowpayments-network-selector__option--highlighted {
+  background-color: var(--nowpayments-surface-variant);
+}
+
+.nowpayments-network-selector__option-logo {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: var(--nowpayments-radius);
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.nowpayments-network-selector__option-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.nowpayments-network-selector__option-name {
+  font-size: var(--nowpayments-font-size-sm);
+  font-weight: var(--nowpayments-font-weight-medium);
+  color: var(--nowpayments-on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nowpayments-network-selector__option-code {
+  font-size: var(--nowpayments-font-size-xs);
+  color: var(--nowpayments-on-surface-variant);
+}
+
+.nowpayments-network-selector__check {
+  flex-shrink: 0;
+  color: var(--nowpayments-primary);
+}
+
+.nowpayments-network-selector__no-results {
+  padding: var(--nowpayments-spacing-lg);
+  text-align: center;
+  color: var(--nowpayments-on-surface-variant);
+  font-size: var(--nowpayments-font-size-sm);
+}
+
 /* Compact Payment Details Layout */
 .nowpayments-payment-details--compact {
   display: flex;
