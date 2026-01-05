@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import Modal from '../shared/Modal'
 import Stepper from '../shared/Stepper'
@@ -6,6 +6,7 @@ import CurrencySelectionStep from './CurrencySelectionStep'
 import AmountEntryStep from './AmountEntryStep'
 import PaymentDetailsStep from './PaymentDetailsStep'
 import { useNowPaymentsContext } from '@/hooks/useNowPaymentsContext'
+import { NowPaymentsAPI } from '@/utils/api'
 import type {
   DepositModalProps,
   DepositFormData,
@@ -30,8 +31,9 @@ export function DepositModal({
   showEmailInput = false,
   shouldNotifyByEmail = false,
   showPoweredByNowpayments = true,
+  fixedAmounts,
 }: DepositModalProps) {
-  const { error } = useNowPaymentsContext()
+  const { error, apiKey } = useNowPaymentsContext()
   const [currentStep, setCurrentStep] = useState(1)
   const [selectedCurrency, setSelectedCurrency] = useState<Currency | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -39,6 +41,9 @@ export function DepositModal({
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | null>(null)
   const [userEmail, setUserEmail] = useState<string>('')
   const [errorMessage, setErrorMessage] = useState<string>('')
+  const [minimumAmount, setMinimumAmount] = useState<number | null>(null)
+  const [minimumAmountUSD, setMinimumAmountUSD] = useState<string | null>(null)
+  const [selectedFixedAmount, setSelectedFixedAmount] = useState<number | null>(null)
 
   const {
     register,
@@ -46,10 +51,27 @@ export function DepositModal({
     watch,
     formState: { errors },
     reset,
+    setValue,
+    setFocus,
   } = useForm<{ amount: number; email?: string }>()
 
   const amount = watch('amount')
   const email = watch('email')
+
+  // Process fixedAmounts: convert strings to numbers, filter by minimum, and sort
+  const processedFixedAmounts = useMemo(() => {
+    if (!fixedAmounts || fixedAmounts.length === 0) return []
+
+    const amounts = fixedAmounts
+      .map(amount => typeof amount === 'string' ? parseFloat(amount) : amount)
+      .filter(amount => !isNaN(amount) && amount > 0)
+
+    const filtered = minimumAmount !== null
+      ? amounts.filter(amount => amount >= minimumAmount)
+      : amounts
+
+    return filtered.sort((a, b) => a - b)
+  }, [fixedAmounts, minimumAmount])
 
   // Reset form when modal opens/closes
   useEffect(() => {
@@ -60,6 +82,9 @@ export function DepositModal({
       setIsSubmitting(false)
       setSteps(STEPS)
       setErrorMessage('')
+      setMinimumAmount(null)
+      setMinimumAmountUSD(null)
+      setSelectedFixedAmount(null)
     }
   }, [isOpen, reset])
 
@@ -74,10 +99,40 @@ export function DepositModal({
     )
   }, [currentStep])
 
-  const handleCurrencySelect = (currency: Currency) => {
+  const handleCurrencySelect = async (currency: Currency) => {
     setSelectedCurrency(currency)
+    setSelectedFixedAmount(null)
+
+    // Fetch minimum amount for this currency
+    if (apiKey) {
+      const api = new NowPaymentsAPI(apiKey)
+      const result = await api.getMinimumAmount(currency.code)
+
+      if (result.success && result.data) {
+        setMinimumAmount(result.data.min_amount)
+        setMinimumAmountUSD(result.data.fiat_equivalent)
+      } else {
+        setMinimumAmount(null)
+        setMinimumAmountUSD(null)
+        console.warn('Failed to fetch minimum amount:', result.error)
+      }
+    }
+
     setCurrentStep(2)
   }
+
+  const handleFixedAmountSelect = (amount: number) => {
+    setFocus('amount')
+    setValue('amount', amount)
+    setSelectedFixedAmount(amount)
+  }
+
+  // Deselect fixed amount when user types
+  useEffect(() => {
+    if (amount !== selectedFixedAmount && selectedFixedAmount !== null) {
+      setSelectedFixedAmount(null)
+    }
+  }, [amount, selectedFixedAmount])
 
   const handleAmountSubmit = async () => {
     if (!amount || amount <= 0 || !selectedCurrency) return
@@ -143,6 +198,11 @@ export function DepositModal({
             showEmailInput={showEmailInput}
             customerEmail={customerEmail}
             errorMessage={errorMessage}
+            fixedAmounts={processedFixedAmounts}
+            minimumAmount={minimumAmount}
+            minimumAmountUSD={minimumAmountUSD}
+            selectedFixedAmount={selectedFixedAmount}
+            onFixedAmountSelect={handleFixedAmountSelect}
             onBack={() => setCurrentStep(1)}
             onSubmit={handleSubmit(handleAmountSubmit)}
           />

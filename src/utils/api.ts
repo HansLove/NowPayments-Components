@@ -1,5 +1,5 @@
 import axios, { type AxiosInstance } from 'axios'
-import type { Currency, ApiResponse } from '../types'
+import type { Currency, ApiResponse, MinimumAmountResponse } from '../types'
 
 const NOWPAYMENTS_API_URL = 'https://api.nowpayments.io'
 
@@ -62,6 +62,27 @@ export class NowPaymentsAPI {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error occurred',
+      }
+    }
+  }
+
+  /**
+   * Get minimum amount required for a specific currency
+   * Used to validate deposit amounts against NOWPayments limits
+   */
+  async getMinimumAmount(currency: string): Promise<ApiResponse<MinimumAmountResponse>> {
+    try {
+      const response = await this.client.get<MinimumAmountResponse>(
+        `/v1/min-amount?currency_from=${currency.toLowerCase()}&fiat_equivalent=usd`
+      )
+      return {
+        success: true,
+        data: response.data,
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to fetch minimum amount',
       }
     }
   }

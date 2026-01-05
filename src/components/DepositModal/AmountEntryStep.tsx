@@ -1,7 +1,8 @@
-import React from 'react'
+import { FormEventHandler } from 'react'
 import { UseFormRegister, FieldErrors } from 'react-hook-form'
 import Input from '../shared/Input'
 import Button from '../shared/Button'
+import AmountCard from '../shared/AmountCard'
 
 interface AmountEntryStepProps {
   register: UseFormRegister<{ amount: number; email?: string }>
@@ -11,8 +12,13 @@ interface AmountEntryStepProps {
   showEmailInput: boolean
   customerEmail?: string | (() => Promise<string>)
   errorMessage?: string
+  fixedAmounts?: number[]
+  minimumAmount?: number | null
+  minimumAmountUSD?: string | null
+  selectedFixedAmount?: number | null
+  onFixedAmountSelect?: (amount: number) => void
   onBack: () => void
-  onSubmit: React.FormEventHandler<HTMLFormElement>
+  onSubmit: FormEventHandler<HTMLFormElement>
 }
 
 export function AmountEntryStep({
@@ -23,6 +29,11 @@ export function AmountEntryStep({
   showEmailInput,
   customerEmail,
   errorMessage,
+  fixedAmounts,
+  minimumAmount,
+  minimumAmountUSD,
+  selectedFixedAmount,
+  onFixedAmountSelect,
   onBack,
   onSubmit,
 }: AmountEntryStepProps) {
@@ -38,17 +49,47 @@ export function AmountEntryStep({
           {errorMessage}
         </div>
       )}
+      {/* Fixed amounts section */}
+      {fixedAmounts && fixedAmounts.length > 0 && (
+        <div style={{ marginBottom: 'var(--nowpayments-spacing-lg)' }}>
+          <label
+            style={{
+              display: 'block',
+              marginBottom: 'var(--nowpayments-spacing-sm)',
+              fontSize: 'var(--nowpayments-font-size-sm)',
+              color: 'var(--nowpayments-on-surface-variant)',
+            }}
+          >
+            Select an amount:
+          </label>
+          <div className="nowpayments-amount-cards">
+            {fixedAmounts.map(amount => (
+              <AmountCard
+                key={amount}
+                amount={amount}
+                isSelected={selectedFixedAmount === amount}
+                onClick={onFixedAmountSelect!}
+              />
+            ))}
+          </div>
+        </div>
+      )}
       <form onSubmit={onSubmit}>
         <Input
           label="Amount"
           type="number"
           step="0.01"
-          min="0"
+          min={minimumAmount || 0}
           placeholder="0.00"
           error={errors.amount?.message}
           {...register('amount', {
             required: 'Amount is required',
-            min: { value: 0.01, message: 'Amount must be greater than 0' },
+            min: minimumAmount
+              ? {
+                  value: minimumAmount,
+                  message: `El monto mínimo aceptado es de ${minimumAmountUSD} USD`,
+                }
+              : { value: 0.01, message: 'Amount must be greater than 0' },
             valueAsNumber: true,
           })}
         />

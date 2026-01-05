@@ -210,3 +210,44 @@ export const WithEmailNotification: Story = {
     },
   },
 }
+
+// With Fixed Amounts
+export const WithFixedAmounts: Story = {
+  args: {
+    isOpen: true,
+    fixedAmounts: [50, 100, 250, 500],
+    customerEmail: 'user@example.com',
+    shouldNotifyByEmail: true,
+    ...createDepositActions(),
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Demonstrates the fixed amounts feature. Quick amount cards are displayed above the input field, allowing users to quickly select preset deposit amounts. Cards below the NOWPayments minimum amount are automatically hidden. Clicking a card updates the input value, and typing in the input deselects the card selection.',
+      },
+    },
+  },
+}
+
+// With Fixed Amounts - Mobile
+export const WithFixedAmountsMobile: Story = {
+  args: {
+    isOpen: true,
+    fixedAmounts: [25, 50, 100, 200, 500],
+    customerEmail: 'user@example.com',
+    shouldNotifyByEmail: true,
+    ...createDepositActions(),
+  },
+  parameters: {
+    viewport: {
+      defaultViewport: 'mobile1',
+    },
+    docs: {
+      description: {
+        story:
+          'Shows fixed amounts on mobile viewport. The responsive grid layout adapts to smaller screens while maintaining usability.',
+      },
+    },
+  },
+}

@@ -33,6 +33,15 @@ export interface WithdrawalDetails {
   transactionId: string
 }
 
+/**
+ * API response for minimum amount endpoint
+ */
+export interface MinimumAmountResponse {
+  currency_from: string
+  min_amount: number
+  fiat_equivalent: string
+}
+
 export interface DepositModalProps {
   isOpen: boolean
   onClose: () => void
@@ -40,6 +49,11 @@ export interface DepositModalProps {
   showEmailInput?: boolean
   shouldNotifyByEmail?: boolean
   showPoweredByNowpayments?: boolean
+  /**
+   * Optional array of preset deposit amounts shown as quick select cards
+   * Amounts below the NOWPayments minimum are automatically filtered out
+   */
+  fixedAmounts?: (number | string)[]
   /**
    * Callback when form is submitted
    * @param formData - Fixed schema from the form

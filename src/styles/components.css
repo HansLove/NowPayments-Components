@@ -1896,3 +1896,44 @@
   box-shadow: none;
   transform: none;
 }
+
+/* Fixed Amount Cards */
+.nowpayments-amount-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: var(--nowpayments-spacing-md);
+  margin-bottom: var(--nowpayments-spacing-lg);
+}
+
+.nowpayments-amount-card {
+  padding: var(--nowpayments-spacing-md) var(--nowpayments-spacing-lg);
+  border: 2px solid var(--nowpayments-border);
+  border-radius: var(--nowpayments-radius);
+  background-color: var(--nowpayments-surface);
+  color: var(--nowpayments-on-surface);
+  font-size: var(--nowpayments-font-size-lg);
+  font-weight: var(--nowpayments-font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--nowpayments-transition-fast);
+  text-align: center;
+  width: 100%;
+}
+
+.nowpayments-amount-card:hover {
+  border-color: var(--nowpayments-primary);
+  background-color: var(--nowpayments-surface-hover);
+}
+
+.nowpayments-amount-card:active {
+  transform: scale(0.98);
+}
+
+.nowpayments-amount-card--selected {
+  border-color: var(--nowpayments-primary);
+  background-color: var(--nowpayments-primary);
+  color: var(--nowpayments-on-primary);
+}
+
+.nowpayments-amount-card--selected:hover {
+  background-color: var(--nowpayments-primary-hover);
+}
