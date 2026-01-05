@@ -1,6 +1,6 @@
 {
   "name": "@taloon/nowpayments-components",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "React components for cryptocurrency payments and withdrawals using NOWPayments API",
   "type": "module",
   "main": "./dist/index.js",
@@ -22,11 +22,11 @@
     "README.md"
   ],
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "build:lib": "vite build",
-    "build:storybook": "storybook build",
-    "build:all": "npm run build:lib && npm run build:storybook",
+    "dev": "node init && vite",
+    "build": "node init && vite build",
+    "build:lib": "node init && vite build",
+    "build:storybook": "node init && storybook build",
+    "build:all": "node init && npm run build:lib && npm run build:storybook",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
